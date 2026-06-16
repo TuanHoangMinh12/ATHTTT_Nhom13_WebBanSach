@@ -81,14 +81,52 @@
               <div class="tile">
                   <div class="tile-body">
                       <div class="container" style="min-height: 600px">
-                         <div> <h1 class="text-center my-4">Chi tiết đơn hàng</h1><label class="green" style="
-          color: green;">${successMessage}</label></label><label class="red" style="
-    color: red;">${nosuccessMessage}</label></div>
-                          <c:if test="${not empty message}">
-                              <div class="alert alert-${alert}" role="alert">
-                                      ${message}
-                              </div>
-                          </c:if>
+                         <div> <h1 class="text-center my-4">Chi tiết đơn hàng</h1>
+<%--                             <label class="green" style="--%>
+<%--          color: green;">${successMessage}</label></label>--%>
+<%--                             <label class="red" style="--%>
+<%--    color: red;">${nosuccessMessage}</label></div>--%>
+<%--                          <c:if test="${not empty message}">--%>
+<%--                              <div class="alert alert-${alert}" role="alert">--%>
+<%--                                      ${message}--%>
+<%--                              </div>--%>
+<%--                          </c:if>--%>
+
+                             <%-- Kết quả Verify --%>
+                             <c:choose>
+                                 <c:when test="${verifyResult == 'OK'}">
+                                     <div class="alert alert-success d-flex align-items-center" role="alert">
+                                         <i class="fas fa-check-circle me-2" style="font-size:1.3rem"></i>
+                                         <div>${successMessage}</div>
+                                     </div>
+                                 </c:when>
+                                 <c:when test="${verifyResult == 'TAMPERED'}">
+                                     <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                         <i class="fas fa-exclamation-triangle me-2" style="font-size:1.3rem"></i>
+                                         <div>${nosuccessMessage}</div>
+                                     </div>
+                                     <div class="alert alert-warning">
+                                         <strong>Chi tiết:</strong> Dữ liệu hiện tại trong database không khớp
+                                         với chữ ký số của khách hàng. Đây là dấu hiệu đơn hàng đã bị
+                                         chỉnh sửa trực tiếp trong DB sau khi khách hàng đã ký.
+                                     </div>
+                                 </c:when>
+                                 <c:when test="${verifyResult == 'ERROR'}">
+                                     <div class="alert alert-warning" role="alert">
+                                         <i class="fas fa-question-circle"></i>
+                                             ${nosuccessMessage}
+                                     </div>
+                                 </c:when>
+                                 <%-- Trước khi nhấn Verify --%>
+                                 <c:otherwise>
+                                     <c:if test="${not empty successMessage}">
+                                         <div class="alert alert-success">${successMessage}</div>
+                                     </c:if>
+                                     <c:if test="${not empty nosuccessMessage}">
+                                         <div class="alert alert-danger">${nosuccessMessage}</div>
+                                     </c:if>
+                                 </c:otherwise>
+                             </c:choose>
                           <div class="row">
                               <div class="col-md-6">
                                   <h2>Thông tin khách hàng</h2>
