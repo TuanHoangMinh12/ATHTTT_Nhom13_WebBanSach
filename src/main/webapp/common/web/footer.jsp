@@ -8,8 +8,8 @@
                     <div class="dichvu d-flex align-items-center">
                         <img src="${pageContext.request.contextPath}/templates/images/footers/iconphone.png" alt="icon-books" style="border-radius: 100%;">
                         <div class="noidung">
-                            <h6 class="tieude font-weight-bold">HƠN 10000 LOẠI SÁCH </h6>
-                            <p class="detail">Tuyển chọn bởi Doraemon</p>
+                            <h6 class="tieude font-weight-bold">HƠN 2000 LOẠI SÁCH </h6>
+                            <p class="detail">Tuyển chọn bởi Hoàng Tiến</p>
                         </div>
                     </div>
                 </div>
@@ -49,8 +49,8 @@
         <div class="row">
             <div class="col-md-3 col-xs-6">
                 <div class="gioithieu">
-                    <h6 class="header text-uppercase font-weight-bold">Về Doraemon</h6>
-                    <a href="${pageContext.request.contextPath}/pages?page=about">Giới thiệu về Doraemon</a>
+                    <h6 class="header text-uppercase font-weight-bold">Về Hoàng Tiến</h6>
+                    <a href="${pageContext.request.contextPath}/pages?page=about">Giới thiệu về Hoàng Tiến</a>
                     <a href="#">Tuyển dụng</a>
                     <a href="${pageContext.request.contextPath}/pages?page=termsOfUse">Điều khoản sử dụng</a>
                     <a href="${pageContext.request.contextPath}/pages?page=privacyPolicy">Chính sách bảo mật</a>
