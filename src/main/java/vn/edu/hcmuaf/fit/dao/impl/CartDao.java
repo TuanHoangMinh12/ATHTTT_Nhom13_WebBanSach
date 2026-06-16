@@ -380,7 +380,8 @@ public class CartDao {
                 "FROM bill b " +
                 "JOIN carts e ON b.idCart = e.id " +
                 "JOIN book bk ON b.id_book = bk.id_book " +
-                "WHERE b.id_user = ? AND b.idCart = ?";
+                "WHERE b.id_user = ? AND b.idCart = ? " +
+                "ORDER BY b.id_order";
         Connection connection = JDBCConnector.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;

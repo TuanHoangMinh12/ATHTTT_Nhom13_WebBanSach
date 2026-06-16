@@ -19,12 +19,11 @@ public class CartModel implements Serializable {
     private double totalPriceShip;
     private double totalPriceShipVoucher;
     private String timeShip;
-
     private int idUser;
     private int inShip;
     private Timestamp createTime;
+    private String verifyStatus;   // "OK" / "FAIL" / null
     private List<Bill> bills;
-
 
     public CartModel() {
     }
@@ -134,7 +133,9 @@ public class CartModel implements Serializable {
     public void setShip(int ship) {
         this.ship = ship;
     }
-
+    public String getVerifyStatus() {
+        return verifyStatus;
+    }
 
     public int getId() {
         return id;
@@ -205,6 +206,10 @@ public class CartModel implements Serializable {
 
     public Timestamp getCreateTime() {
         return createTime;
+    }
+
+    public void setVerifyStatus(String verifyStatus) {
+        this.verifyStatus = verifyStatus;
     }
 
     public List<Bill> getBills() {

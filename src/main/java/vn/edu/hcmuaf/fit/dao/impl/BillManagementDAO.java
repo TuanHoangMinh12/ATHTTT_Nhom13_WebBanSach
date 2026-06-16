@@ -210,35 +210,49 @@ public class BillManagementDAO implements IBillManagementDAO {
 
     }
 
+//    @Override
+//    public void confirmBill(String id_order) {
+//            Connection connection = JDBCConnector.getConnection();
+//            String sql = "UPDATE bill SET shipping_info = 2 WHERE idCart = ?";
+//            PreparedStatement statement = null;
+//            if (connection != null) {
+//                try {
+//                    statement = connection.prepareStatement(sql);
+//                    statement.setString(1, id_order);
+//                    statement.executeUpdate();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                } finally {
+//                    try {
+//                        if (connection != null) connection.close();
+//                        if (statement != null) statement.close();
+//                    } catch (SQLException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//    }
     @Override
     public void confirmBill(String id_order) {
-            Connection connection = JDBCConnector.getConnection();
-            String sql = "UPDATE bill SET shipping_info = 2 WHERE idCart = ?";
-            PreparedStatement statement = null;
+        String sql = "UPDATE bill SET shipping_info = 2 WHERE idCart = ?";
+
+        // Tự động đóng connection và statement kể cả khi có Exception xảy ra
+        try (Connection connection = JDBCConnector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
             if (connection != null) {
-                try {
-                    statement = connection.prepareStatement(sql);
-                    statement.setString(1, id_order);
-                    statement.executeUpdate();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        if (connection != null) connection.close();
-                        if (statement != null) statement.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
+                statement.setString(1, id_order);
+                statement.executeUpdate();
             }
-
-
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void deleteBill(String id_order) {
         Connection connection = JDBCConnector.getConnection();
-        String sql = "UPDATE bill SET shipping_info = 4 WHERE id_order = ?";
+        String sql = "UPDATE bill SET shipping_info = 4 WHERE idCart = ?";
         PreparedStatement statement = null;
 
         if (connection != null) {

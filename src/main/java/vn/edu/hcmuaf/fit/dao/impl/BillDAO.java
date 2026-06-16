@@ -538,17 +538,71 @@ public class BillDAO implements IBillDAO {
         return null;
     }
 
+//    public List<Bill> findAllBillByIdCart(int id) {
+//        List<Bill> list = new ArrayList<Bill>();
+//        String sql = "SELECT b.id_order, s.name, b.totalBill, b.quantity, b.id_user, b.id_book, b.address, b.shipping_info, b.payment_method, b.pack,\n" +
+//                "c.create_time, c.timeShip, b.idCart, b.phone\n" +
+//                "FROM bill b JOIN book s \n" +
+//                "ON b.id_book = s.id_book JOIN carts c ON b.idCart = c.id\n" +
+//                "WHERE b.idCart = ?";
+//        Connection connection = JDBCConnector.getConnection();
+//        PreparedStatement statement = null;
+//        ResultSet resultSet = null;
+//        if(connection != null) {
+//            try {
+//                statement = connection.prepareStatement(sql);
+//                statement.setInt(1, id);
+//                resultSet = statement.executeQuery();
+//                while (resultSet.next()) {
+//                    Bill bill = new Bill();
+//                    bill.setIdOrder(resultSet.getInt(1));
+//                    bill.setName(resultSet.getString(2));
+//                    bill.setTotalPrice(resultSet.getInt(3));
+//                    bill.setQuantity(resultSet.getInt(4));
+//                    bill.setIdUser(resultSet.getInt(5));
+//                    bill.setIdBook(resultSet.getInt(6));
+//                    bill.setImage(findImageById(resultSet.getInt(6)));
+//                    bill.setAddress(resultSet.getString(7));
+//                    bill.setShippingInfo(resultSet.getInt(8));
+//                    bill.setShip_time(resultSet.getTimestamp(11));
+//                    bill.setShip_time_predict(resultSet.getString(12));
+//                    bill.setIdCart(resultSet.getInt(13));
+//                    bill.setPhone(resultSet.getString(14));
+//                    list.add(bill);
+//                }
+//
+//                return list;
+//            } catch (SQLException e) {
+//                return null;
+//            } finally {
+//                try {
+//                    if(connection != null) connection.close();
+//                    if(statement != null) statement.close();
+//                    if(resultSet != null) resultSet.close();
+//                } catch (SQLException e) {
+//                    return null;
+//                }
+//            }
+//        }
+//        return null;
+//    }
     public List<Bill> findAllBillByIdCart(int id) {
         List<Bill> list = new ArrayList<Bill>();
-        String sql = "SELECT b.id_order, s.name, b.totalBill, b.quantity, b.id_user, b.id_book, b.address, b.shipping_info, b.payment_method, b.pack,\n" +
-                "c.create_time, c.timeShip, b.idCart, b.phone\n" +
-                "FROM bill b JOIN book s \n" +
-                "ON b.id_book = s.id_book JOIN carts c ON b.idCart = c.id\n" +
+
+        // TỐI ƯU SQL: JOIN trực tiếp với bảng ảnh (Lấy ảnh đầu tiên bằng GROUP BY hoặc viết JOIN khéo)
+        String sql = "SELECT b.id_order, s.name, b.totalBill, b.quantity, b.id_user, b.id_book, b.address, b.shipping_info, b.payment_method, b.pack, " +
+                "c.create_time, c.timeShip, b.idCart, b.phone, img.image " +
+                "FROM bill b " +
+                "JOIN book s ON b.id_book = s.id_book " +
+                "JOIN carts c ON b.idCart = c.id " +
+                "LEFT JOIN (SELECT id_book, MIN(image) AS image FROM image_book GROUP BY id_book) img ON b.id_book = img.id_book " +
                 "WHERE b.idCart = ?";
+
         Connection connection = JDBCConnector.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-        if(connection != null) {
+
+        if (connection != null) {
             try {
                 statement = connection.prepareStatement(sql);
                 statement.setInt(1, id);
@@ -561,7 +615,10 @@ public class BillDAO implements IBillDAO {
                     bill.setQuantity(resultSet.getInt(4));
                     bill.setIdUser(resultSet.getInt(5));
                     bill.setIdBook(resultSet.getInt(6));
-                    bill.setImage(findImageById(resultSet.getInt(6)));
+
+                    // SỬA TẠI ĐÂY: Lấy trực tiếp từ cột số 15 của câu SQL trên, KHÔNG gọi hàm findImageById() nữa!
+                    bill.setImage(resultSet.getString(15));
+
                     bill.setAddress(resultSet.getString(7));
                     bill.setShippingInfo(resultSet.getInt(8));
                     bill.setShip_time(resultSet.getTimestamp(11));
@@ -570,15 +627,16 @@ public class BillDAO implements IBillDAO {
                     bill.setPhone(resultSet.getString(14));
                     list.add(bill);
                 }
-
                 return list;
             } catch (SQLException e) {
+                e.printStackTrace(); // Nên in ra để dễ debug thay vì chỉ return null
                 return null;
             } finally {
+                // Đóng kết nối an toàn
                 try {
-                    if(connection != null) connection.close();
-                    if(statement != null) statement.close();
-                    if(resultSet != null) resultSet.close();
+                    if (resultSet != null) resultSet.close();
+                    if (statement != null) statement.close();
+                    if (connection != null) connection.close();
                 } catch (SQLException e) {
                     return null;
                 }
@@ -586,6 +644,7 @@ public class BillDAO implements IBillDAO {
         }
         return null;
     }
+
     public List<Bill> findAllBillByIdCartRate(int id) {
         List<Bill> list = new ArrayList<Bill>();
         String sql = "SELECT b.id_order, s.name, b.totalBill, b.quantity, b.id_user, b.id_book, b.address, b.shipping_info, b.payment_method, b.pack,\n" +
