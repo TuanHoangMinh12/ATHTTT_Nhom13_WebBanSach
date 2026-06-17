@@ -926,7 +926,7 @@ FROM customer c
          JOIN carts ct ON c.id_user = ct.idUser
 WHERE ct.id = cart_id
   AND ct.idUser = user_id
-  AND ct.create_time > pk.create_date
+  AND ct.create_time >= pk.create_date
   AND ct.create_time <= pk.expire;
 ELSE
 SELECT pk.public_Key
@@ -935,7 +935,7 @@ FROM customer c
          JOIN carts ct ON c.id_user = ct.idUser
 WHERE ct.id = cart_id
   AND ct.idUser = user_id
-  AND ct.create_time > pk.create_date
+  AND ct.create_time >= pk.create_date
   AND pk.expire IS NULL;
 END IF;
 END

@@ -2,7 +2,7 @@
 <!-- Sidebar menu-->
 <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
 <aside class="app-sidebar">
-  <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="${pageContext.request.contextPath}/templates/images/avatar-admin.jpg" width="50px"
+  <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="${pageContext.request.contextPath}/templates/images/img_admin.png" width="50px"
                                       alt="User Image">
     <div>
       <p class="app-sidebar__user-name"><b>Mod</b></p>
@@ -41,12 +41,12 @@
     </c:if>
 
     <c:if test="${title.equals('Danh Sách Đơn Hàng')}">
-      <li><a class="app-menu__item active" href="<c:url value="/admin-table-order" />"><i class='app-menu__icon bx bx-task'></i><span
-              class="app-menu__label">Quản lý đơn hàng</span></a></li>
+      <li><a class="app-menu__item active" href="<c:url value="/admin-table-order" />">
+          <i class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý đơn hàng</span></a></li>
     </c:if>
     <c:if test="${!title.equals('Danh Sách Đơn Hàng')}">
-      <li><a class="app-menu__item" href="<c:url value="/admin-table-order" />"><i class='app-menu__icon bx bx-task'></i><span
-              class="app-menu__label">Quản lý đơn hàng</span></a></li>
+      <li><a class="app-menu__item" href="<c:url value="/admin-table-order" />">
+          <i class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý đơn hàng</span></a></li>
     </c:if>
 
 <%--    <c:if test="${title.equals('Danh Sách Bài Viết')}">--%>
@@ -66,6 +66,18 @@
 <%--      <li><a class="app-menu__item" href="<c:url value="/admin-table-slider" />"><i class='app-menu__icon bx bx-task'></i><span--%>
 <%--              class="app-menu__label">Quản lý slider</span></a></li>--%>
 <%--    </c:if>--%>
+
+      <%-- ── Menu: Danh sách Public Key (THÊM MỚI) ── --%>
+      <c:if test="${title.equals('Danh Sách Public Key')}">
+          <li><a class="app-menu__item active" href="<c:url value="/admin-public-key" />">
+              <i class="app-menu__icon bx bx-key"></i><span class="app-menu__label">Quản lý Public Key</span>
+          </a></li>
+      </c:if>
+      <c:if test="${!title.equals('Danh Sách Public Key')}">
+          <li><a class="app-menu__item" href="<c:url value="/admin-public-key" />">
+              <i class="app-menu__icon bx bx-key"></i><span class="app-menu__label">Quản lý Public Key</span>
+          </a></li>
+      </c:if>
 
     <c:if test="${title.equals('Danh sách đánh giá, bình luận')}">
       <li><a class="app-menu__item active" href="<c:url value="/admin-manage-rate"/>">
@@ -105,7 +117,6 @@
               class='app-menu__icon bx bx-pie-chart-alt-2'></i><span class="app-menu__label">Báo cáo doanh thu</span></a>
       </li>
     </c:if>
-
 
   </ul>
 </aside>
