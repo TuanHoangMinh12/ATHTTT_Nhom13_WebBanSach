@@ -25,8 +25,11 @@ public class OrderDetailController extends HttpServlet {
     BillDAO billDAO = new BillDAO();
     CustomerDAO customerDAO = new CustomerDAO();
     SHA256Util sha256Util = new SHA256Util();
-    RSAUtil rsa = new RSAUtil();
     ObjectVerifyUtil objectVerify = new ObjectVerifyUtil();
+    // KHÔNG khai báo RSAUtil ở đây nữa — Servlet chỉ tạo 1 instance
+    // dùng chung cho mọi request, nên field RSAUtil (chứa publicKey/privateKey)
+    // có thể bị 2 request khác nhau ghi đè lẫn nhau cùng lúc (race condition),
+    // gây verify nhầm key dẫn đến lỗi "Decryption error". Tạo mới trong doPost().
 
     // ── GET: chỉ hiển thị, không verify
     @Override
@@ -43,49 +46,49 @@ public class OrderDetailController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("utf-8");
+        response.setCharacterEncoding("utf-8");
 
-        int idInt = parseId(request);
-        CartModel cartModel = cartDao.getCartById(idInt);
-        int idUser = cartModel.getIdUser();
+        int idInt = parseId(request); //
+        CartModel cartModel = cartDao.getCartById(idInt); //
+        int idUser = cartModel.getIdUser(); //
 
-        // Lấy dữ liệu cần thiết
-        String publicKey = cartDao.getPuclickey(idUser, idInt);   // public key của user
-        String signature = cartDao.getHash(idInt, idUser);        // chữ ký đã lưu khi đặt hàng
-        String orderNow = objectVerify.string(idUser, idInt);    // dữ liệu DB hiện tại
-        String hash1 = sha256Util.check(orderNow);            // hash của dữ liệu hiện tại
+        // Lấy dữ liệu phục vụ Verify
+        String publicKey = cartDao.getPuclickey(idUser, idInt); //
+        String signature = cartDao.getHash(idInt, idUser); //
+        String orderNow = objectVerify.string(idUser, idInt); //
+        String hash1 = sha256Util.check(orderNow); //
 
-        if (publicKey == null || signature == null) {
-            // Chưa có chữ ký → không thể verify
-            request.setAttribute("verifyResult", "ERROR");
-            request.setAttribute("verifyError", "Đơn hàng này chưa có chữ ký số (thiếu public key hoặc signature).");
+        if (publicKey == null || signature == null) { //
+            request.setAttribute("verifyResult", "ERROR"); //
+            request.setAttribute("verifyError", "Đơn hàng này chưa có chữ ký số (thiếu public key hoặc signature)."); //
         } else {
             try {
-                rsa.setPublicKey(publicKey);
-                String hash2 = rsa.decrypt(signature);  // hash gốc lúc user ký
+                RSAUtil rsa = new RSAUtil(); //
+                rsa.setPublicKey(publicKey); //
+                String hash2 = rsa.decrypt(signature); //
 
-                if (hash1.equals(hash2)) {
-                    request.setAttribute("verifyResult", "OK");
+                // 1. Chạy so sánh hash tự nhiên của đơn hàng
+                if (hash1.equals(hash2)) { //
+                    request.setAttribute("verifyResult", "OK"); //
                 } else {
-                    // verify() == false → Dữ liệu đơn hàng trong DB đã bị can thiệp, chỉnh sửa!
-                    request.setAttribute("verifyResult", "FAIL");
+                    // Nếu bị sửa, hiển thị đúng badge FAIL (Invalid) lên màn hình để Cảnh báo
+                    request.setAttribute("verifyResult", "FAIL"); //
 
-                    // KIỂM TRA ĐIỀU KIỆN NGOẠI LỆ:
-                    // Nếu trạng thái giỏ hàng hiện tại KHÁC 3 (Chưa giao thành công) thì mới thực hiện hủy đơn tự động
-                    if (cartModel.getInShip() != 3) {
-                        cartDao.updateCart(idInt, 4); // Tự động hủy đơn hàng bị giả mạo (infoShip = 4)
-
-                        // Cập nhật lại model để giao diện hiển thị đúng trạng thái "Đã hủy" ngay lập tức sau khi reload
-                        cartModel.setInShip(4);
-                    } else {
-                        // Đơn hàng đã giao thành công (infoShip == 3) -> Chỉ báo Invalid (FAIL) trên giao diện, KHÔNG hạ trạng thái xuống hủy
-                        System.out.println("Cảnh báo bảo mật: Đơn hàng #" + idInt + " đã hoàn thành nhưng phát hiện có sự thay đổi dữ liệu trong DB!");
+                    // 2. CHỈ tự động hủy sang 4 nếu đơn hàng đang ở trạng thái Chờ xử lý (1)
+                    // Nếu đang giao (2) hoặc đã giao (3), giữ nguyên tình trạng vận chuyển của DB, để yên nút bấm!
+                    if (cartModel.getInShip() == 1) { //
+                        cartDao.updateCart(idInt, 4); //
                     }
                 }
             } catch (Exception e) {
-                request.setAttribute("verifyResult", "ERROR");
-                request.setAttribute("verifyError", "Lỗi khi giải mã chữ ký: " + e.getMessage());
+                request.setAttribute("verifyResult", "ERROR"); //
+                request.setAttribute("verifyError", "Lỗi khi giải mã chữ ký: " + e.getMessage()); //
             }
         }
+
+        setCommonAttributes(request, idInt); //
+        forward(request, response); //
     }
 
     // ── Helper: set các attribute dùng chung cho GET và POST ─────────────
@@ -102,13 +105,7 @@ public class OrderDetailController extends HttpServlet {
     }
 
     private int parseId(HttpServletRequest request) {
-//        return Integer.parseInt(request.getParameter("id"));
-        String idStr = request.getParameter("id");
-        if (idStr == null || idStr.trim().isEmpty()) {
-            // Nếu trên URL không có, thử lấy từ attribute (do filter/servlet trước set)
-            idStr = (String) request.getAttribute("id");
-        }
-        return Integer.parseInt(idStr.trim());
+        return Integer.parseInt(request.getParameter("id"));
     }
 
     private CartModel buildCart(int id) {

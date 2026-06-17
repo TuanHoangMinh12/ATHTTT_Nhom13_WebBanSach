@@ -70,28 +70,29 @@ public class TestSignOrderController extends HttpServlet {
             out.println("<h3>Không tìm thấy đơn hàng id=" + idCart + "</h3>");
             return;
         }
+
+        // 🔍 BỔ SUNG CHẶN: Nếu đơn hàng đã hủy (inShip == 4) thì chặn đứng, không cho phép ký lại nữa
+        if (cart.getInShip() == 4) {
+            out.println("<h2 style='color:red'>❌ Không thể ký đơn hàng này!</h2>");
+            out.println("<p style='font-size:16px;'><b>Lý do bảo mật:</b> Đơn hàng #" + idCart + " đã bị <b>HỦY (hoặc Khóa do chỉnh sửa trái phép)</b>. Theo nguyên tắc chống trối bỏ, không được phép tái ký đơn hàng đã đóng lịch sử. Vui lòng tạo một đơn đặt hàng mới!</p>");
+            out.println("<p><a href='" + request.getContextPath() + "/admin-table-order'>Quay lại danh sách đơn hàng</a></p>");
+            return;
+        }
+
         int idUser = cart.getIdUser();
 
         try {
-            // 1) Tạo cặp khóa RSA mới
+            // ... (Giữ nguyên toàn bộ logic tạo key, băm hash và ký số bên dưới của bạn) ...
             RSAUtil rsa = new RSAUtil();
             rsa.genKey();
             String publicKeyStr = rsa.getPublicKeyAsString();
 
-            // 2) Lưu public key vào DB, với create_date NHỎ HƠN carts.create_time
-            //    (bắt buộc — vì stored procedure getSelectPublicKey yêu cầu
-            //     ct.create_time > pk.create_date)
             insertPublicKeyBeforeCart(idUser, publicKeyStr, idCart);
 
-            // 3) Tính hash từ dữ liệu đơn hàng HIỆN TẠI trong DB
             String orderString = objectVerifyUtil.string(idUser, idCart);
             String hash = sha256Util.check(orderString);
-
-            // 4) Ký hash bằng private key (private key chỉ sống trong RAM,
-            //    không lưu vào DB — đúng nguyên tắc, vì chỉ user mới được giữ)
             String signature = rsa.encrypt(hash);
 
-            // 5) Lưu chữ ký vào carts.verify
             cartDao.updateVerify(idCart, signature);
 
             out.println("<h2 style='color:green'>✅ Đã ký đơn hàng #" + idCart + " thành công</h2>");
@@ -116,13 +117,28 @@ public class TestSignOrderController extends HttpServlet {
      * Insert public key với create_date cố tình set SỚM HƠN carts.create_time
      * 1 giờ, để thỏa điều kiện trong stored procedure getSelectPublicKey.
      */
+//    private void insertPublicKeyBeforeCart(int idUser, String publicKey, int idCart) throws SQLException {
+//        // Lấy create_time của cart
+//        String getCartTimeSql = "SELECT create_time FROM carts WHERE id = ?";
+//        // Insert public_key với create_date = cart.create_time - 1 giờ
+//        String insertSql = "INSERT INTO public_key (id_user, public_Key, status, create_date) " +
+//                "VALUES (?, ?, 1, " +
+//                "(SELECT DATE_SUB(create_time, INTERVAL 1 HOUR) FROM carts WHERE id = ?))";
+//
+//        try (Connection conn = vn.edu.hcmuaf.fit.db.JDBCConnector.getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(insertSql)) {
+//            stmt.setInt(1, idUser);
+//            stmt.setString(2, publicKey);
+//            stmt.setInt(3, idCart);
+//            stmt.executeUpdate();
+//        }
+//    }
+
     private void insertPublicKeyBeforeCart(int idUser, String publicKey, int idCart) throws SQLException {
-        // Lấy create_time của cart
-        String getCartTimeSql = "SELECT create_time FROM carts WHERE id = ?";
-        // Insert public_key với create_date = cart.create_time - 1 giờ
-        String insertSql = "INSERT INTO public_key (id_user, public_Key, status, create_date) " +
-                "VALUES (?, ?, 1, " +
-                "(SELECT DATE_SUB(create_time, INTERVAL 1 HOUR) FROM carts WHERE id = ?))";
+        // Sử dụng DATE_SUB để trừ đi 1 giây, lách qua điều kiện dấu ">" của Procedure chưa fix
+        String insertSql = "INSERT INTO public_key (id_user, public_Key, status, create_date, expire) " +
+                "SELECT ?, ?, 1, DATE_SUB(create_time, INTERVAL 1 SECOND), DATE_ADD(create_time, INTERVAL 1 YEAR) " +
+                "FROM carts WHERE id = ?";
 
         try (Connection conn = vn.edu.hcmuaf.fit.db.JDBCConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(insertSql)) {

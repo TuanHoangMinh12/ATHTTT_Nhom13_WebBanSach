@@ -351,25 +351,33 @@
 </script>
 
 <script>
+
     $(document).ready(function () {
 
-        // 1. XỬ LÝ NÚT ĐĂNG KÝ GIAO HÀNG (ASYNC + KHÓA MÀN HÌNH CHỐNG NỔI BỌT)
+        // 1. XỬ LÝ NÚT ĐĂNG KÝ GIAO HÀNG (ẨN CHÍNH NÓ VÀ XỔ RA 2 NÚT MỚI)
         $(document).on('click', '.btn-register-ghn', function (e) {
             e.preventDefault();
+
+            // ĐIỀU KIỆN BẢO MẬT: Kiểm tra xem đơn hàng đã được Xác thực chữ ký số chưa
+            var isVerified = "${verifyResult}";
+            if (isVerified !== "OK") {
+                swal("Hành động bị chặn!", "Đơn hàng này chưa được xác thực chữ ký số hoặc chữ ký không hợp lệ. Bạn phải bấm nút [Verify đơn hàng] trước khi giao cho đối tác vận chuyển!", "error");
+                return;
+            }
+
             var orderId = $(this).data('id');
             var cusId = $(this).data('cus');
             var $btn = $(this);
-            var $tdContainer = $btn.parent();
+            var $tdContainer = $btn.parent(); // Thẻ <td> chứa cụm nút bấm
 
-            // Khóa nút bấm
-            $btn.prop('disabled', true).addClass('disabled').text('Đang gửi...');
+            // Khóa nút tạm thời để chống bấm trùng
+            $btn.prop('disabled', true).addClass('disabled').text('Đang xử lý...');
 
-            // MỞ POPUP KHÓA TOÀN BỘ MÀN HÌNH TRƯỚC KHI GỬI AJAX
             swal({
                 title: "Đang xử lý...",
                 text: "Hệ thống đang tiến hành đăng ký vận đơn ngầm với GHN, vui lòng đợi.",
                 icon: "info",
-                buttons: false, // Ẩn hoàn toàn nút bấm để người dùng không click bừa bãi
+                buttons: false,
                 closeOnClickOutside: false,
                 closeOnEsc: false
             });
@@ -380,20 +388,18 @@
                 data: {id: orderId, variable: cusId},
                 success: function (response) {
                     if (response.trim() === "processing") {
-                        // Đóng popup loading cũ và hiện popup báo thành công chính thức
                         swal({
                             title: "Thành công!",
                             text: "Đơn hàng đã được xếp lịch vận chuyển ngầm thành công!",
                             icon: "success",
                             button: "Đóng"
                         }).then(() => {
-                            // CHỈ THAY ĐỔI GIAO DIỆN KHI NGƯỜI DÙNG ĐÃ BẤM NÚT "ĐÓNG" TRÊN POPUP
-                            // Việc này đảm bảo sự kiện click chuột ban đầu đã kết thúc hoàn toàn, không bị nổi bọt gây hủy đơn
+                            // ── ĐỔI GIAO DIỆN TẠI CHỖ CHUẨN XÁC THEO Ý BẠN ──
 
-                            // Cập nhật chữ Tình trạng thành Đang vận chuyển
+                            // 1. Cập nhật text Tình trạng hiển thị từ "Chờ xử lý" sang "Đang vận chuyển"
                             $('td:contains("Tình trạng:")').next().html('<span class="text-warning" style="font-weight:500;">Đang vận chuyển</span>');
 
-                            // Thay đổi nút hành động
+                            // 2. Ẩn hẳn nút Đăng ký đơn hàng đi và "xổ" ra cặp nút mới: Xác nhận Đã giao & Hủy đơn
                             var newButtons =
                                 '<button type="button" class="btn btn-success btn-sm btn-confirm-delivered" data-id="' + orderId + '" data-cus="' + cusId + '" style="margin-right: 5px;">' +
                                 '   Xác nhận Đã giao' +
@@ -416,9 +422,17 @@
             });
         });
 
-        // 2. XỬ LÝ NÚT XÁC NHẬN ĐÃ GIAO
+        // 2. XỬ LÝ NÚT XÁC NHẬN ĐÃ GIAO (CÓ CHẶN BẢO MẬT KHI CHỮ KÝ INVALID)
         $(document).on('click', '.btn-confirm-delivered', function (e) {
             e.preventDefault();
+
+            // ĐIỀU KIỆN BẢO MẬT: Chặn không cho hoàn thành đơn hàng nếu chữ ký không hợp lệ
+            var isVerified = "${verifyResult}";
+            if (isVerified !== "OK") {
+                swal("Cảnh báo bảo mật lỗi!", "Đơn hàng này phát hiện có sự sai lệch dữ liệu hệ thống (Chữ ký Invalid). Vui lòng không thực hiện hoàn thành đơn hàng này và liên hệ quản trị viên!", "error");
+                return;
+            }
+
             var orderId = $(this).data('id');
             var cusId = $(this).data('cus');
             var $btn = $(this);
@@ -433,7 +447,7 @@
                     if (response.trim() === "success") {
                         swal("Thành công!", "Đơn hàng đã được xác nhận hoàn thành!", "success")
                             .then(() => {
-                                window.location.reload();
+                                window.location.reload(); // Đã giao hoàn tất thành công thì reload trang lại để đóng đơn
                             });
                     } else {
                         swal("Lỗi", "Không thể cập nhật trạng thái đơn hàng.", "error");
@@ -488,6 +502,7 @@
         });
 
     });
+
 </script>
 
 

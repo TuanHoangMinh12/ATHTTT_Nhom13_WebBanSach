@@ -107,7 +107,9 @@ public class CartModel implements Serializable {
             case 1: return "Chờ xử lý";
             case 2: return "Đang vận chuyển";
             case 3: return "Đã hoàn thành";
-            default: return "Đã hủy";
+            case 4: return "Đã hủy";
+            case 5: return "Đang xử lý đăng ký";
+            default: return "Không xác định";
         }
     }
 

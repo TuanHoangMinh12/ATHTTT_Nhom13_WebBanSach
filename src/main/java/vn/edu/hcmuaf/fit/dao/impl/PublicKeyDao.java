@@ -14,36 +14,34 @@ public class PublicKeyDao implements IPublicKeyDao {
      */
     @Override
     public List<PublicKeyModel> getAllKeys() {
-        List<PublicKeyModel> result = new ArrayList<>();
-        String sql = "SELECT pk.id_key, pk.id_user, c.firstName, c.lastName, c.email, " +
-                "pk.public_Key, pk.status, pk.create_date, pk.expire " +
+        List<PublicKeyModel> list = new ArrayList<>();
+        // JOIN chính xác từ bảng customer để lấy Họ tên và Email hiển thị lên giao diện
+        String sql = "SELECT pk.id_key, pk.id_user, CONCAT(c.first_name, ' ', c.last_name) AS fullname, " +
+                "c.email, pk.public_Key, pk.status, pk.create_date, pk.expire " +
                 "FROM public_key pk " +
                 "JOIN customer c ON pk.id_user = c.id_user " +
                 "ORDER BY pk.create_date DESC";
-        Connection conn = JDBCConnector.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
+
+        try (Connection conn = JDBCConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
             while (rs.next()) {
-                PublicKeyModel m = new PublicKeyModel();
-                m.setIdKey(rs.getInt("id_key"));
-                m.setIdUser(rs.getInt("id_user"));
-                m.setUserName(rs.getString("firstName") + " " + rs.getString("lastName"));
-                m.setEmail(rs.getString("email"));
-                m.setPublicKey(rs.getString("public_Key"));
-                m.setStatus(rs.getInt("status"));
-                m.setCreateDate(rs.getTimestamp("create_date"));
-                m.setExpire(rs.getTimestamp("expire"));
-                result.add(m);
+                PublicKeyModel model = new PublicKeyModel();
+                model.setIdKey(rs.getInt("id_key"));
+                model.setIdUser(rs.getInt("id_user"));
+                model.setUserName(rs.getString("fullname"));
+                model.setEmail(rs.getString("email"));
+                model.setPublicKey(rs.getString("public_Key"));
+                model.setStatus(rs.getInt("status"));
+                model.setCreateDate(rs.getTimestamp("create_date"));
+                model.setExpire(rs.getTimestamp("expire"));
+                list.add(model);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeAll(rs, stmt, conn);
         }
-        return result;
+        return list;
     }
 
     /**

@@ -9,65 +9,50 @@ import java.util.List;
 public class ObjectVerifyUtil {
     CartDao cartDao = new CartDao();
 
-//    public String string(int idUser, int idCart) {
-//        OrderReviewDetail o1 = cartDao.getAllByIdUserAndIdCart(idUser, idCart);
-//        String getTime = cartDao.getCreatime(idCart, idUser);
-//        System.out.println(getTime);
-//        String s1 = String.valueOf(o1);
-//        System.out.println( "s1"+s1);
-//
-//        String s2 = String.valueOf(cartDao.getAllDetailCart(idUser, idCart));
-//        System.out.println("s2"+s2);
-//
-//        double getTotalBill = cartDao.getTotalBill(idUser, idCart);
-//        return s1 + s2 +getTime + getTotalBill;
-//    }
-//
-//    public String stringPrinlt(int idUser, int idCart) {
-//        OrderReviewDetail o = cartDao.getAllByIdUserAndIdCart(idUser, idCart);
-//        List<CartDetailModel> list = cartDao.getAllDetailCart(idUser, idCart);
-//        StringBuilder result = new StringBuilder();
-//        for (CartDetailModel value : list) {
-//            result.append("Tên khách hàng :").append(o.getFullName() +"- ").append("Địa chỉ :").append(o.getAddress()  +"- ").append("Số điện thoại:").append(o.getPhone()+"- ").append("Email :").append(o.getEmail()  +"- "
-//                    ).append("Mã sản phẩm:").append(o.getIdcart() +"- ").append(" Tổng tiền :").append(o.getTotolPrice()  +"- ").append("Ngày đặt :").append(o.getCreate_order_time() +"\n" ).append("Tên sản phẩm :").append(value.getNameSach() +"- ")
-//                    .append("Số lượng:").append(value.getQuantity());
-//        }
-//        return  result.toString();
-//
-//    }
-
-
-
     /**
      * Serialize đơn hàng thành chuỗi NHẤT QUÁN để hash.
      * QUAN TRỌNG: thứ tự và format phải GIỐNG HỆT lúc user ký (phía web).
-     * Chỉ dùng các field KHÔNG thay đổi sau khi đặt hàng.
+     *
+     * VÙNG HASH BAO GỒM TOÀN BỘ field ảnh hưởng quyền lợi/nghĩa vụ giữa
+     * khách hàng và shop. Field bị LOẠI TRỪ có chủ đích vì chúng thay
+     * đổi hợp lệ theo quy trình nghiệp vụ (không phải do gian lận):
+     *   - carts.infoShip / bill.shipping_info  (trạng thái vận chuyển)
+     *   - carts.timeShip                        (mốc thời gian dự kiến, GHN cập nhật)
+     *   - bill.ship_time / bill.receive_time    (mốc thời gian thực tế)
      */
     public String string(int idUser, int idCart) {
         OrderReviewDetail o1 = cartDao.getAllByIdUserAndIdCart(idUser, idCart);
         String getTime = cartDao.getCreatime(idCart, idUser);
         List<CartDetailModel> details = cartDao.getAllDetailCart(idUser, idCart);
-        double totalBill = cartDao.getTotalBill(idUser, idCart);
+        double totalBillFromBillTable = cartDao.getTotalBill(idUser, idCart);   // bill.totalBill
+        double totalPriceFromCarts = o1.getTotolPrice();                        // carts.totalPrice
+        double feeShip = cartDao.getFeeShip(idUser, idCart);                    // carts.feeShip
 
-        // Build chuỗi theo thứ tự CỐ ĐỊNH, KHÔNG dùng toString() của object
         StringBuilder sb = new StringBuilder();
 
-        // Thông tin đơn hàng
-        sb.append(o1.getIdcart());
+        // ── Thông tin đơn hàng (mức carts/bill chung) ──────────────────
+        sb.append(idUser);                          // chống đánh cắp đơn sang user khác
+        sb.append("|").append(o1.getIdcart());
         sb.append("|").append(o1.getFullName());
         sb.append("|").append(o1.getAddress());
         sb.append("|").append(o1.getPhone());
         sb.append("|").append(o1.getEmail());
         sb.append("|").append(getTime);
-        sb.append("|").append(totalBill);
+        sb.append("|").append(totalBillFromBillTable);
+        sb.append("|").append(totalPriceFromCarts);
+        sb.append("|").append(feeShip);
 
-        // Thông tin từng sản phẩm (sắp xếp theo id để đảm bảo thứ tự)
-        details.sort((a, b) -> Integer.compare(a.getId(), b.getId()));
+        // ── Thông tin từng sản phẩm (giữ thứ tự theo ORDER BY b.id_order) ──
         for (CartDetailModel item : details) {
             sb.append("|").append(item.getId());
             sb.append(":").append(item.getNameSach());
             sb.append(":").append(item.getQuantity());
             sb.append(":").append(item.getTotalPrice());
+            sb.append(":").append(item.getIdBook());        // chống đổi sản phẩm
+            sb.append(":").append(item.getIdDiscount());     // chống đổi mã giảm giá
+            sb.append(":").append(item.getPack());           // chống đổi kiểu đóng gói
+            sb.append(":").append(item.getPaymentMethod());  // chống đổi phương thức thanh toán
+            sb.append(":").append(item.getInfo());           // chống đổi ghi chú đơn hàng
         }
 
         return sb.toString();
@@ -90,10 +75,5 @@ public class ObjectVerifyUtil {
                     .append("Số lượng: ").append(value.getQuantity()).append("\n\n");
         }
         return result.toString();
-    }
-
-
-    public static void main(String[] args) {ObjectVerifyUtil objectVerifyUtil = new ObjectVerifyUtil();
-        System.out.println(objectVerifyUtil.stringPrinlt(49,43));
     }
 }

@@ -328,6 +328,30 @@ public class CartDao {
         }
         // You can return a default object or throw an exception if you prefer.
         return 0;
+
+    }
+
+    /**
+     * MỚI THÊM: lấy carts.feeShip — đưa vào vùng hash để bảo vệ phí ship
+     * khỏi bị sửa trực tiếp trong DB sau khi đơn đã được ký.
+     */
+    public double getFeeShip(int idUser, int idCart) {
+        String sql = "SELECT feeShip FROM carts WHERE id = ? AND idUser = ?";
+        try (Connection connection = JDBCConnector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, idCart);
+            statement.setInt(2, idUser);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getDouble("feeShip");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
     public OrderReviewDetail getAllByIdUserAndIdCartNoTime(int id, int idCart) {
         String sql = "SELECT CONCAT(t.first_name, ' ', t.last_name) AS fullname, b.address, b.phone, t.email, b.idCart, "
@@ -371,12 +395,21 @@ public class CartDao {
     public List<CartDetailModel> getAllDetailCart(int id, int idCart) {
         List<CartDetailModel> result = new ArrayList<>();
 
+        // CẬP NHẬT: thêm b.id_book, b.id_discount, b.pack, b.payment_method,
+        // b.info vào SELECT — các trường này giờ được đưa vào vùng hash để
+        // bảo vệ tính toàn vẹn (chống admin/hacker sửa sản phẩm, mã giảm giá,
+        // kiểu đóng gói, phương thức thanh toán, hoặc ghi chú đơn hàng).
         String sql = "SELECT " +
                 "b.idCart, " +
                 "bk.name, " +
                 "b.quantity, " +
                 "(SELECT image FROM image_book WHERE id_book = bk.id_book LIMIT 1) AS image, " +
-                "b.quantity * bk.price AS tongtien " +
+                "b.quantity * bk.price AS tongtien, " +
+                "b.id_book, " +
+                "IFNULL(b.id_discount, 0) AS id_discount, " +
+                "b.pack, " +
+                "b.payment_method, " +
+                "IFNULL(b.info, '') AS info " +
                 "FROM bill b " +
                 "JOIN carts e ON b.idCart = e.id " +
                 "JOIN book bk ON b.id_book = bk.id_book " +
@@ -398,6 +431,11 @@ public class CartDao {
                     cartDetailModel.setQuantity(resultSet.getInt(3));
                     cartDetailModel.setImage(resultSet.getString(4));
                     cartDetailModel.setTotalPrice(resultSet.getInt(5));
+                    cartDetailModel.setIdBook(resultSet.getInt(6));
+                    cartDetailModel.setIdDiscount(resultSet.getInt(7));
+                    cartDetailModel.setPack(resultSet.getInt(8));
+                    cartDetailModel.setPaymentMethod(resultSet.getInt(9));
+                    cartDetailModel.setInfo(resultSet.getString(10));
                     result.add(cartDetailModel);
 
                 }

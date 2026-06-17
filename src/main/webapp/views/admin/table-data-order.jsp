@@ -92,9 +92,12 @@
                                         <c:when test="${cart.inShip == 4}">
                                             <span class="badge badge-danger">Đã hủy</span>
                                         </c:when>
-                                        <%--                                        <c:otherwise>--%>
-                                        <%--                                            <span class="badge badge-light">—</span>--%>
-                                        <%--                                        </c:otherwise>--%>
+                                        <c:when test="${cart.inShip == 5}">
+                                            <span class="badge badge-info">Đang xử lý đăng ký</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="badge badge-light">Không xác định</span>
+                                        </c:otherwise>
                                     </c:choose>
                                 </td>
 
