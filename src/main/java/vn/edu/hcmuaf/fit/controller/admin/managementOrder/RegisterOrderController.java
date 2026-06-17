@@ -43,8 +43,7 @@ public class RegisterOrderController extends HttpServlet {
             InformationDeliverDao daoInFo = new InformationDeliverDao();
 
             try {
-                // ĐỒNG BỘ NGAY LẬP TỨC: Chuyển trạng thái giỏ hàng sang 2 (Đang vận chuyển) ngay tại luồng chính.
-                // Điều này đảm bảo khi Admin nhấn F5 hoặc Verify ngay lập tức, DB đã ghi nhận số 2, không bị bật về số 1 nữa.
+                // Chuyển trạng thái giỏ hàng sang 2 (Đang vận chuyển) ngay tại luồng chính.
                 cartDao.updateCart(idInt, 2);
 
                 // Đẩy tác vụ gọi API GHN (tốn thời gian) chạy ngầm ở luồng phụ
@@ -68,7 +67,7 @@ public class RegisterOrderController extends HttpServlet {
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        // PHỤC HỒI logic ngoại lệ: Nếu API GHN thất bại (sai địa chỉ, mất mạng),
+                        // Logic ngoại lệ: Nếu API GHN thất bại (sai địa chỉ, mất mạng),
                         // luồng ngầm mới trả trạng thái về Chờ xử lý (1) để Admin có thể bấm đăng ký lại.
                         cartDao.updateCart(idInt, 1);
                     }

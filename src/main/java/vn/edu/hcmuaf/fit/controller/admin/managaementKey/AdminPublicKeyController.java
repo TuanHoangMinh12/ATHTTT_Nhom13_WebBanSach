@@ -6,10 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
-/**
- * URL: /admin-public-key         → GET  → hiển thị danh sách
- *      /admin-public-key?revoke=<id> → GET → revoke key rồi redirect
- */
+
 @WebServlet(name = "admin-public-key", value = "/admin-public-key")
 public class AdminPublicKeyController extends HttpServlet {
     private final PublicKeyDao publicKeyDao = new PublicKeyDao();
