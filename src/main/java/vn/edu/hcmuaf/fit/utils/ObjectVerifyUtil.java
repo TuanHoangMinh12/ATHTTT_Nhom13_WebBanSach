@@ -9,17 +9,6 @@ import java.util.List;
 public class ObjectVerifyUtil {
     CartDao cartDao = new CartDao();
 
-    /**
-     * Serialize đơn hàng thành chuỗi NHẤT QUÁN để hash.
-     * QUAN TRỌNG: thứ tự và format phải GIỐNG HỆT lúc user ký (phía web).
-     *
-     * VÙNG HASH BAO GỒM TOÀN BỘ field ảnh hưởng quyền lợi/nghĩa vụ giữa
-     * khách hàng và shop. Field bị LOẠI TRỪ có chủ đích vì chúng thay
-     * đổi hợp lệ theo quy trình nghiệp vụ (không phải do gian lận):
-     *   - carts.infoShip / bill.shipping_info  (trạng thái vận chuyển)
-     *   - carts.timeShip                        (mốc thời gian dự kiến, GHN cập nhật)
-     *   - bill.ship_time / bill.receive_time    (mốc thời gian thực tế)
-     */
     public String string(int idUser, int idCart) {
         OrderReviewDetail o1 = cartDao.getAllByIdUserAndIdCart(idUser, idCart);
         String getTime = cartDao.getCreatime(idCart, idUser);
@@ -30,8 +19,8 @@ public class ObjectVerifyUtil {
 
         StringBuilder sb = new StringBuilder();
 
-        // ── Thông tin đơn hàng (mức carts/bill chung) ──────────────────
-        sb.append(idUser);                          // chống đánh cắp đơn sang user khác
+        // ── Thông tin đơn hàng (mức carts/bill chung)
+        sb.append(idUser);
         sb.append("|").append(o1.getIdcart());
         sb.append("|").append(o1.getFullName());
         sb.append("|").append(o1.getAddress());
@@ -42,7 +31,7 @@ public class ObjectVerifyUtil {
         sb.append("|").append(totalPriceFromCarts);
         sb.append("|").append(feeShip);
 
-        // ── Thông tin từng sản phẩm (giữ thứ tự theo ORDER BY b.id_order) ──
+        // Thông tin từng sản phẩm (giữ thứ tự theo ORDER BY b.id_order)
         for (CartDetailModel item : details) {
             sb.append("|").append(item.getId());
             sb.append(":").append(item.getNameSach());

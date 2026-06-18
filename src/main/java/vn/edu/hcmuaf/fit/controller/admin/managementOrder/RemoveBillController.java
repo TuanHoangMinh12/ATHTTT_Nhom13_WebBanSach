@@ -31,13 +31,8 @@ public class RemoveBillController extends HttpServlet {
         response.setCharacterEncoding("utf-8");
 
         String id = request.getParameter("id");
-
-        // TỐI ƯU: Lấy IP trực tiếp từ request, loại bỏ InetAddress để chặn nghẽn hệ thống 30s
         String ip = request.getRemoteAddr();
-
         CustomerModel cus = (CustomerModel) SessionUtil.getInstance().getValue(request, "USERMODEL");
-
-        // Thêm class CartDao vào đầu Controller nếu chưa có
         CartDao cartDao = new CartDao();
 
         if(id != null) {
@@ -45,7 +40,7 @@ public class RemoveBillController extends HttpServlet {
                 // 1. Cập nhật shipping_info = 4 trong bảng bill theo idCart
                 iBillManagementService.deleteBill(id);
 
-                // 2. BỔ SUNG: Cập nhật trạng thái = 4 trong bảng carts để đồng bộ giao diện
+                // 2. Cập nhật trạng thái = 4 trong bảng carts để đồng bộ giao diện
                 int idInt = Integer.parseInt(id);
                 cartDao.updateCart(idInt, 4);
 

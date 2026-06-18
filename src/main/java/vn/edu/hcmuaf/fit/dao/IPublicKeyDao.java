@@ -8,9 +8,7 @@ import java.sql.ResultSet;
 import java.util.List;
 
 public interface IPublicKeyDao {
-
     List<PublicKeyModel> getAllKeys();
     boolean revokeKey(int idKey);
-
     void closeAll(ResultSet rs, PreparedStatement stmt, Connection conn);
 }

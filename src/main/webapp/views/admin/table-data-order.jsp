@@ -102,7 +102,7 @@
                                 </td>
 
                                     <%--
-                                        TASK 2 — Badge "Xác thực chữ ký"
+                                        Badge "Xác thực chữ ký"
                                         Dùng cart.verifyStatus được set từ TableOrderController:
                                           null   → Chưa verify
                                           "OK"   → Verified (chữ ký hợp lệ)

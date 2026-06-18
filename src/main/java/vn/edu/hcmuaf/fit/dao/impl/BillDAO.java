@@ -616,7 +616,6 @@ public class BillDAO implements IBillDAO {
                     bill.setIdUser(resultSet.getInt(5));
                     bill.setIdBook(resultSet.getInt(6));
 
-                    // SỬA TẠI ĐÂY: Lấy trực tiếp từ cột số 15 của câu SQL trên, KHÔNG gọi hàm findImageById() nữa!
                     bill.setImage(resultSet.getString(15));
 
                     bill.setAddress(resultSet.getString(7));
