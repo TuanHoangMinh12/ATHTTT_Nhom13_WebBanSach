@@ -10,12 +10,19 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class SHA256Util {
-    public String check(String data) {
+    public static String check(String data) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] output = md.digest(data.getBytes());
-            BigInteger num = new BigInteger(1, output);
-            return num.toString(16);
+
+            StringBuilder sb = new StringBuilder();
+
+            for (byte b : output) {
+                sb.append(String.format("%02x", b));
+            }
+
+            return sb.toString();
+
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
