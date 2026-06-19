@@ -26,7 +26,7 @@
     <style>
 
         .verify-container{
-            margin:40px auto;
+            margin:120px auto 40px auto;
             max-width:900px;
         }
 
