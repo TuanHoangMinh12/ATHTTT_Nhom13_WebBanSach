@@ -9,14 +9,6 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Servlet quản lý báo cáo mất khóa phía admin.
- *
- * GET  /admin-key-loss-report              → Danh sách tất cả báo cáo
- * GET  /admin-key-loss-report?filter=pending → Chỉ chờ xử lý
- * POST /admin-key-loss-report?action=approve&idReport=X → Xác nhận
- * POST /admin-key-loss-report?action=reject&idReport=X  → Từ chối
- */
 @WebServlet(name = "adminKeyLossReport", value = "/admin-key-loss-report")
 public class AdminKeyLossReportController extends HttpServlet {
 
@@ -65,11 +57,9 @@ public class AdminKeyLossReportController extends HttpServlet {
         request.getRequestDispatcher("/views/admin/table-key-loss-report.jsp")
                 .forward(request, response);
     }
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         request.setCharacterEncoding("UTF-8");
         String action    = request.getParameter("action");
         String idReportStr = request.getParameter("idReport");
@@ -105,3 +95,4 @@ public class AdminKeyLossReportController extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/admin-key-loss-report?msg=" + msgParam);
     }
 }
+

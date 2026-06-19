@@ -9,7 +9,6 @@ import java.util.List;
 
 public class KeyLossReportDao {
 
-    /** Người dùng gửi báo cáo mất khóa */
     public boolean submitReport(int idKey, int idUser, String reason) {
         String sql = "INSERT INTO key_loss_report (id_key, id_user, reason, status) VALUES (?, ?, ?, 0)";
         try (Connection conn = JDBCConnector.getConnection();
@@ -24,30 +23,20 @@ public class KeyLossReportDao {
         }
     }
 
-    /** Admin: danh sách chờ xử lý */
     public List<KeyLossReportModel> getPendingReports() {
         return queryReports("WHERE r.status = 0");
     }
 
-    /** Admin: toàn bộ lịch sử */
     public List<KeyLossReportModel> getAllReports() {
         return queryReports(null);
     }
 
-    /**
-     * Admin XÁC NHẬN mất khóa — transaction 4 bước:
-     * 1. Lấy id_key + report_time
-     * 2. Cập nhật báo cáo → status=1
-     * 3. Thu hồi public_key (expire = report_time)
-     * 4. Đơn hàng dùng khóa đó TẠO SAU report_time → shipping_info=4 (hủy), carts.infoShip=4
-     */
     public boolean approveReport(int idReport, String adminNote) {
         Connection conn = null;
         try {
             conn = JDBCConnector.getConnection();
             conn.setAutoCommit(false);
 
-            // Bước 1: lấy thông tin báo cáo (id_key, id_user, report_time)
             int idKey;
             int idUser;
             Timestamp reportTime;
@@ -61,7 +50,6 @@ public class KeyLossReportDao {
                 reportTime = rs.getTimestamp("report_time");
             }
 
-            // Bước 2: cập nhật báo cáo
             try (PreparedStatement stmt = conn.prepareStatement(
                     "UPDATE key_loss_report SET status=1, admin_note=?, processed_at=NOW() WHERE id_report=?")) {
                 stmt.setString(1, adminNote);
@@ -69,7 +57,6 @@ public class KeyLossReportDao {
                 stmt.executeUpdate();
             }
 
-            // Bước 3: thu hồi khóa (expire = thời điểm báo mất, không phải NOW())
             try (PreparedStatement stmt = conn.prepareStatement(
                     "UPDATE public_key SET status=0, expire=? WHERE id_key=?")) {
                 stmt.setTimestamp(1, reportTime);
@@ -77,9 +64,7 @@ public class KeyLossReportDao {
                 stmt.executeUpdate();
             }
 
-            // Bước 4a: bill.shipping_info = 4 (hủy)
-            // Điều kiện: đúng user + đơn tạo SAU thời điểm báo mất + chưa hoàn thành/hủy
-            // Dùng id_user thay id_key vì bill.id_key có thể NULL (đơn cũ)
+
             try (PreparedStatement stmt = conn.prepareStatement(
                     "UPDATE bill SET shipping_info=4 " +
                             "WHERE id_user=? AND create_order_time>? AND shipping_info NOT IN (3,4)")) {
@@ -88,8 +73,6 @@ public class KeyLossReportDao {
                 stmt.executeUpdate();
             }
 
-            // Bước 4b: đồng bộ carts.infoShip = 4
-            // UI đọc từ carts.infoShip — phải UPDATE cả 2 bảng mới hiện lên giao diện
             try (PreparedStatement stmt = conn.prepareStatement(
                     "UPDATE carts c " +
                             "JOIN bill b ON b.idCart = c.id " +
@@ -110,8 +93,9 @@ public class KeyLossReportDao {
             try { if (conn != null) conn.close(); } catch (SQLException ignored) {}
         }
     }
-
-    /** Admin từ chối báo cáo */
+    /**
+     * Admin từ chối báo cáo
+     */
     public boolean rejectReport(int idReport, String adminNote) {
         String sql = "UPDATE key_loss_report SET status=2, admin_note=?, processed_at=NOW() WHERE id_report=?";
         try (Connection conn = JDBCConnector.getConnection();
@@ -125,7 +109,9 @@ public class KeyLossReportDao {
         }
     }
 
-    /** Kiểm tra khóa đã có báo cáo đang pending chưa (tránh gửi trùng) */
+    /**
+     * Kiểm tra khóa đã có báo cáo đang pending chưa (tránh gửi trùng)
+     */
     public boolean hasPendingReport(int idKey) {
         String sql = "SELECT COUNT(*) FROM key_loss_report WHERE id_key=? AND status=0";
         try (Connection conn = JDBCConnector.getConnection();
@@ -139,7 +125,9 @@ public class KeyLossReportDao {
         return false;
     }
 
-    /** Đếm số báo cáo pending — dùng cho badge trên menu admin */
+    /**
+     * Đếm số báo cáo pending — dùng cho badge trên menu admin
+     */
     public int countPending() {
         String sql = "SELECT COUNT(*) FROM key_loss_report WHERE status=0";
         try (Connection conn = JDBCConnector.getConnection();
@@ -187,4 +175,5 @@ public class KeyLossReportDao {
         }
         return list;
     }
+
 }

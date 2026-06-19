@@ -289,8 +289,6 @@
                                         </c:forEach>
                                         </tbody>
                                     </table>
-
-                                    <%-- Nút Verify: chỉ hiện khi đơn chưa hủy và chưa verify OK --%>
                                     <c:if test="${cart.inShip != 4 && verifyResult != 'OK'}">
                                         <div class="parent-button">
                                             <button type="submit" class="btn-verify">

@@ -10,24 +10,13 @@ public interface IKeyLossReportDao {
 
     boolean submitReport(int idKey, int idUser, String reason);
 
-    /** Admin lấy tất cả yêu cầu chờ xử lý */
     List<KeyLossReportModel> getPendingReports();
 
-    /** Admin lấy toàn bộ lịch sử */
     List<KeyLossReportModel> getAllReports();
 
-    /**
-     * Admin xác nhận mất khóa:
-     * - Cập nhật status = 1 trong key_loss_report
-     * - Thu hồi public_key (status = 0, expire = lostTime, fallback report_time nếu lostTime NULL)
-     * - Đơn hàng dùng khóa đó tạo SAU lostTime → shipping_info = 4 (đã hủy)
-     * - Đơn hàng dùng khóa đó tạo TRƯỚC HOẶC BẰNG lostTime → giữ nguyên
-     */
     boolean approveReport(int idReport, String adminNote);
 
-    /** Admin từ chối báo cáo */
     boolean rejectReport(int idReport, String adminNote);
 
-    /** Kiểm tra user đã có báo cáo đang chờ xử lý chưa (tránh spam) */
     boolean hasPendingReport(int idKey);
 }
