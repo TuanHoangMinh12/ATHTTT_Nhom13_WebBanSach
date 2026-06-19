@@ -57,3 +57,42 @@ public class AdminKeyLossReportController extends HttpServlet {
         request.getRequestDispatcher("/views/admin/table-key-loss-report.jsp")
                 .forward(request, response);
     }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        String action    = request.getParameter("action");
+        String idReportStr = request.getParameter("idReport");
+        String adminNote = request.getParameter("adminNote");
+        if (adminNote == null) adminNote = "";
+
+        if (idReportStr == null) {
+            response.sendRedirect(request.getContextPath() + "/admin-key-loss-report?msg=error");
+            return;
+        }
+
+        int idReport;
+        try {
+            idReport = Integer.parseInt(idReportStr);
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/admin-key-loss-report?msg=error");
+            return;
+        }
+
+        boolean ok;
+        String  msgParam;
+
+        if ("approve".equals(action)) {
+            ok       = dao.approveReport(idReport, adminNote);
+            msgParam = ok ? "approved" : "error";
+        } else if ("reject".equals(action)) {
+            ok       = dao.rejectReport(idReport, adminNote);
+            msgParam = ok ? "rejected" : "error";
+        } else {
+            msgParam = "error";
+        }
+
+        response.sendRedirect(request.getContextPath() + "/admin-key-loss-report?msg=" + msgParam);
+    }
+}
+
