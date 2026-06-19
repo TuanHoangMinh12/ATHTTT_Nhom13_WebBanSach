@@ -20,10 +20,16 @@ public class KeyManagementController extends HttpServlet {
     private final PublicKeyDao publicKeyDao = new PublicKeyDao();
     private final CustomerDAO  customerDAO  = new CustomerDAO();
 
-    // ── GET: hiển thị trang quản lý khóa ────────────────────────────────────
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        // ── Xử lý download file private key (gọi từ iframe) ─────────────────
+        String action = request.getParameter("action");
+        if ("download".equals(action)) {
+            handleDownload(request, response);
+            return;
+        }
 
         CustomerModel user = getLoggedInUser(request);
         if (user == null) {
@@ -35,16 +41,15 @@ public class KeyManagementController extends HttpServlet {
         request.setAttribute("cus",       user);
         request.setAttribute("activeKey", activeKey);
 
-        // Thông báo kết quả thao tác (nếu có, sau redirect)
         String msg = request.getParameter("msg");
         if ("generated".equals(msg)) {
             request.setAttribute("alertType", "success");
             request.setAttribute("alertMsg",
-                    "Đã tạo cặp khóa mới thành công. Private key chỉ hiển thị MỘT LẦN, hãy lưu lại ngay.");
+                    "Đã tạo cặp khóa mới thành công. Private key đã được tải xuống máy bạn.");
         } else if ("renewed".equals(msg)) {
             request.setAttribute("alertType", "success");
             request.setAttribute("alertMsg",
-                    "Đã cập nhật khóa mới. Khóa cũ đã hết hiệu lực. Private key chỉ hiển thị MỘT LẦN, hãy lưu lại ngay.");
+                    "Đã cập nhật khóa mới. Khóa cũ đã hết hiệu lực. Private key đã được tải xuống máy bạn.");
         } else if ("haveactive".equals(msg)) {
             request.setAttribute("alertType", "warning");
             request.setAttribute("alertMsg",
@@ -52,13 +57,6 @@ public class KeyManagementController extends HttpServlet {
         } else if ("error".equals(msg)) {
             request.setAttribute("alertType", "danger");
             request.setAttribute("alertMsg", "Có lỗi xảy ra. Vui lòng thử lại sau.");
-        }
-
-        // Private key vừa sinh ra (chỉ tồn tại trong 1 lần request - flash attribute)
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("NEW_PRIVATE_KEY") != null) {
-            request.setAttribute("newPrivateKey", session.getAttribute("NEW_PRIVATE_KEY"));
-            session.removeAttribute("NEW_PRIVATE_KEY"); // chỉ hiển thị đúng 1 lần
         }
 
         request.getRequestDispatcher("/views/web/key-management.jsp")
@@ -99,21 +97,21 @@ public class KeyManagementController extends HttpServlet {
             return;
         }
 
-        boolean ok = generateAndStoreKey(request, user.getIdUser());
-        redirect(response, request, ok ? "generated" : "error");
+        boolean ok = generateAndStoreKey(request, response, user.getIdUser(), "generated");
+        if (!ok) redirect(response, request, "error");
     }
 
     private void handleRenew(HttpServletRequest request, HttpServletResponse response,
                              CustomerModel user) throws IOException {
 
-        // Thu hồi toàn bộ khóa đang active của user
         customerDAO.update_publicKey(user.getIdUser());
 
-        boolean ok = generateAndStoreKey(request, user.getIdUser());
-        redirect(response, request, ok ? "renewed" : "error");
+        boolean ok = generateAndStoreKey(request, response, user.getIdUser(), "renewed");
+        if (!ok) redirect(response, request, "error");
     }
 
-    private boolean generateAndStoreKey(HttpServletRequest request, int idUser) {
+    private boolean generateAndStoreKey(HttpServletRequest request, HttpServletResponse response,
+                                        int idUser, String successMsg) throws IOException {
         try {
             RSAUtil rsa = new RSAUtil();
             rsa.genKey();
@@ -124,10 +122,31 @@ public class KeyManagementController extends HttpServlet {
             // Lưu public key vào DB (status = 1, active)
             customerDAO.insert_publicKey(idUser, publicKey);
 
-            // Private key KHÔNG được lưu trên server.
-            // Chỉ đưa vào session để hiển thị MỘT LẦN duy nhất cho người dùng tải về.
+            // Tên file: private_key_<idUser>_<timestamp>.txt
+            String fileName = "private_key_" + idUser + "_" + System.currentTimeMillis() + ".txt";
+
+            // Lưu private key vào session tạm để handleDownload lấy
             HttpSession session = request.getSession(true);
-            session.setAttribute("NEW_PRIVATE_KEY", privateKey);
+            session.setAttribute("PRIVATE_KEY_DOWNLOAD", privateKey);
+            session.setAttribute("PRIVATE_KEY_FILENAME", fileName);
+
+            String redirectUrl = request.getContextPath() + "/key-management?msg=" + successMsg;
+
+            // Trả về trang HTML trung gian:
+            // - iframe ẩn trigger download file
+            // - meta refresh redirect về trang chính sau 2 giây
+            response.setContentType("text/html; charset=UTF-8");
+            response.getWriter().write(
+                    "<!DOCTYPE html><html><head><meta charset='UTF-8'>" +
+                            "<title>Đang tải xuống...</title>" +
+                            "<meta http-equiv='refresh' content='2;url=" + redirectUrl + "'>" +
+                            "</head><body>" +
+                            "<p>Đang tải private key xuống máy bạn... Vui lòng chờ.</p>" +
+                            "<iframe src='" + request.getContextPath() + "/key-management?action=download' " +
+                            "style='display:none'></iframe>" +
+                            "</body></html>"
+            );
+            response.getWriter().flush();
 
             return true;
         } catch (NoSuchAlgorithmException e) {
@@ -136,7 +155,27 @@ public class KeyManagementController extends HttpServlet {
         }
     }
 
-    /** Lấy khóa đang active (status = 1) của user, null nếu không có */
+    private void handleDownload(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        HttpSession session = request.getSession(false);
+        if (session == null) return;
+
+        String privateKey = (String) session.getAttribute("PRIVATE_KEY_DOWNLOAD");
+        String fileName   = (String) session.getAttribute("PRIVATE_KEY_FILENAME");
+
+        if (privateKey == null || fileName == null) return;
+
+        // Xóa khỏi session ngay sau khi lấy — chỉ download được 1 lần
+        session.removeAttribute("PRIVATE_KEY_DOWNLOAD");
+        session.removeAttribute("PRIVATE_KEY_FILENAME");
+
+        response.setContentType("text/plain; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        response.getWriter().write(privateKey);
+        response.getWriter().flush();
+    }
+
     private PublicKeyModel findActiveKey(int idUser) {
         List<PublicKeyModel> keys = publicKeyDao.getAllKeys();
         for (PublicKeyModel k : keys) {

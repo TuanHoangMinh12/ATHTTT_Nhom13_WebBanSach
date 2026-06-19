@@ -40,9 +40,6 @@ public class KeyLossReportModel {
     public Timestamp getReportTime() { return reportTime; }
     public void setReportTime(Timestamp reportTime) { this.reportTime = reportTime; }
 
-    public Timestamp getLostTime() { return lostTime; }
-    public void setLostTime(Timestamp lostTime) { this.lostTime = lostTime; }
-
     public String getReason() { return reason; }
     public void setReason(String reason) { this.reason = reason; }
 

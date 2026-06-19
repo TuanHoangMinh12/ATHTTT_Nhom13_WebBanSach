@@ -7,12 +7,8 @@ import java.util.List;
 
 public interface IKeyLossReportDao {
 
-    /**
-     * Người dùng gửi yêu cầu báo mất khóa.
-     * @param lostTime thời điểm user CHỌN là lúc bị mất khóa (lấy từ input datetime-local "lossTime").
-     *                 Đây là mốc dùng để thu hồi key / hủy đơn — KHÁC với report_time (lúc bấm gửi).
-     */
-    boolean submitReport(int idKey, int idUser, String reason, Timestamp lostTime);
+
+    boolean submitReport(int idKey, int idUser, String reason);
 
     /** Admin lấy tất cả yêu cầu chờ xử lý */
     List<KeyLossReportModel> getPendingReports();

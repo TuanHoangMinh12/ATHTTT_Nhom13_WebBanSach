@@ -113,13 +113,6 @@
                                 </div>
                             </c:forEach>
                         </div>
-
-                        <div class="form-group">
-                            <label for="lossTime" class="font-weight-bold">Thời điểm bạn bị mất khóa <span class="text-danger">*</span></label>
-                            <input type="datetime-local" class="form-control" id="lossTime" name="lossTime" required>
-                            <small class="form-text text-muted">Ước lượng thời điểm gần nhất bạn cho rằng khóa đã bị lộ/mất.</small>
-                        </div>
-
                         <div class="form-group">
                             <label for="reason" class="font-weight-bold">Mô tả tình huống mất khóa</label>
                             <textarea class="form-control" id="reason" name="reason"

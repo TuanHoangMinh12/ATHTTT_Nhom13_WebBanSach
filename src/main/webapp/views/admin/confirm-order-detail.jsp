@@ -19,7 +19,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
     <style>
-        /* ── Verify result box ── */
         .verify-box {
             display: flex;
             align-items: center;
@@ -36,7 +35,6 @@
         .verify-fail { background: #f8d7da; color: #721c24; border-color: #dc3545; }
         .verify-none { background: #e2e3e5; color: #383d41; border-color: #6c757d; }
 
-        /* ── Verify button ── */
         .btn-verify {
             background-color: #2c7be5;
             color: #fff;
@@ -73,7 +71,6 @@
     </div>
 
     <div class="row">
-        <%-- Toolbar --%>
         <div class="col-md-12">
             <div class="tile">
                 <div class="tile-body">
@@ -99,222 +96,223 @@
             </div>
         </div>
 
-        <form action="${pageContext.request.contextPath}/admin-order-detail?id=${id}" method="post" >
+        <form action="${pageContext.request.contextPath}/admin-order-detail?id=${id}" method="post">
             <div class="col-md-12">
-            <div class="tile">
-                <div class="tile-body">
-                    <div class="container" style="min-height: 600px">
+                <div class="tile">
+                    <div class="tile-body">
+                        <div class="container" style="min-height: 600px">
 
-                        <h1 class="text-center my-4">Chi tiết đơn hàng</h1>
+                            <h1 class="text-center my-4">Chi tiết đơn hàng</h1>
 
-                        <%-- KẾT QUẢ VERIFY
-                             verifyResult được set bởi OrderDetailController:
-                               "OK"    → Đã xác thực
-                               "FAIL"  → Đơn hàng đã bị chỉnh sửa
-                               null    → chưa nhấn Verify --%>
-                        <c:choose>
-                            <c:when test="${verifyResult == 'OK'}">
-                                <div class="verify-box verify-ok">
-                                    <i class="fas fa-check-circle"></i>
-                                    <div>
-                                        <strong>Đã xác thực</strong><br>
-                                        <small>Chữ ký số hợp lệ — dữ liệu đơn hàng không bị thay đổi.</small>
+                            <%-- KẾT QUẢ VERIFY --%>
+                            <c:choose>
+                                <c:when test="${verifyResult == 'OK'}">
+                                    <div class="verify-box verify-ok">
+                                        <i class="fas fa-check-circle"></i>
+                                        <div>
+                                            <strong>Đã xác thực</strong><br>
+                                            <small>Chữ ký số hợp lệ — dữ liệu đơn hàng không bị thay đổi.</small>
+                                        </div>
                                     </div>
-                                </div>
-                            </c:when>
-                            <c:when test="${verifyResult == 'FAIL'}">
-                                <div class="verify-box verify-fail">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    <div>
-                                        <strong>Đơn hàng đã bị chỉnh sửa</strong><br>
-                                        <small>
-                                            Hash hiện tại không khớp với chữ ký gốc của khách hàng.
-                                            Đơn hàng đã tự động chuyển về trạng thái <b>Đã hủy</b>.
-                                        </small>
+                                </c:when>
+                                <c:when test="${verifyResult == 'FAIL'}">
+                                    <div class="verify-box verify-fail">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <div>
+                                            <strong>Đơn hàng đã bị chỉnh sửa</strong><br>
+                                            <small>
+                                                Hash hiện tại không khớp với chữ ký gốc của khách hàng.
+                                                Đơn hàng đã tự động chuyển về trạng thái <b>Đã hủy</b>.
+                                            </small>
+                                        </div>
                                     </div>
-                                </div>
-                            </c:when>
-                            <c:when test="${verifyResult == 'ERROR'}">
-                                <div class="verify-box verify-none">
-                                    <i class="fas fa-question-circle"></i>
-                                    <div>
-                                        <strong>Không thể xác thực</strong><br>
-                                        <small>${verifyError}</small>
+                                </c:when>
+                                <c:when test="${verifyResult == 'ERROR'}">
+                                    <div class="verify-box verify-none">
+                                        <i class="fas fa-question-circle"></i>
+                                        <div>
+                                            <strong>Không thể xác thực</strong><br>
+                                            <small>${verifyError}</small>
+                                        </div>
                                     </div>
-                                </div>
-                            </c:when>
-                            <c:otherwise>
-                                <%-- Chưa nhấn Verify: không hiện gì --%>
-                            </c:otherwise>
-                        </c:choose>
+                                </c:when>
+                            </c:choose>
 
-                        <%-- Thông tin khách hàng & đơn hàng --%>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h2>Thông tin khách hàng</h2>
-                                <table class="table">
-                                    <tbody>
-                                    <tr>
-                                        <td>Tên khách hàng:</td>
-                                        <td>${CUSTOMER.firstName} ${CUSTOMER.lastName}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Địa chỉ:</td>
-                                        <td>${cart.bills.get(0).address}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Số điện thoại:</td>
-                                        <td>${cart.bills.get(0).phone}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Email:</td>
-                                        <td>${CUSTOMER.email}</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="col-md-6">
-                                <h2>Thông tin đơn hàng</h2>
-                                <table class="table">
-                                    <tbody>
-                                    <tr>
-                                        <td>Mã đơn hàng:</td>
-                                        <td><b>${cart.id}</b></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Ngày đặt hàng:</td>
-                                        <td>${cart.createTime}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Ngày dự kiến giao:</td>
-                                        <td>${cart.timeShip}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Đóng gói:</td>
-                                        <td>${cart.bills.get(0).pack}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Phương thức thanh toán:</td>
-                                        <td>${cart.bills.get(0).paymentMethod}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Ghi chú:</td>
-                                        <td>${cart.bills.get(0).info}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tổng giá trị:</td>
-                                        <td>
-                                            <b>
-                                                <fmt:formatNumber value="${cart.getTotalPriceFromCart()}" type="number" groupingUsed="true"/> VNĐ
-                                            </b>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tình trạng:</td>
-                                        <td>${cart.getInFoShipString()}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Đăng ký giao hàng:</td>
-                                        <td>
-                                            <c:if test="${cart.getInFoShipString().equals('Chờ xử lý')}">
-                                                <button type="button"
-                                                        class="btn btn-danger btn-sm btn-register-ghn"
-                                                        data-id="${cart.id}"
-                                                        data-cus="${CUSTOMER.idUser}">
-                                                    Đăng ký đơn hàng
-                                                </button>
-                                                <button type="button"
-                                                        class="btn btn-warning btn-sm btn-cancel-order"
-                                                        data-id="${cart.id}">
-                                                    Hủy đơn
-                                                </button>
-                                            </c:if>
-                                            <c:if test="${cart.getInFoShipString().equals('Đang vận chuyển')}">
-                                                <button type="button"
-                                                        class="btn btn-success btn-sm btn-confirm-delivered"
-                                                        data-id="${cart.id}"
-                                                        data-cus="${CUSTOMER.idUser}">
-                                                    Xác nhận Đã giao
-                                                </button>
-                                                <button type="button"
-                                                        class="btn btn-warning btn-sm btn-cancel-order"
-                                                        data-id="${cart.id}">
-                                                    Hủy đơn
-                                                </button>
-                                            </c:if>
-                                            <c:if test="${cart.getInFoShipString().equals('Đã hoàn thành')}">
-                                                <span class="text-success"><i class="fas fa-check"></i> Đơn hàng đã giao thành công</span>
-                                            </c:if>
-                                            <c:if test="${cart.getInFoShipString().equals('Đã hủy')}">
-                                                <span class="text-danger" style="font-weight: 500;"><i class="fas fa-times-circle"></i> Đơn hàng đã hủy</span>
-                                            </c:if>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <%-- Danh sách sản phẩm trong đơn --%>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h2>Danh sách sản phẩm</h2>
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Tên sản phẩm</th>
-                                        <th>Ảnh</th>
-                                        <th>Số lượng</th>
-                                        <th>Tổng tiền</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <c:forEach var="item" items="${LISTBILL}">
+                            <%-- Thông tin khách hàng & đơn hàng --%>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h2>Thông tin khách hàng</h2>
+                                    <table class="table">
+                                        <tbody>
                                         <tr>
-                                            <td>${item.nameSach}</td>
+                                            <td>Tên khách hàng:</td>
+                                            <td>${CUSTOMER.firstName} ${CUSTOMER.lastName}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Địa chỉ:</td>
+                                            <td>${cart.bills.get(0).address}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Số điện thoại:</td>
+                                            <td>${cart.bills.get(0).phone}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Email:</td>
+                                            <td>${CUSTOMER.email}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h2>Thông tin đơn hàng</h2>
+                                    <table class="table">
+                                        <tbody>
+                                        <tr>
+                                            <td>Mã đơn hàng:</td>
+                                            <td><b>${cart.id}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ngày đặt hàng:</td>
+                                            <td>${cart.createTime}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ngày dự kiến giao:</td>
+                                            <td>${cart.timeShip}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Đóng gói:</td>
+                                            <td>${cart.bills.get(0).pack}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Phương thức thanh toán:</td>
+                                            <td>${cart.bills.get(0).paymentMethod}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ghi chú:</td>
+                                            <td>${cart.bills.get(0).info}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tổng giá trị:</td>
                                             <td>
-                                                <img style="height:50px"
-                                                     src="${pageContext.request.contextPath}/${item.image}"
-                                                     alt="${item.nameSach}">
-                                            </td>
-                                            <td>${item.quantity}</td>
-                                            <td>
-                                                <fmt:formatNumber value="${item.totalPrice}" type="number" groupingUsed="true"/> VNĐ
+                                                <b>
+                                                    <fmt:formatNumber value="${cart.getTotalPriceFromCart()}" type="number" groupingUsed="true"/> VNĐ
+                                                </b>
                                             </td>
                                         </tr>
-                                    </c:forEach>
-                                    </tbody>
-                                </table>
-
-                                <%--
-                                   TASK 3 — NÚT [Verify]
-                                     Chỉ hiển thị khi đơn chưa bị hủy (inShip != 4) và chưa verify OK
-                                   --%>
-                                <%-- Nút Verify: chỉ hiện khi đơn chưa hủy và chưa verify OK --%>
-                                <c:if test="${cart.getInShip() != 4 && verifyResult != 'OK'}">
-                                    <div class="parent-button">
-                                        <button type="submit" class="btn-verify">
-                                            <i class="fas fa-shield-alt"></i> Verify đơn hàng
-                                        </button>
-                                    </div>
-                                </c:if>
-                                <c:if test="${verifyResult == 'OK'}">
-                                    <div class="parent-button">
-                                        <span class="text-success" style="font-size:14px">
-                                            <i class="fas fa-check-circle"></i> Đã xác thực thành công.
-                                        </span>
-                                    </div>
-                                </c:if>
-
-
+                                        <tr>
+                                            <td>Tình trạng:</td>
+                                            <td>${cart.getInFoShipString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>DEBUG:</td>
+                                            <td>inShip = [${cart.inShip}]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Đăng ký giao hàng:</td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${cart.inShip == 1}">
+                                                        <button type="button"
+                                                                class="btn btn-danger btn-sm btn-register-ghn"
+                                                                data-id="${cart.id}"
+                                                                data-cus="${CUSTOMER.idUser}">
+                                                            Đăng ký đơn hàng
+                                                        </button>
+                                                        <button type="button"
+                                                                class="btn btn-warning btn-sm btn-cancel-order"
+                                                                data-id="${cart.id}">
+                                                            Hủy đơn
+                                                        </button>
+                                                    </c:when>
+                                                    <c:when test="${cart.inShip == 2}">
+                                                        <button type="button"
+                                                                class="btn btn-success btn-sm btn-confirm-delivered"
+                                                                data-id="${cart.id}"
+                                                                data-cus="${CUSTOMER.idUser}">
+                                                            Xác nhận Đã giao
+                                                        </button>
+                                                        <button type="button"
+                                                                class="btn btn-warning btn-sm btn-cancel-order"
+                                                                data-id="${cart.id}">
+                                                            Hủy đơn
+                                                        </button>
+                                                    </c:when>
+                                                    <c:when test="${cart.inShip == 3}">
+                                                        <span class="text-success">
+                                                            <i class="fas fa-check"></i> Đơn hàng đã giao thành công
+                                                        </span>
+                                                    </c:when>
+                                                    <c:when test="${cart.inShip == 4}">
+                                                        <span class="text-danger" style="font-weight: 500;">
+                                                            <i class="fas fa-times-circle"></i> Đơn hàng đã hủy
+                                                        </span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="text-muted">${cart.getInFoShipString()}</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
 
+                            <%-- Danh sách sản phẩm trong đơn --%>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>Danh sách sản phẩm</h2>
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Tên sản phẩm</th>
+                                            <th>Ảnh</th>
+                                            <th>Số lượng</th>
+                                            <th>Tổng tiền</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <c:forEach var="item" items="${LISTBILL}">
+                                            <tr>
+                                                <td>${item.nameSach}</td>
+                                                <td>
+                                                    <img style="height:50px"
+                                                         src="${pageContext.request.contextPath}/${item.image}"
+                                                         alt="${item.nameSach}">
+                                                </td>
+                                                <td>${item.quantity}</td>
+                                                <td>
+                                                    <fmt:formatNumber value="${item.totalPrice}" type="number" groupingUsed="true"/> VNĐ
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                        </tbody>
+                                    </table>
+
+                                    <%-- Nút Verify: chỉ hiện khi đơn chưa hủy và chưa verify OK --%>
+                                    <c:if test="${cart.inShip != 4 && verifyResult != 'OK'}">
+                                        <div class="parent-button">
+                                            <button type="submit" class="btn-verify">
+                                                <i class="fas fa-shield-alt"></i> Verify đơn hàng
+                                            </button>
+                                        </div>
+                                    </c:if>
+                                    <c:if test="${verifyResult == 'OK'}">
+                                        <div class="parent-button">
+                                            <span class="text-success" style="font-size:14px">
+                                                <i class="fas fa-check-circle"></i> Đã xác thực thành công.
+                                            </span>
+                                        </div>
+                                    </c:if>
+
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         </form>
     </div>
 </main>
@@ -347,14 +345,12 @@
 </script>
 
 <script>
-
     $(document).ready(function () {
 
-        // 1. XỬ LÝ NÚT ĐĂNG KÝ GIAO HÀNG (ẨN CHÍNH NÓ VÀ XỔ RA 2 NÚT MỚI)
+        // 1. XỬ LÝ NÚT ĐĂNG KÝ GIAO HÀNG
         $(document).on('click', '.btn-register-ghn', function (e) {
             e.preventDefault();
 
-            // ĐIỀU KIỆN BẢO MẬT: Kiểm tra xem đơn hàng đã được Xác thực chữ ký số chưa
             var isVerified = "${verifyResult}";
             if (isVerified !== "OK") {
                 swal("Hành động bị chặn!", "Đơn hàng này chưa được xác thực chữ ký số hoặc chữ ký không hợp lệ. Bạn phải bấm nút [Verify đơn hàng] trước khi giao cho đối tác vận chuyển!", "error");
@@ -364,9 +360,8 @@
             var orderId = $(this).data('id');
             var cusId = $(this).data('cus');
             var $btn = $(this);
-            var $tdContainer = $btn.parent(); // Thẻ <td> chứa cụm nút bấm
+            var $tdContainer = $btn.parent();
 
-            // Khóa nút tạm thời để chống bấm trùng
             $btn.prop('disabled', true).addClass('disabled').text('Đang xử lý...');
 
             swal({
@@ -390,12 +385,8 @@
                             icon: "success",
                             button: "Đóng"
                         }).then(() => {
-                            // ── ĐỔI GIAO DIỆN TẠI CHỖ CHUẨN XÁC THEO Ý BẠN ──
-
-                            // 1. Cập nhật text Tình trạng hiển thị từ "Chờ xử lý" sang "Đang vận chuyển"
                             $('td:contains("Tình trạng:")').next().html('<span class="text-warning" style="font-weight:500;">Đang vận chuyển</span>');
 
-                            // 2. Ẩn hẳn nút Đăng ký đơn hàng đi và "xổ" ra cặp nút mới: Xác nhận Đã giao & Hủy đơn
                             var newButtons =
                                 '<button type="button" class="btn btn-success btn-sm btn-confirm-delivered" data-id="' + orderId + '" data-cus="' + cusId + '" style="margin-right: 5px;">' +
                                 '   Xác nhận Đã giao' +
@@ -418,11 +409,10 @@
             });
         });
 
-        // 2. XỬ LÝ NÚT XÁC NHẬN ĐÃ GIAO (CÓ CHẶN BẢO MẬT KHI CHỮ KÝ INVALID)
+        // 2. XỬ LÝ NÚT XÁC NHẬN ĐÃ GIAO
         $(document).on('click', '.btn-confirm-delivered', function (e) {
             e.preventDefault();
 
-            // ĐIỀU KIỆN BẢO MẬT: Chặn không cho hoàn thành đơn hàng nếu chữ ký không hợp lệ
             var isVerified = "${verifyResult}";
             if (isVerified !== "OK") {
                 swal("Cảnh báo bảo mật lỗi!", "Đơn hàng này phát hiện có sự sai lệch dữ liệu hệ thống (Chữ ký Invalid). Vui lòng không thực hiện hoàn thành đơn hàng này và liên hệ quản trị viên!", "error");
@@ -443,7 +433,7 @@
                     if (response.trim() === "success") {
                         swal("Thành công!", "Đơn hàng đã được xác nhận hoàn thành!", "success")
                             .then(() => {
-                                window.location.reload(); // Đã giao hoàn tất thành công thì reload trang lại để đóng đơn
+                                window.location.reload();
                             });
                     } else {
                         swal("Lỗi", "Không thể cập nhật trạng thái đơn hàng.", "error");
@@ -498,9 +488,7 @@
         });
 
     });
-
 </script>
-
 
 </body>
 </html>
