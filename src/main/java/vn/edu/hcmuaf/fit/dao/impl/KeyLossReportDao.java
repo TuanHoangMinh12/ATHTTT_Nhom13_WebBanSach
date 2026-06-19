@@ -139,4 +139,67 @@ public class KeyLossReportDao {
         }
         return 0;
     }
+
+    public boolean approveReport(int idReport, String adminNote) {
+        Connection conn = null;
+        try {
+            conn = JDBCConnector.getConnection();
+            conn.setAutoCommit(false);
+
+            int idKey;
+            int idUser;
+            Timestamp reportTime;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT id_key, id_user, report_time FROM key_loss_report WHERE id_report = ?")) {
+                stmt.setInt(1, idReport);
+                ResultSet rs = stmt.executeQuery();
+                if (!rs.next()) { conn.rollback(); return false; }
+                idKey      = rs.getInt("id_key");
+                idUser     = rs.getInt("id_user");
+                reportTime = rs.getTimestamp("report_time");
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE key_loss_report SET status=1, admin_note=?, processed_at=NOW() WHERE id_report=?")) {
+                stmt.setString(1, adminNote);
+                stmt.setInt(2, idReport);
+                stmt.executeUpdate();
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE public_key SET status=0, expire=? WHERE id_key=?")) {
+                stmt.setTimestamp(1, reportTime);
+                stmt.setInt(2, idKey);
+                stmt.executeUpdate();
+            }
+
+
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE bill SET shipping_info=4 " +
+                            "WHERE id_user=? AND create_order_time>? AND shipping_info NOT IN (3,4)")) {
+                stmt.setInt(1, idUser);
+                stmt.setTimestamp(2, reportTime);
+                stmt.executeUpdate();
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE carts c " +
+                            "JOIN bill b ON b.idCart = c.id " +
+                            "SET c.infoShip = 4 " +
+                            "WHERE b.id_user = ? AND b.create_order_time > ? AND c.infoShip NOT IN (3,4)")) {
+                stmt.setInt(1, idUser);
+                stmt.setTimestamp(2, reportTime);
+                stmt.executeUpdate();
+            }
+
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try { if (conn != null) conn.rollback(); } catch (SQLException ignored) {}
+            return false;
+        } finally {
+            try { if (conn != null) conn.close(); } catch (SQLException ignored) {}
+        }
+    }
 }
