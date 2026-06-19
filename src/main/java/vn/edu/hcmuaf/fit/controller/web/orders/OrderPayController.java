@@ -100,7 +100,7 @@ public class OrderPayController extends HttpServlet {
                 );
 
         String hash =
-                SHA256Util.check(
+                new SHA256Util().check(
                         verifyData
                 );
 
