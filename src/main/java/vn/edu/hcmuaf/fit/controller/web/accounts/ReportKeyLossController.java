@@ -4,19 +4,18 @@ import vn.edu.hcmuaf.fit.dao.impl.KeyLossReportDao;
 import vn.edu.hcmuaf.fit.dao.impl.PublicKeyDao;
 import vn.edu.hcmuaf.fit.model.CustomerModel;
 import vn.edu.hcmuaf.fit.model.PublicKeyModel;
+import vn.edu.hcmuaf.fit.utils.SessionUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
-/**
- * Servlet xử lý báo mất private key của người dùng.
- *
- * GET  /report-key-loss  → Hiển thị form báo mất (danh sách key đang active)
- * POST /report-key-loss  → Lưu báo cáo vào DB và thông báo thành công
- */
+
 @WebServlet(name = "reportKeyLoss", value = "/report-key-loss")
 public class ReportKeyLossController extends HttpServlet {
 
@@ -27,8 +26,7 @@ public class ReportKeyLossController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
-        CustomerModel user  = (session != null) ? (CustomerModel) session.getAttribute("account") : null;
+        CustomerModel user = (CustomerModel) SessionUtil.getInstance().getValue(request, "USERMODEL");
 
         if (user == null) {
             response.sendRedirect(request.getContextPath() + "/login");
@@ -47,16 +45,16 @@ public class ReportKeyLossController extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-        HttpSession session  = request.getSession(false);
-        CustomerModel user   = (session != null) ? (CustomerModel) session.getAttribute("account") : null;
+        CustomerModel user = (CustomerModel) SessionUtil.getInstance().getValue(request, "USERMODEL");
 
         if (user == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        String idKeyParam = request.getParameter("idKey");
-        String reason     = request.getParameter("reason");
+        String idKeyParam   = request.getParameter("idKey");
+        String reason       = request.getParameter("reason");
+        String lossTimeParam = request.getParameter("lossTime"); // input type="datetime-local"
 
         if (idKeyParam == null || idKeyParam.isEmpty()) {
             request.setAttribute("error", "Vui lòng chọn khóa bị mất.");
@@ -73,14 +71,35 @@ public class ReportKeyLossController extends HttpServlet {
             return;
         }
 
-        // Kiểm tra đã có báo cáo pending chưa
+        if (lossTimeParam == null || lossTimeParam.isEmpty()) {
+            request.setAttribute("error", "Vui lòng chọn thời điểm bạn bị mất khóa.");
+            doGet(request, response);
+            return;
+        }
+
+        Timestamp lostTime;
+        try {
+            LocalDateTime ldt = LocalDateTime.parse(lossTimeParam);
+            lostTime = Timestamp.valueOf(ldt);
+        } catch (DateTimeParseException e) {
+            request.setAttribute("error", "Thời điểm mất khóa không hợp lệ.");
+            doGet(request, response);
+            return;
+        }
+
+        if (lostTime.after(new Timestamp(System.currentTimeMillis()))) {
+            request.setAttribute("error", "Thời điểm mất khóa không thể ở tương lai.");
+            doGet(request, response);
+            return;
+        }
+
         if (reportDao.hasPendingReport(idKey)) {
             request.setAttribute("error", "Bạn đã gửi báo cáo cho khóa này và đang chờ admin xử lý.");
             doGet(request, response);
             return;
         }
 
-        boolean ok = reportDao.submitReport(idKey, user.getIdUser(), reason);
+        boolean ok = reportDao.submitReport(idKey, user.getIdUser(), reason, lostTime);
 
         if (ok) {
             // Redirect để tránh re-submit khi refresh

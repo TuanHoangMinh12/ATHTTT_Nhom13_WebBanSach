@@ -14,7 +14,8 @@ public class KeyLossReportModel {
     private int    idReport;
     private int    idKey;
     private int    idUser;
-    private Timestamp reportTime;   // Thời điểm người dùng báo mất
+    private Timestamp reportTime;   // Thời điểm user BẤM GỬI báo cáo (audit log, không dùng để tính hủy đơn)
+    private Timestamp lostTime;     // Thời điểm user CHỌN là lúc bị mất khóa (dùng làm mốc thu hồi key / hủy đơn)
     private String reason;          // Lý do mô tả của người dùng
     private int    status;          // 0 | 1 | 2
     private String adminNote;
@@ -38,6 +39,9 @@ public class KeyLossReportModel {
 
     public Timestamp getReportTime() { return reportTime; }
     public void setReportTime(Timestamp reportTime) { this.reportTime = reportTime; }
+
+    public Timestamp getLostTime() { return lostTime; }
+    public void setLostTime(Timestamp lostTime) { this.lostTime = lostTime; }
 
     public String getReason() { return reason; }
     public void setReason(String reason) { this.reason = reason; }

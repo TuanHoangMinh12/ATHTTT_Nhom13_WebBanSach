@@ -67,4 +67,53 @@ public class PublicKeyDao implements IPublicKeyDao {
         } catch (SQLException ignored) {
         }
     }
+    public List<PublicKeyModel> getActiveKeysByUser(int idUser) {
+        List<PublicKeyModel> list = new ArrayList<>();
+        String sql =
+                "SELECT pk.id_key, pk.id_user, " +
+                        "       CONCAT(c.first_name, ' ', c.last_name) AS fullname, " +
+                        "       c.email, pk.public_Key, pk.status, pk.create_date, pk.expire " +
+                        "FROM public_key pk " +
+                        "JOIN customer c ON pk.id_user = c.id_user " +
+                        "WHERE pk.id_user = ? AND pk.status = 1 " +
+                        "ORDER BY pk.create_date DESC";
+
+        try (Connection conn = JDBCConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idUser);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    PublicKeyModel model = new PublicKeyModel();
+                    model.setIdKey(rs.getInt("id_key"));
+                    model.setIdUser(rs.getInt("id_user"));
+                    model.setUserName(rs.getString("fullname"));
+                    model.setEmail(rs.getString("email"));
+                    model.setPublicKey(rs.getString("public_Key"));
+                    model.setStatus(rs.getInt("status"));
+                    model.setCreateDate(rs.getTimestamp("create_date"));
+                    model.setExpire(rs.getTimestamp("expire"));
+                    list.add(model);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Lấy số lượng báo cáo mất khóa đang PENDING.
+     * Dùng để hiển thị badge thông báo trên header/menu admin.
+     */
+    public int countPendingLossReports() {
+        String sql = "SELECT COUNT(*) FROM key_loss_report WHERE status = 0";
+        try (Connection conn = JDBCConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }
