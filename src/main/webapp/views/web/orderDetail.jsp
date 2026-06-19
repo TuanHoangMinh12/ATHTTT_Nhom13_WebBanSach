@@ -95,6 +95,7 @@
                             <td>Tình trạng:</td>
                             <td>${orderReviewDetail.trangThai}</td>
                         </tr>
+
                         </tbody>
                     </table>
                 </div>
