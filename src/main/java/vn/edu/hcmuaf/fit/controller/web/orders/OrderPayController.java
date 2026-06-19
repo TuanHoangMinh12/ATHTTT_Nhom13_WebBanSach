@@ -90,11 +90,35 @@ public class OrderPayController extends HttpServlet {
         }
         cartDao.update_cart_to_bill(idCart);
 
+        ObjectVerifyUtil verifyUtil =
+                new ObjectVerifyUtil();
+
+        String verifyData =
+                verifyUtil.string(
+                        cus.getIdUser(),
+                        idCart
+                );
+
+        String hash =
+                new SHA256Util().check(
+                        verifyData
+                );
+
+        System.out.println(hash);
         // xóa dữ liệu khỏi session
         billService.removeProductInCart(listIdRemove, request);
-        response.sendRedirect(
-                request.getContextPath()
-                        + "/order/reviewOrder?orderSuccess=1"
+        request.setAttribute(
+                "hash",
+                hash
         );
+
+        request.setAttribute(
+                "idCart",
+                idCart
+        );
+
+        request.getRequestDispatcher(
+                "/views/web/sign-order.jsp"
+        ).forward(request,response);
     }
 }

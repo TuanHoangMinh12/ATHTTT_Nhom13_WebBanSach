@@ -13,4 +13,6 @@ release.properties
 .classpath
 .project
 .settings/
+
+.smarttomcat/
 bin/
