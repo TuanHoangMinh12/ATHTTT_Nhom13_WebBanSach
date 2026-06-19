@@ -29,31 +29,6 @@ public class ConfirmBillController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        request.setCharacterEncoding("utf-8");
-//        response.setCharacterEncoding("utf-8");
-//        String id = request.getParameter("id");
-//        CustomerModel cus = (CustomerModel) SessionUtil.getInstance().getValue(request, "USERMODEL");
-//        InetAddress myIP=InetAddress.getLocalHost();
-//        String ip= myIP.getHostAddress();
-//
-//        CartDao cartDao = new CartDao();
-//        String idCus = request.getParameter("variable");
-//
-//        if(id != null) {
-//            int idInt = Integer.parseInt(id);
-//            int idCusInt = Integer.parseInt(idCus);
-//
-//            InformationDeliverDao daoInFo = new InformationDeliverDao();
-//            InformationDeliverModel info = daoInFo.getById(idInt);
-//            daoInFo.updateToken(idInt, FeeGHNUtils.registerShipForDeliver(info.getX()+"", info.getY()+"", info.getZ()+"", info.getW()+"",1463,21808,info.getDistrictTo(), info.getWarTo()));
-//            iBillManagementService.confirmBill(id);
-//            cartDao.updateCart(idInt, 3);
-//            Log log = new Log(Log.ALER,ip,"Xác nhận đơn hàng",cus.getIdUser(),"Đã giao: " + id,1);
-//            log.insert();
-//            request.setAttribute("message", "Xác nhận đơn hàng thành công: " + id);
-//            request.setAttribute("alert", "success");
-//            response.sendRedirect(request.getContextPath() + "/admin-order-detail?id="+id);
-//        }
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
 
@@ -61,7 +36,6 @@ public class ConfirmBillController extends HttpServlet {
         String idCus = request.getParameter("variable");
         CustomerModel cus = (CustomerModel) SessionUtil.getInstance().getValue(request, "USERMODEL");
 
-        // TỐI ƯU: Thay đổi lấy IP trực tiếp từ request để tránh bị nghẽn mạng
         String ip = request.getRemoteAddr();
 
         CartDao cartDao = new CartDao();

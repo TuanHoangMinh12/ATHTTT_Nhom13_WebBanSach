@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 public class PublicKeyDao implements IPublicKeyDao {
 
-    /**
-     * Lấy toàn bộ public key kèm tên user (JOIN với customer)
-     */
     @Override
     public List<PublicKeyModel> getAllKeys() {
         List<PublicKeyModel> list = new ArrayList<>();
@@ -44,10 +41,6 @@ public class PublicKeyDao implements IPublicKeyDao {
         return list;
     }
 
-    /**
-     * Revoke một key: set status = 0
-     * status = 1 → Active, status = 0 → Revoked
-     */
     @Override
     public boolean revokeKey(int idKey) {
         String sql = "UPDATE public_key SET status = 0 WHERE id_key = ?";

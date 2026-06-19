@@ -30,7 +30,6 @@ public class PublicKeyModel {
     public int getStatus() { return status; }
     public void setStatus(int status) { this.status = status; }
 
-    /** Trả về chuỗi để JSP hiển thị badge */
     public String getStatusLabel() {
         return status == 1 ? "Active" : "Revoked";
     }

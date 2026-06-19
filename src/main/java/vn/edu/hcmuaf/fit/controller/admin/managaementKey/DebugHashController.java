@@ -9,25 +9,6 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-/**
- * ════════════════════════════════════════════════════════════════════
- *  SERVLET DEBUG TẠM THỜI — chỉ để tìm nguyên nhân, KHÔNG nộp vào đồ án
- * ════════════════════════════════════════════════════════════════════
- *
- * Mục đích: in ra CHÍNH XÁC chuỗi dùng để hash + hash kết quả cho 1 đơn
- * hàng, để so sánh giữa 2 thời điểm (trước và sau khi bấm "Đăng ký
- * đơn hàng") và biết chính xác ký tự nào bị thay đổi.
- *
- * CÁCH DÙNG:
- *   /admin-debug-hash?idCart=X
- *
- * QUY TRÌNH TEST:
- *   1. Sau khi verify OK, gọi URL này lần 1 → copy lại toàn bộ output
- *   2. Bấm "Đăng ký đơn hàng"
- *   3. Gọi lại URL này lần 2 (cùng idCart) → copy output
- *   4. So sánh 2 đoạn text — chỗ nào khác nhau chính là nguyên nhân
- * ════════════════════════════════════════════════════════════════════
- */
 @WebServlet(name = "admin-debug-hash", value = "/admin-debug-hash")
 public class DebugHashController extends HttpServlet {
 
