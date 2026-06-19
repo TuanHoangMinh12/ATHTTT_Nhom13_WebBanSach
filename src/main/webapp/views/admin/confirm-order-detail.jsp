@@ -117,8 +117,8 @@
                                 <div class="verify-box verify-ok">
                                     <i class="fas fa-check-circle"></i>
                                     <div>
-                                        <strong>Đã xác thực</strong><br>
-                                        <small>Chữ ký số hợp lệ — dữ liệu đơn hàng không bị thay đổi.</small>
+                                        <strong>Chữ ký số: HỢP LỆ</strong><br>
+                                        <small>Hệ thống đối chiếu thành công chữ ký số của khách hàng từ Tool ký ngoài — Dữ liệu đơn hàng đảm bảo toàn vẹn 100%.</small>
                                     </div>
                                 </div>
                             </c:when>
@@ -126,11 +126,8 @@
                                 <div class="verify-box verify-fail">
                                     <i class="fas fa-exclamation-triangle"></i>
                                     <div>
-                                        <strong>Đơn hàng đã bị chỉnh sửa</strong><br>
-                                        <small>
-                                            Hash hiện tại không khớp với chữ ký gốc của khách hàng.
-                                            Đơn hàng đã tự động chuyển về trạng thái <b>Đã hủy</b>.
-                                        </small>
+                                        <strong>Cảnh báo: CHỮ KÝ KHÔNG HỢP LỆ!</strong><br>
+                                        <small>Dữ liệu hiện tại trong hệ thống đã bị chỉnh sửa lén so với dữ liệu gốc ban đầu lúc khách hàng thực hiện ký bằng Tool ngoài.</small>
                                     </div>
                                 </div>
                             </c:when>
@@ -138,13 +135,13 @@
                                 <div class="verify-box verify-none">
                                     <i class="fas fa-question-circle"></i>
                                     <div>
-                                        <strong>Không thể xác thực</strong><br>
+                                        <strong>Không thể tiến hành xác thực</strong><br>
                                         <small>${verifyError}</small>
                                     </div>
                                 </div>
                             </c:when>
                             <c:otherwise>
-                                <%-- Chưa nhấn Verify: không hiện gì --%>
+                                <%-- Chưa nhấn nút Verify: Để trống không hiển thị hộp thoại kết quả --%>
                             </c:otherwise>
                         </c:choose>
 
@@ -291,7 +288,7 @@
                                    TASK 3 — NÚT [Verify]
                                      Chỉ hiển thị khi đơn chưa bị hủy (inShip != 4) và chưa verify OK
                                    --%>
-                                <%-- Nút Verify: chỉ hiện khi đơn chưa hủy và chưa verify OK --%>
+                                <%-- Nút kích hoạt lệnh Xác thực: Chỉ hiển thị khi đơn chưa hủy và chưa xác thực thành công --%>
                                 <c:if test="${cart.getInShip() != 4 && verifyResult != 'OK'}">
                                     <div class="parent-button">
                                         <button type="submit" class="btn-verify">
@@ -299,15 +296,14 @@
                                         </button>
                                     </div>
                                 </c:if>
+
                                 <c:if test="${verifyResult == 'OK'}">
                                     <div class="parent-button">
-                                        <span class="text-success" style="font-size:14px">
-                                            <i class="fas fa-check-circle"></i> Đã xác thực thành công.
+                                        <span class="text-success" style="font-size:15px; font-weight: 500;">
+                                            <i class="fas fa-check-circle"></i> Hệ thống đã hoàn thành xác thực đơn hàng này.
                                         </span>
                                     </div>
                                 </c:if>
-
-
                             </div>
                         </div>
 
