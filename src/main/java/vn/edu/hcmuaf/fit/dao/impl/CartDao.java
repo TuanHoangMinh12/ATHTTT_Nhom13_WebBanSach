@@ -65,9 +65,7 @@ public class CartDao {
         }
         return 1;
     }
-    /** lấy ngày tạo đơn hàng
-     *
-     */
+
     public String getCreatime( int idCart,int idUser) {
         String sql = "SELECT create_time FROM `carts` WHERE id = ? and idUser = ?";
         Connection connection = JDBCConnector.getConnection();
@@ -86,10 +84,8 @@ public class CartDao {
                 createTime = resultSet.getString("create_time");
             }
         } catch (SQLException e) {
-            // Handle exceptions
             e.printStackTrace();
         } finally {
-            // Close resultSet, statement, and connection to avoid resource leaks
             try {
                 if (resultSet != null) {
                     resultSet.close();
@@ -108,15 +104,6 @@ public class CartDao {
         return createTime;
     }
 
-    /**
-     *
-     * @param idUser
-     * @param timeShip
-     * @param feeShip
-     * @param totalPrice
-     * @param infoShip
-     * @return
-     */
     public int insert_Cart(int idUser, String timeShip, double feeShip, double totalPrice, String infoShip) {
         Connection connection = JDBCConnector.getConnection();
         PreparedStatement statement = null;
@@ -159,10 +146,6 @@ public class CartDao {
         return cartId;
     }
 
-    /**
-     * sau khi mua hang hoa don duoc tao và cap nhap thoi gian hoa don bill tạo
-     * @param id
-     */
     public void update_cart_to_bill(int id) {
         Connection connection = JDBCConnector.getConnection();
         PreparedStatement statement = null;
@@ -246,12 +229,6 @@ public class CartDao {
 
     }
 
-    /**
-     *
-     * @param id
-     * @param idCart
-     * @return
-     */
 //    public OrderReviewDetail getAllByIdUserAndIdCartNoTimeship(int id, int idCart) {
 //        OrderReviewDetail orderReviewDetail = new OrderReviewDetail();
 //        String sql = "SELECT  CONCAT(t.first_name, ' ', t.last_name) AS fullname, b.address, b.phone, t.email, b.idCart, b.create_order_time, e.timeShip, e.totalPrice\n" +
@@ -295,12 +272,6 @@ public class CartDao {
 //
 //    }
 
-    /**
-     * khong lay thoi gian
-     * @param id_user
-     * @param idCart
-     * @return
-     */
     public double getTotalBill(int id_user, int idCart){
         String sql = "SELECT b.totalBill\n" +
                 "FROM bill b\n" +
@@ -317,24 +288,16 @@ public class CartDao {
                 if (resultSet.next()) {
                     return resultSet.getDouble("totalBill");
                 } else {
-                    // Handle case when no data is found. For example:
-                    // throw new NoDataFoundException("No order found for the given ID and Cart ID.");
+
                 }
             }
         } catch (SQLException e) {
-            // Handle exception, log error, etc.
             e.printStackTrace();
-            // You could log this error and/or throw a custom exception.
         }
-        // You can return a default object or throw an exception if you prefer.
         return 0;
 
     }
 
-    /**
-     * MỚI THÊM: lấy carts.feeShip — đưa vào vùng hash để bảo vệ phí ship
-     * khỏi bị sửa trực tiếp trong DB sau khi đơn đã được ký.
-     */
     public double getFeeShip(int idUser, int idCart) {
         String sql = "SELECT feeShip FROM carts WHERE id = ? AND idUser = ?";
         try (Connection connection = JDBCConnector.getConnection();
@@ -379,16 +342,11 @@ public class CartDao {
                     orderReviewDetail.setTotolPrice(resultSet.getInt("totalPrice"));
                     return orderReviewDetail;
                 } else {
-                    // Handle case when no data is found. For example:
-                    // throw new NoDataFoundException("No order found for the given ID and Cart ID.");
                 }
             }
         } catch (SQLException e) {
-            // Handle exception, log error, etc.
             e.printStackTrace();
-            // You could log this error and/or throw a custom exception.
         }
-        // You can return a default object or throw an exception if you prefer.
         return null;
 
     }
@@ -397,7 +355,7 @@ public class CartDao {
 
         // CẬP NHẬT: thêm b.id_book, b.id_discount, b.pack, b.payment_method,
         // b.info vào SELECT — các trường này giờ được đưa vào vùng hash để
-        // bảo vệ tính toàn vẹn (chống admin/hacker sửa sản phẩm, mã giảm giá,
+        // bảo vệ tính toàn vẹn (chống admin/người khác sửa sản phẩm, mã giảm giá,
         // kiểu đóng gói, phương thức thanh toán, hoặc ghi chú đơn hàng).
         String sql = "SELECT " +
                 "b.idCart, " +
@@ -581,12 +539,6 @@ public class CartDao {
         return null;
     }
 
-    /**
-     * lấy chuỗi hash
-     * @param idCart
-     * @param idUser
-     * @return
-     */
     public String getHash(int idCart, int idUser) {
         String query = "SELECT verify FROM `carts` WHERE id = ? AND idUser = ?";
         Connection connection = JDBCConnector.getConnection();
@@ -604,32 +556,21 @@ public class CartDao {
                     return resultSet.getString(1);
                 }
             } catch (SQLException e) {
-                e.printStackTrace();  // Handle or log the exception as needed
+                e.printStackTrace();
             } finally {
                 try {
                     if (resultSet != null) resultSet.close();
                     if (statement != null) statement.close();
                     if (connection != null) connection.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();  // Handle or log the exception as needed
+                    e.printStackTrace();
                 }
             }
         }
-        return null;  // Return null if no result is found
+        return null;
     }
 
-    /**
-     * Lấy public key gần nhất đơn hàng đó
-     * @param idCart
-     * @param idUser
-     * @return
-     */
 
-
-    /**
-     * lay public key  so sanh thoi gian cua hang vua voi public key
-     * @return
-     */
     public String getPuclickey( int idUser,int idCart) {
         String query = "CALL getSelectPublicKey(?, ?)";
         Connection connection = JDBCConnector.getConnection();
@@ -894,13 +835,6 @@ public class CartDao {
 
     public static void main(String[] args) {
         CartDao cartDao = new CartDao();
-
-//        System.out.println(cartDao.getAllByIdUserAndIdCartNoTimeship(54,75));
-
-//        System.out.println(cartDao.getAllByIdUserAndIdCartNoTime(54,75));
-//        System.out.println(cartDao.getCreatime(30,48));
-//
-//        System.out.println(cartDao.getAllByIdUserAndIdCartNoTime(54,75));
         System.out.println(cartDao.getTotalBill(48,31));
 
     }

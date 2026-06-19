@@ -99,7 +99,6 @@
             </div>
         </div>
 
-        <%-- Form bọc toàn bộ nội dung — POST về /admin-order-detail?id=... khi nhấn Verify --%>
         <form action="${pageContext.request.contextPath}/admin-order-detail?id=${id}" method="post" >
             <div class="col-md-12">
             <div class="tile">
@@ -108,13 +107,11 @@
 
                         <h1 class="text-center my-4">Chi tiết đơn hàng</h1>
 
-                        <%-- ════════════════════════════════════════════
-                             TASK 3 — KẾT QUẢ VERIFY
+                        <%-- KẾT QUẢ VERIFY
                              verifyResult được set bởi OrderDetailController:
                                "OK"    → Đã xác thực
                                "FAIL"  → Đơn hàng đã bị chỉnh sửa
-                               null    → chưa nhấn Verify
-                             ════════════════════════════════════════════ --%>
+                               null    → chưa nhấn Verify --%>
                         <c:choose>
                             <c:when test="${verifyResult == 'OK'}">
                                 <div class="verify-box verify-ok">
@@ -292,8 +289,7 @@
 
                                 <%--
                                    TASK 3 — NÚT [Verify]
-                                     Chỉ hiển thị khi đơn chưa bị hủy (inShip != 4)
-                                     và chưa verify OK
+                                     Chỉ hiển thị khi đơn chưa bị hủy (inShip != 4) và chưa verify OK
                                    --%>
                                 <%-- Nút Verify: chỉ hiện khi đơn chưa hủy và chưa verify OK --%>
                                 <c:if test="${cart.getInShip() != 4 && verifyResult != 'OK'}">

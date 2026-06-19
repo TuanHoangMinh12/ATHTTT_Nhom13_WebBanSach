@@ -32,7 +32,7 @@
             <div class="tile">
                 <div class="tile-body">
 
-                    <%-- Khối thông báo Alert sau khi Revoke khóa --%>
+                    <%-- Khối thông báo sau khi Revoke khóa --%>
                     <c:if test="${not empty alertMsg}">
                         <div class="alert alert-${alertType} alert-dismissible fade show" role="alert" style="border-left: 5px solid;">
                             <strong>Thông báo:</strong> ${alertMsg}
