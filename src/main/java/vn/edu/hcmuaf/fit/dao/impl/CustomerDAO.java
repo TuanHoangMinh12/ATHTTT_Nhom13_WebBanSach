@@ -132,28 +132,18 @@ CustomerDAO implements ICustomerDAO {
         return 0;
     }
     public void insert_publicKey(int id, String public_key) {
-        String sql = new String("INSERT INTO public_key (id_user,public_key, status)\n" +
-                "VALUES (?,?,1)");
-        PreparedStatement statement = null;
-        try {
-            Connection connection = JDBCConnector.getConnection();
-            statement = connection.prepareStatement(sql.toString());
+        String sql = "INSERT INTO public_key (id_user, public_Key, status) VALUES (?, ?, 1)";
+        // FIX: dùng try-with-resources để đóng cả connection lẫn statement tự động
+        //      bỏ connection.commit() vì JDBCConnector trả autoCommit=true,
+        //      gọi commit() thủ công trên autoCommit connection sẽ throw SQLException
+        //      bị catch nuốt im → key không lưu được
+        try (Connection connection = JDBCConnector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
             statement.setString(2, public_key);
             statement.executeUpdate();
-            connection.commit();
         } catch (SQLException e) {
-            // Log or print the exception stack trace for debugging
             e.printStackTrace();
-        } finally {
-            // Close the statement (and possibly the connection, depending on your setup)
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
     public void update_publicKey(int id) {
@@ -515,35 +505,35 @@ CustomerDAO implements ICustomerDAO {
         }
         return result;
     }
-        public int getTypeLogin(String email) {
-            int result = 1;
-            Connection connection = JDBCConnector.getConnection();
-            String sql = new String("SELECT typeLogin FROM customer WHERE email=?");
-            PreparedStatement statement = null;
-            ResultSet resultSet = null;
-            if (connection != null) {
-                try {
-                    statement = connection.prepareStatement(sql.toString());
-                    statement.setString(1, email);
-                    resultSet = statement.executeQuery();
-                    while (resultSet.next()) {
-                        result = resultSet.getInt(1);
-                    }
+    public int getTypeLogin(String email) {
+        int result = 1;
+        Connection connection = JDBCConnector.getConnection();
+        String sql = new String("SELECT typeLogin FROM customer WHERE email=?");
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        if (connection != null) {
+            try {
+                statement = connection.prepareStatement(sql.toString());
+                statement.setString(1, email);
+                resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    result = resultSet.getInt(1);
+                }
 
-                    return result;
+                return result;
+            } catch (SQLException e) {
+                return 1;
+            } finally {
+                try {
+                    if (connection != null) connection.close();
+                    if (statement != null) statement.close();
+                    if (resultSet != null) resultSet.close();
                 } catch (SQLException e) {
                     return 1;
-                } finally {
-                    try {
-                        if (connection != null) connection.close();
-                        if (statement != null) statement.close();
-                        if (resultSet != null) resultSet.close();
-                    } catch (SQLException e) {
-                        return 1;
-                    }
                 }
             }
-            return 1;
+        }
+        return 1;
     }
     public List<CustomerModel> getAllUserAdmin() {
         String sql = "SELECT c.id_user, CONCAT(c.first_name,' ',c.last_name) 'full_name', c.phone, c.address, \n" +
@@ -626,4 +616,3 @@ CustomerDAO implements ICustomerDAO {
 
 
 }
-
