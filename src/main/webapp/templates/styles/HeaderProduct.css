@@ -325,9 +325,61 @@ hr {
 }
 
 .center-header_div {
-    /*display: block;*/
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 45px; /* Giới hạn chiều cao cố định cho thanh menu thanh thoát hơn */
 }
 
+/* Khối chứa nút Voucher và Hotline bên phải */
+.center-header_div .f_right {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Tạo khoảng cách 20px giữa nút Voucher và Hotline */
+}
+
+/* Tối ưu lại nút Săn mã giảm giá */
+.center-header_div .f_right a[href*="voucher"] {
+    background-color: #ed4d2b;
+    padding: 6px 15px; /* Tăng padding trái/phải cho nút đầy đặn hơn */
+    color: #FFFFFF;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.center-header_div .f_right a[href*="voucher"]:hover {
+    background-color: #d63b19; /* Hiệu ứng hover cho nút thêm sinh động */
+    color: #fff;
+}
+
+.hotline {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.hotline i {
+    font-size: 14px;
+    margin-right: 6px;
+    color: var(--bs-blue-default);
+}
+
+.hotline h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 4px 0 0; /* Xóa bỏ padding-top: 8px gây lệch dòng */
+    color: #000;
+    line-height: 1;
+}
+
+.hotline span {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--bs-blue-default);
+}
 
 
 /* ----------------menu-------------- */

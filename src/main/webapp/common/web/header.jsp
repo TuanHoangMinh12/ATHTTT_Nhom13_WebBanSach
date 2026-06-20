@@ -13,7 +13,7 @@
         <div class="top-header">
             <div class="container top-header-content">
                 <a class="logo" href="${pageContext.request.contextPath}/home">Hoàng Tiến</a>
-                <form action="/products/search" method="post">
+                <form action="${pageContext.request.contextPath}/products/search" method="post">
                     <div class="top-header_search">
                         <input type="text" name="key" placeholder="Tìm kiếm">
                         <button style="border: none"><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -28,9 +28,9 @@
                             <c:set var="cart" value="${sessionScope[cartKey]}"/>
 
                             <c:if test="${cart != null && cart.map.size() != 0}">
-        <span class="top-header_cart-quantity">
-            (${cart.map.size()})
-        </span>
+                                <span class="top-header_cart-quantity">
+                                    (${cart.map.size()})
+                                </span>
                             </c:if>
                         </c:if>
 
@@ -105,11 +105,10 @@
 
                             <!-- Nhóm nổi bật phù hợp với web bán sách cũ -->
                             <li class="type_products-item type_hots">
-        <span class="container_type-arrow">
-            <div>Nổi bật</div>
-            <i class="fa-solid fa-chevron-right"></i>
-        </span>
-
+                                <span class="container_type-arrow">
+                                    <div>Nổi bật</div>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </span>
                                 <ul class="type_hot-child">
                                     <li>
                                         <a href="${pageContext.request.contextPath}/products?hot=1">
@@ -151,10 +150,10 @@
                             <!-- Công ty phát hành / nhà xuất bản -->
                             <li class="type_products-item type_companys">
                                 <a href="javascript:void(0)">
-            <span class="container_type-arrow">
-                <div>Nhà xuất bản</div>
-                <i class="fa-solid fa-chevron-right"></i>
-            </span>
+                                    <span class="container_type-arrow">
+                                        <div>Nhà xuất bản</div>
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </span>
                                 </a>
 
                                 <ul class="type_companys-child" style="font-size: 10px">
