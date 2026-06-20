@@ -49,6 +49,17 @@
             margin-top: 8px;
         }
         .feature-actions .btn { margin-right: 8px; margin-bottom: 6px; }
+        .choice-row { display: flex; gap: 16px; flex-wrap: wrap; }
+        .choice-col { flex: 1 1 280px; }
+        .choice-box {
+            border: 1px solid #e2e2e2; border-radius: 6px; padding: 14px 16px;
+            height: 100%; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .choice-box h5 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+        .choice-box p { font-size: 13px; color: #6c757d; margin-bottom: 12px; }
+        textarea.pubkey-input {
+            font-family: monospace; font-size: 12px; min-height: 120px;
+        }
     </style>
 </head>
 <body>
@@ -125,7 +136,8 @@
                             <c:otherwise>
                                 <span class="key-status-none"><i class="fas fa-ban"></i> Chưa có khóa hoạt động</span>
                                 <p class="mt-2 text-muted">
-                                    Bạn cần tạo cặp khóa mới để có thể đặt hàng / xác thực giao dịch trên hệ thống.
+                                    Bạn cần tạo cặp khóa mới hoặc nhập Public Key có sẵn để có thể đặt hàng /
+                                    xác thực giao dịch trên hệ thống.
                                 </p>
                             </c:otherwise>
                         </c:choose>
@@ -135,9 +147,10 @@
                     <div class="key-card">
                         <h4><i class="fas fa-exclamation-triangle text-danger"></i> Báo Mất Khóa Bí Mật</h4>
                         <p class="text-muted mb-2">
-                            Nếu private key của bạn bị mất hoặc bị lộ, hãy báo ngay để admin xử lý.
-                            Sau khi admin xác nhận, khóa hiện tại sẽ bị thu hồi và các đơn hàng tạo
-                            <b>sau</b> thời điểm báo mất sẽ bị hủy để đảm bảo an toàn.
+                            Nếu private key của bạn bị mất hoặc bị lộ, hãy báo ngay. Khóa hiện tại sẽ
+                            <b>bị vô hiệu hóa ngay lập tức</b> và các đơn hàng tạo <b>sau</b> thời điểm
+                            báo mất sẽ bị hủy để đảm bảo an toàn. Sau đó bạn có thể tạo khóa mới hoặc
+                            nhập Public Key có sẵn ở mục bên dưới.
                         </p>
                         <c:choose>
                             <c:when test="${not empty activeKey}">
@@ -153,22 +166,61 @@
                         </c:choose>
                     </div>
 
-                    <%-- 3) TẠO KHÓA MỚI (chỉ hiện khi CHƯA có khóa active) ──────────── --%>
+                    <%-- 3) KHÔNG CÓ KHÓA ACTIVE → 2 lựa chọn riêng biệt: Tạo mới / Nhập sẵn --%>
                     <c:if test="${empty activeKey}">
                         <div class="key-card" style="border-left:4px solid #f39c12;">
-                            <h4><i class="fas fa-plus-circle text-warning"></i> Tạo Cặp Khóa Mới</h4>
-                            <p class="text-muted mb-2">
-                                Bạn hiện chưa có khóa hoạt động (có thể do khóa cũ đã bị admin thu hồi
-                                sau khi xác nhận báo mất). Tạo cặp khóa mới để tiếp tục sử dụng các
-                                chức năng cần xác thực trên hệ thống.
+                            <h4><i class="fas fa-plus-circle text-warning"></i> Thiết Lập Khóa</h4>
+                            <p class="text-muted mb-3">
+                                Bạn hiện chưa có khóa hoạt động (có thể do vừa báo mất khóa cũ). Chọn 1
+                                trong 2 cách dưới đây để tiếp tục sử dụng các chức năng cần xác thực
+                                trên hệ thống.
                             </p>
-                            <form method="POST" action="${pageContext.request.contextPath}/key-management"
-                                  onsubmit="return confirm('Bạn chắc chắn muốn tạo cặp khóa mới?');">
-                                <input type="hidden" name="action" value="generate">
-                                <button type="submit" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-key"></i> Tạo cặp khóa mới
-                                </button>
-                            </form>
+
+                            <div class="choice-row">
+                                    <%-- Lựa chọn A: Tạo cặp khóa mới (hệ thống tự sinh) --%>
+                                <div class="choice-col">
+                                    <div class="choice-box">
+                                        <div>
+                                            <h5><i class="fas fa-key text-warning"></i> Tạo Cặp Khóa Mới</h5>
+                                            <p>
+                                                Hệ thống tự sinh cặp khóa RSA mới cho bạn. Private key sẽ
+                                                được tải xuống máy ngay sau khi tạo — hãy lưu lại an toàn.
+                                            </p>
+                                        </div>
+                                        <form method="POST" action="${pageContext.request.contextPath}/key-management"
+                                              onsubmit="return confirm('Bạn chắc chắn muốn tạo cặp khóa mới?');">
+                                            <input type="hidden" name="action" value="generate">
+                                            <button type="submit" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-key"></i> Tạo cặp khóa mới
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                    <%-- Lựa chọn B: Nhập Public Key có sẵn --%>
+                                <div class="choice-col">
+                                    <div class="choice-box">
+                                        <div>
+                                            <h5><i class="fas fa-file-import text-primary"></i> Nhập Public Key Có Sẵn</h5>
+                                            <p>
+                                                Nếu bạn đã tự tạo cặp khóa RSA riêng (offline) và muốn tự
+                                                giữ private key, hãy dán Public Key (định dạng PEM) vào đây.
+                                            </p>
+                                        </div>
+                                        <form method="POST" action="${pageContext.request.contextPath}/key-management"
+                                              onsubmit="return confirm('Xác nhận đăng ký Public Key này với hệ thống?');">
+                                            <input type="hidden" name="action" value="submitPublicKey">
+                                            <div class="form-group">
+                                                <textarea class="form-control pubkey-input" name="publicKey" required
+                                                          placeholder="-----BEGIN PUBLIC KEY-----&#10;...&#10;-----END PUBLIC KEY-----"></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-file-import"></i> Lưu Public Key
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </c:if>
 
