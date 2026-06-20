@@ -9,54 +9,35 @@ import java.util.List;
 
 public class KeyLossReportDao {
 
+    /**
+     * Người dùng bấm "Báo Mất Khóa" → tự động xử lý luôn (không cần admin xác nhận):
+     * 1. Ghi báo cáo vào key_loss_report (status=1 luôn — đã xử lý)
+     * 2. Thu hồi public_key ngay (status=0, expire=now)
+     * 3. Đơn hàng của user tạo SAU thời điểm báo mất → hủy (bill.shipping_info=4)
+     * 4. Đồng bộ carts.infoShip=4 để UI hiển thị đúng
+     * → Đơn tạo TRƯỚC thời điểm báo mất → giữ nguyên (hợp lệ)
+     */
     public boolean submitReport(int idKey, int idUser, String reason) {
-        String sql = "INSERT INTO key_loss_report (id_key, id_user, reason, status) VALUES (?, ?, ?, 0)";
-        try (Connection conn = JDBCConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, idKey);
-            stmt.setInt(2, idUser);
-            stmt.setString(3, reason);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public List<KeyLossReportModel> getPendingReports() {
-        return queryReports("WHERE r.status = 0");
-    }
-
-    public List<KeyLossReportModel> getAllReports() {
-        return queryReports(null);
-    }
-
-    public boolean approveReport(int idReport, String adminNote) {
         Connection conn = null;
         try {
             conn = JDBCConnector.getConnection();
             conn.setAutoCommit(false);
 
-            int idKey;
-            int idUser;
-            Timestamp reportTime;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT id_key, id_user, report_time FROM key_loss_report WHERE id_report = ?")) {
-                stmt.setInt(1, idReport);
-                ResultSet rs = stmt.executeQuery();
-                if (!rs.next()) { conn.rollback(); return false; }
-                idKey      = rs.getInt("id_key");
-                idUser     = rs.getInt("id_user");
-                reportTime = rs.getTimestamp("report_time");
-            }
+            // Lấy thời điểm báo mất = NOW() — dùng nhất quán trong toàn transaction
+            Timestamp reportTime = new Timestamp(System.currentTimeMillis());
 
+            // Bước 1: ghi báo cáo, status=1 (tự động xác nhận luôn)
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE key_loss_report SET status=1, admin_note=?, processed_at=NOW() WHERE id_report=?")) {
-                stmt.setString(1, adminNote);
-                stmt.setInt(2, idReport);
+                    "INSERT INTO key_loss_report (id_key, id_user, reason, status, processed_at) " +
+                            "VALUES (?, ?, ?, 1, ?)")) {
+                stmt.setInt(1, idKey);
+                stmt.setInt(2, idUser);
+                stmt.setString(3, reason);
+                stmt.setTimestamp(4, reportTime);
                 stmt.executeUpdate();
             }
 
+            // Bước 2: thu hồi public_key (status=0, expire=reportTime)
             try (PreparedStatement stmt = conn.prepareStatement(
                     "UPDATE public_key SET status=0, expire=? WHERE id_key=?")) {
                 stmt.setTimestamp(1, reportTime);
@@ -64,7 +45,8 @@ public class KeyLossReportDao {
                 stmt.executeUpdate();
             }
 
-
+            // Bước 3: hủy đơn hàng của user tạo SAU thời điểm báo mất
+            // (đơn tạo TRƯỚC → giữ nguyên)
             try (PreparedStatement stmt = conn.prepareStatement(
                     "UPDATE bill SET shipping_info=4 " +
                             "WHERE id_user=? AND create_order_time>? AND shipping_info NOT IN (3,4)")) {
@@ -73,11 +55,12 @@ public class KeyLossReportDao {
                 stmt.executeUpdate();
             }
 
+            // Bước 4: đồng bộ carts.infoShip=4 để UI hiển thị "Đã hủy"
             try (PreparedStatement stmt = conn.prepareStatement(
                     "UPDATE carts c " +
                             "JOIN bill b ON b.idCart = c.id " +
                             "SET c.infoShip = 4 " +
-                            "WHERE b.id_user = ? AND b.create_order_time > ? AND c.infoShip NOT IN (3,4)")) {
+                            "WHERE b.id_user=? AND b.create_order_time>? AND c.infoShip NOT IN (3,4)")) {
                 stmt.setInt(1, idUser);
                 stmt.setTimestamp(2, reportTime);
                 stmt.executeUpdate();
@@ -93,25 +76,8 @@ public class KeyLossReportDao {
             try { if (conn != null) conn.close(); } catch (SQLException ignored) {}
         }
     }
-    /**
-     * Admin từ chối báo cáo
-     */
-    public boolean rejectReport(int idReport, String adminNote) {
-        String sql = "UPDATE key_loss_report SET status=2, admin_note=?, processed_at=NOW() WHERE id_report=?";
-        try (Connection conn = JDBCConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, adminNote);
-            stmt.setInt(2, idReport);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
-    /**
-     * Kiểm tra khóa đã có báo cáo đang pending chưa (tránh gửi trùng)
-     */
+    /** Kiểm tra khóa đã có báo cáo pending chưa (tránh gửi trùng) */
     public boolean hasPendingReport(int idKey) {
         String sql = "SELECT COUNT(*) FROM key_loss_report WHERE id_key=? AND status=0";
         try (Connection conn = JDBCConnector.getConnection();
@@ -125,32 +91,53 @@ public class KeyLossReportDao {
         return false;
     }
 
-    /**
-     * Đếm số báo cáo pending — dùng cho badge trên menu admin
-     */
-    public int countPending() {
-        String sql = "SELECT COUNT(*) FROM key_loss_report WHERE status=0";
-        try (Connection conn = JDBCConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) return rs.getInt(1);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    private List<KeyLossReportModel> queryReports(String whereClause) {
+    /** Lấy lịch sử báo mất khóa của 1 user — hiển thị trên trang tài khoản */
+    public List<KeyLossReportModel> getReportsByUser(int idUser) {
         List<KeyLossReportModel> list = new ArrayList<>();
         String sql =
                 "SELECT r.id_report, r.id_key, r.id_user, r.report_time, r.reason, " +
-                        "       r.status, r.admin_note, r.processed_at, " +
-                        "       CONCAT(c.first_name,' ',c.last_name) AS user_name, " +
-                        "       c.email, LEFT(pk.public_Key, 32) AS pk_short " +
+                        "       r.status, r.processed_at, LEFT(pk.public_Key, 32) AS pk_short " +
                         "FROM key_loss_report r " +
-                        "JOIN customer c   ON r.id_user = c.id_user " +
-                        "JOIN public_key pk ON r.id_key  = pk.id_key " +
-                        (whereClause != null ? whereClause + " " : "") +
+                        "JOIN public_key pk ON r.id_key = pk.id_key " +
+                        "WHERE r.id_user = ? " +
+                        "ORDER BY r.report_time DESC";
+        try (Connection conn = JDBCConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idUser);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    KeyLossReportModel m = new KeyLossReportModel();
+                    m.setIdReport(rs.getInt("id_report"));
+                    m.setIdKey(rs.getInt("id_key"));
+                    m.setIdUser(rs.getInt("id_user"));
+                    m.setReportTime(rs.getTimestamp("report_time"));
+                    m.setReason(rs.getString("reason"));
+                    m.setStatus(rs.getInt("status"));
+                    m.setProcessedAt(rs.getTimestamp("processed_at"));
+                    m.setPublicKeyShort(rs.getString("pk_short") + "...");
+                    list.add(m);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Lấy TOÀN BỘ lịch sử báo mất khóa của TẤT CẢ user — dùng cho trang Admin
+     * (chỉ xem lịch sử, không còn duyệt/từ chối vì hệ thống tự xử lý ngay
+     * lúc người dùng báo mất).
+     */
+    public List<KeyLossReportModel> getAllReports() {
+        List<KeyLossReportModel> list = new ArrayList<>();
+        String sql =
+                "SELECT r.id_report, r.id_key, r.id_user, r.report_time, r.reason, " +
+                        "       r.status, r.processed_at, LEFT(pk.public_Key, 32) AS pk_short, " +
+                        "       CONCAT(c.first_name, ' ', c.last_name) AS fullname, c.email AS email " +
+                        "FROM key_loss_report r " +
+                        "JOIN public_key pk ON r.id_key = pk.id_key " +
+                        "JOIN customer c ON r.id_user = c.id_user " +
                         "ORDER BY r.report_time DESC";
         try (Connection conn = JDBCConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -163,11 +150,10 @@ public class KeyLossReportDao {
                 m.setReportTime(rs.getTimestamp("report_time"));
                 m.setReason(rs.getString("reason"));
                 m.setStatus(rs.getInt("status"));
-                m.setAdminNote(rs.getString("admin_note"));
                 m.setProcessedAt(rs.getTimestamp("processed_at"));
-                m.setUserName(rs.getString("user_name"));
-                m.setEmail(rs.getString("email"));
                 m.setPublicKeyShort(rs.getString("pk_short") + "...");
+                m.setUserName(rs.getString("fullname"));
+                m.setEmail(rs.getString("email"));
                 list.add(m);
             }
         } catch (SQLException e) {
@@ -175,5 +161,4 @@ public class KeyLossReportDao {
         }
         return list;
     }
-
 }

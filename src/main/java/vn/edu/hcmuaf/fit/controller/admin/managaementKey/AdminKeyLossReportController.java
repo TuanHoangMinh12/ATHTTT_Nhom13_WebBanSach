@@ -9,6 +9,15 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Trang Admin xem LỊCH SỬ báo mất khóa.
+ *
+ * Từ khi áp dụng luồng tự động xử lý (KeyLossReportDao#submitReport):
+ * mỗi báo cáo được hệ thống xử lý ngay lúc người dùng bấm "Báo Mất Khóa"
+ * (vô hiệu hóa key + hủy đơn hàng liên quan), KHÔNG còn cần admin xác
+ * nhận hoặc từ chối nữa. Vì vậy controller này chỉ còn chức năng xem —
+ * không có doPost xử lý approve/reject.
+ */
 @WebServlet(name = "adminKeyLossReport", value = "/admin-key-loss-report")
 public class AdminKeyLossReportController extends HttpServlet {
 
@@ -18,81 +27,12 @@ public class AdminKeyLossReportController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String filter = request.getParameter("filter");
-        List<KeyLossReportModel> reports;
+        List<KeyLossReportModel> reports = dao.getAllReports();
 
-        if ("pending".equals(filter)) {
-            reports = dao.getPendingReports();
-        } else {
-            reports = dao.getAllReports();
-        }
-
-        // Đếm số lượng chờ xử lý để hiển thị badge trên menu
-        long pendingCount = reports.stream()
-                .filter(r -> r.getStatus() == KeyLossReportModel.STATUS_PENDING)
-                .count();
-        if (!"pending".equals(filter)) {
-            // Khi xem tất cả, vẫn cần số pending thực từ DB
-            pendingCount = dao.getPendingReports().size();
-        }
-
-        request.setAttribute("title",        "Thông Báo Mất Khóa");
-        request.setAttribute("reports",      reports);
-        request.setAttribute("pendingCount", pendingCount);
-        request.setAttribute("currentFilter", filter != null ? filter : "all");
-
-        // Truyền thông báo kết quả xử lý (nếu có)
-        String msg = request.getParameter("msg");
-        if ("approved".equals(msg)) {
-            request.setAttribute("alertType", "success");
-            request.setAttribute("alertMsg",  "Đã xác nhận mất khóa. Các đơn hàng sau thời điểm báo mất đã được cập nhật lỗi.");
-        } else if ("rejected".equals(msg)) {
-            request.setAttribute("alertType", "info");
-            request.setAttribute("alertMsg",  "Đã từ chối báo cáo mất khóa.");
-        } else if ("error".equals(msg)) {
-            request.setAttribute("alertType", "danger");
-            request.setAttribute("alertMsg",  "Có lỗi xảy ra. Vui lòng thử lại.");
-        }
+        request.setAttribute("title",   "Lịch Sử Báo Mất Khóa");
+        request.setAttribute("reports", reports);
 
         request.getRequestDispatcher("/views/admin/table-key-loss-report.jsp")
                 .forward(request, response);
     }
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        String action    = request.getParameter("action");
-        String idReportStr = request.getParameter("idReport");
-        String adminNote = request.getParameter("adminNote");
-        if (adminNote == null) adminNote = "";
-
-        if (idReportStr == null) {
-            response.sendRedirect(request.getContextPath() + "/admin-key-loss-report?msg=error");
-            return;
-        }
-
-        int idReport;
-        try {
-            idReport = Integer.parseInt(idReportStr);
-        } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/admin-key-loss-report?msg=error");
-            return;
-        }
-
-        boolean ok;
-        String  msgParam;
-
-        if ("approve".equals(action)) {
-            ok       = dao.approveReport(idReport, adminNote);
-            msgParam = ok ? "approved" : "error";
-        } else if ("reject".equals(action)) {
-            ok       = dao.rejectReport(idReport, adminNote);
-            msgParam = ok ? "rejected" : "error";
-        } else {
-            msgParam = "error";
-        }
-
-        response.sendRedirect(request.getContextPath() + "/admin-key-loss-report?msg=" + msgParam);
-    }
 }
-

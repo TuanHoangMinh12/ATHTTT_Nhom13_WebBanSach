@@ -4,22 +4,32 @@ import java.sql.Timestamp;
 
 /**
  * Model đại diện cho yêu cầu báo mất khóa private key của người dùng.
+ *
+ * LƯU Ý (cập nhật luồng tự động xử lý):
+ * Từ khi áp dụng luồng "tự động xử lý ngay khi user báo mất" (xem
+ * KeyLossReportDao#submitReport), mọi báo cáo được ghi với status = 1
+ * ngay lập tức — không còn trạng thái chờ admin xác nhận (PENDING) hay
+ * admin từ chối (REJECTED) trong thực tế nữa. Các hằng số STATUS_PENDING /
+ * STATUS_REJECTED được giữ lại để tương thích dữ liệu cũ (nếu còn record
+ * cũ trong DB từ trước khi đổi luồng) và để trang Admin lịch sử hiển thị
+ * đúng nhãn cho các record đó. Chỉ có DUY NHẤT một mốc thời gian
+ * (reportTime) — là lúc người dùng bấm nút báo mất — được dùng làm mốc
+ * để thu hồi key và hủy đơn hàng tạo sau thời điểm đó.
  */
 public class KeyLossReportModel {
 
-    public static final int STATUS_PENDING  = 0; // Chờ xử lý
-    public static final int STATUS_APPROVED = 1; // Admin xác nhận mất
-    public static final int STATUS_REJECTED = 2; // Admin từ chối
+    public static final int STATUS_PENDING  = 0; // (Luồng cũ) Chờ admin xử lý
+    public static final int STATUS_APPROVED = 1; // Đã xử lý — khóa đã bị vô hiệu hóa
+    public static final int STATUS_REJECTED = 2; // (Luồng cũ) Admin từ chối
 
     private int    idReport;
     private int    idKey;
     private int    idUser;
-    private Timestamp reportTime;   // Thời điểm user BẤM GỬI báo cáo (audit log, không dùng để tính hủy đơn)
-    private Timestamp lostTime;     // Thời điểm user CHỌN là lúc bị mất khóa (dùng làm mốc thu hồi key / hủy đơn)
+    private Timestamp reportTime;   // Mốc duy nhất: lúc user bấm "Báo Mất Khóa" — dùng để thu hồi key + hủy đơn hàng
     private String reason;          // Lý do mô tả của người dùng
     private int    status;          // 0 | 1 | 2
     private String adminNote;
-    private Timestamp processedAt;  // Thời điểm admin xử lý
+    private Timestamp processedAt;  // Thời điểm xử lý (= reportTime vì xử lý ngay)
 
     // ── Thông tin JOIN (hiển thị UI) ──────────────────────────
     private String userName;        // fullname từ customer
@@ -64,7 +74,7 @@ public class KeyLossReportModel {
     /** Trả về nhãn trạng thái tiếng Việt */
     public String getStatusLabel() {
         switch (status) {
-            case STATUS_APPROVED: return "Đã xác nhận";
+            case STATUS_APPROVED: return "Đã xử lý";
             case STATUS_REJECTED: return "Đã từ chối";
             default:              return "Chờ xử lý";
         }
