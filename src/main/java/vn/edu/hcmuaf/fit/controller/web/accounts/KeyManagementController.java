@@ -13,7 +13,6 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @WebServlet(name = "keyManagement", value = "/key-management")
 public class KeyManagementController extends HttpServlet {
@@ -21,12 +20,9 @@ public class KeyManagementController extends HttpServlet {
     private final PublicKeyDao publicKeyDao = new PublicKeyDao();
     private final CustomerDAO  customerDAO  = new CustomerDAO();
 
-    // Public key RSA định dạng PEM: chỉ chấp nhận ký tự base64 + header/footer chuẩn,
-    // độ dài tối thiểu hợp lý để tránh chuỗi rác/rỗng.
-    private static final Pattern PEM_PUBLIC_KEY_PATTERN = Pattern.compile(
-            "^-----BEGIN PUBLIC KEY-----\\s*[A-Za-z0-9+/=\\s]+-----END PUBLIC KEY-----\\s*$"
-    );
-    private static final int MIN_PUBLIC_KEY_LENGTH = 50;
+    // Độ dài tối thiểu hợp lý để chặn chuỗi rỗng/rác — không bắt buộc định
+    // dạng PEM (BEGIN/END), người dùng có thể dán thẳng nội dung key.
+    private static final int MIN_PUBLIC_KEY_LENGTH = 20;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -72,7 +68,11 @@ public class KeyManagementController extends HttpServlet {
         } else if ("invalidpublickey".equals(msg)) {
             request.setAttribute("alertType", "danger");
             request.setAttribute("alertMsg",
-                    "Public Key không hợp lệ. Vui lòng kiểm tra lại định dạng (PEM, BEGIN/END PUBLIC KEY) và thử lại.");
+                    "Public Key không hợp lệ. Vui lòng kiểm tra lại và thử lại.");
+        } else if ("duplicatepublickey".equals(msg)) {
+            request.setAttribute("alertType", "danger");
+            request.setAttribute("alertMsg",
+                    "Public Key này đã được sử dụng trong hệ thống. Vui lòng nhập một key khác.");
         } else if ("error".equals(msg)) {
             request.setAttribute("alertType", "danger");
             request.setAttribute("alertMsg", "Có lỗi xảy ra. Vui lòng thử lại sau.");
@@ -155,10 +155,18 @@ public class KeyManagementController extends HttpServlet {
             return;
         }
 
+        String trimmedKey = publicKey.trim();
+
+        // Chặn key đã được dùng (bởi bất kỳ user nào, ở bất kỳ trạng thái nào)
+        if (publicKeyDao.existsByPublicKey(trimmedKey)) {
+            redirect(response, request, "duplicatepublickey");
+            return;
+        }
+
         try {
             // Lưu public key vào DB (status = 1, active) — không sinh private key,
             // vì private key do người dùng tự giữ.
-            customerDAO.insert_publicKey(user.getIdUser(), publicKey.trim());
+            customerDAO.insert_publicKey(user.getIdUser(), trimmedKey);
             redirect(response, request, "publickeysaved");
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,12 +174,11 @@ public class KeyManagementController extends HttpServlet {
         }
     }
 
-    /** Kiểm tra định dạng Public Key cơ bản trước khi lưu vào DB. */
+    /** Kiểm tra Public Key không rỗng và đủ độ dài tối thiểu hợp lý. */
     private boolean isValidPublicKey(String publicKey) {
         if (publicKey == null) return false;
         String trimmed = publicKey.trim();
-        if (trimmed.length() < MIN_PUBLIC_KEY_LENGTH) return false;
-        return PEM_PUBLIC_KEY_PATTERN.matcher(trimmed).matches();
+        return trimmed.length() >= MIN_PUBLIC_KEY_LENGTH;
     }
 
     private boolean generateAndStoreKey(HttpServletRequest request, HttpServletResponse response,
