@@ -1,6 +1,9 @@
 package vn.edu.hcmuaf.fit.utils;
 
 
+import vn.edu.hcmuaf.fit.dao.impl.CartDao;
+import vn.edu.hcmuaf.fit.dao.impl.PublicKeyDao;
+
 import javax.crypto.Cipher;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -13,6 +16,11 @@ public class RSAUtil {
     KeyPair keyPair;
     PublicKey publicKey;
     PrivateKey privateKey;
+
+    private static CartDao cartDao = new CartDao();
+    private static SHA256Util sha256Util = new SHA256Util();
+    private static ObjectVerifyUtil objUtil = new ObjectVerifyUtil();
+    private static PublicKeyDao publicKeyDao = new PublicKeyDao();
 
     public void genKey() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -110,5 +118,64 @@ public class RSAUtil {
         cipher.init(Cipher.DECRYPT_MODE, publicKey);
         byte[] output = cipher.doFinal(Base64.getDecoder().decode(data));
         return new String(output, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Hàm tự động xác thực đơn hàng dùng chung cho toàn hệ thống backend admin
+     * @return "OK" (Hợp lệ), "FAIL" (Bị chỉnh sửa/Lỗi khóa), hoặc null (Chưa ký)
+     */
+    public static String autoVerifyOrder(int idCart, int idUser) {
+        try {
+            String signature = cartDao.getHash(idCart, idUser);
+            String publicKey = cartDao.getPuclickey(idUser, idCart);
+
+            if (signature == null || signature.trim().isEmpty() || "NULL".equalsIgnoreCase(signature)) {
+                return null;
+            }
+            if (publicKey == null) {
+                System.out.println("[VERIFY ERRROR]: Không tìm thấy Public Key cho User ID: " + idUser);
+                return "FAIL";
+            }
+
+            // Sinh chuỗi kiểm tra từ dữ liệu hiện tại trong DB của Admin
+            String orderString = objUtil.string(idUser, idCart);
+            String hash1 = sha256Util.check(orderString);
+
+            // LOG ĐỂ ĐỐI CHIẾU: Bật console lên so sánh xem 2 dòng này có khớp hoàn toàn với lúc User tạo đơn không
+            System.out.println("[ADMIN VERIFY] - Chuỗi gốc đơn hàng: " + orderString);
+            System.out.println("[ADMIN VERIFY] - Mã Hash tính toán lại: " + hash1);
+
+            // Tiến hành xác thực chữ ký
+            String cleanPublicKey = publicKey.trim().replace("\r\n", "").replace("\n", "");
+            byte[] publicBytes = Base64.getDecoder().decode(cleanPublicKey);
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PublicKey pubKey = keyFactory.generatePublic(keySpec);
+
+            String cleanSignature = signature.trim().replace("\r\n", "").replace("\n", "");
+            byte[] signatureBytes = Base64.getDecoder().decode(cleanSignature);
+
+            Signature sig = Signature.getInstance("SHA256withRSA");
+            sig.initVerify(pubKey);
+
+            // Truyền mã hash1 vào để Verify
+            sig.update(hash1.getBytes("UTF-8"));
+
+            boolean isCorrect = sig.verify(signatureBytes);
+
+            if (isCorrect) {
+                System.out.println("[ADMIN VERIFY] - Kết quả kiểm tra chữ ký: " + (isCorrect ? "HỢP LỆ (OK)" : "KHÔNG KHỚP (FAIL)"));
+                return "OK";
+            } else {
+                // TỰ ĐỘNG CẬP NHẬT TRẠNG THÁI HỦY ĐƠN HÀNG XUỐNG DATABASE
+                cartDao.updateCart(idCart, 4);
+                System.out.println("[BẢO MẬT] - Đơn hàng #" + idCart + " có chữ ký Invalid. Đã tự động chuyển trạng thái về Đã hủy (4).");
+                return "FAIL";
+            }
+
+        } catch (Exception e) {
+            System.err.println("Lỗi xác thực hệ thống: " + e.getMessage());
+            return "FAIL";
+        }
     }
 }

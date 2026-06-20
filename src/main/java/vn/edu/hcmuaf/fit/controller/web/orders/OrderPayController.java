@@ -51,10 +51,11 @@ public class OrderPayController extends HttpServlet {
 
         int packInt = Integer.parseInt(pack);
         int payInt = Integer.parseInt(pay);
-        CustomerModel cus = (CustomerModel) SessionUtil.getInstance().getValue(request, "USERMODEL");
 
+        CustomerModel cus = (CustomerModel) SessionUtil.getInstance().getValue(request, "USERMODEL");
         CartModel cart = (CartModel) request.getSession().getAttribute("cartOrder");
         cart.setIdUser(cus.getIdUser());
+
         // listIdRemove để xóa sản phẩm khỏi giỏ hàng
         List<Integer> listIdRemove = new ArrayList<>();
         Set<Integer> keySet = cart.getMap().keySet();
@@ -68,8 +69,8 @@ public class OrderPayController extends HttpServlet {
         }
 
         int idCart = cartDao.insert_Cart( cart.getIdUser(),cart.getTimeShip(),cart.getShip(), cart.getTotalPriceShipVoucher(),"1" );
+        cart.setId(idCart); // Cập nhật ID thực tế vừa sinh ra cho đối tượng cart
 
-        System.out.println("cart id" +idCart);
         // lấy thông tin từ session ra
         HttpSession httpSession = request.getSession();
         InformationDeliverModel informationDeliverModel = (InformationDeliverModel) httpSession.getAttribute("deliver");
@@ -78,6 +79,8 @@ public class OrderPayController extends HttpServlet {
             httpSession.setAttribute("deliver", informationDeliverModel);
         }
         informationDeliverModel.setIdCart(idCart);
+        informationDeliverModel.setDistrictTo(district); // FIX: gán district vào model
+        informationDeliverModel.setWarTo(ward);           // FIX: gán ward vào model
 
         // lưu informationDeliver vào DB
         informationDeliverDao.insertInfomationDeliver(informationDeliverModel);
@@ -90,35 +93,25 @@ public class OrderPayController extends HttpServlet {
         }
         cartDao.update_cart_to_bill(idCart);
 
-        ObjectVerifyUtil verifyUtil =
-                new ObjectVerifyUtil();
+        ObjectVerifyUtil verifyUtil = new ObjectVerifyUtil();
 
-        String verifyData =
-                verifyUtil.string(
-                        cus.getIdUser(),
-                        idCart
-                );
+        String verifyData = verifyUtil.string(cus.getIdUser(), idCart);
 
-        String hash =
-                new SHA256Util().check(
-                        verifyData
-                );
+        String hash = new SHA256Util().check(verifyData);
 
         System.out.println(hash);
         // xóa dữ liệu khỏi session
         billService.removeProductInCart(listIdRemove, request);
-        request.setAttribute(
-                "hash",
-                hash
-        );
+        request.setAttribute("hash", hash);
 
-        request.setAttribute(
-                "idCart",
-                idCart
-        );
+        request.setAttribute("idCart", idCart);
 
-        request.getRequestDispatcher(
-                "/views/web/sign-order.jsp"
-        ).forward(request,response);
+        request.getRequestDispatcher("/views/web/sign-order.jsp").forward(request, response);
+
+        System.out.println("Chuỗi gốc sinh ra phía User: " + verifyData);
+        System.out.println("Mã Hash mang đi ký: " + hash);
+
+        request.setAttribute("hash", hash);
+        request.setAttribute("idCart", idCart);
     }
 }
