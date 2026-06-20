@@ -204,7 +204,7 @@
                                             <h5><i class="fas fa-file-import text-primary"></i> Nhập Public Key Có Sẵn</h5>
                                             <p>
                                                 Nếu bạn đã tự tạo cặp khóa RSA riêng (offline) và muốn tự
-                                                giữ private key, hãy dán Public Key (định dạng PEM) vào đây.
+                                                giữ private key, hãy dán Public Key vào đây.
                                             </p>
                                         </div>
                                         <form method="POST" action="${pageContext.request.contextPath}/key-management"
@@ -212,7 +212,7 @@
                                             <input type="hidden" name="action" value="submitPublicKey">
                                             <div class="form-group">
                                                 <textarea class="form-control pubkey-input" name="publicKey" required
-                                                          placeholder="-----BEGIN PUBLIC KEY-----&#10;...&#10;-----END PUBLIC KEY-----"></textarea>
+                                                          placeholder="Dán Public Key của bạn vào đây..."></textarea>
                                             </div>
                                             <button type="submit" class="btn btn-primary btn-sm">
                                                 <i class="fas fa-file-import"></i> Lưu Public Key
