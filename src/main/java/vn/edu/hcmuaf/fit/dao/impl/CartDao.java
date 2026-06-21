@@ -571,37 +571,28 @@ public class CartDao {
     }
 
 
-    public String getPuclickey( int idUser,int idCart) {
-        String query = "CALL getSelectPublicKey(?, ?)";
-        Connection connection = JDBCConnector.getConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+    public String getPuclickey(int idUser, int idCart) {
+        String result = null;
+        // Thay vì JOIN phức tạp dễ bị lệch idUser=0 trong bảng carts, ta chỉ truy vấn thẳng bảng public_key
+        // để lấy key có hiệu lực tại thời điểm đơn hàng đó tạo ra.
+        String sql = "SELECT public_Key FROM public_key " +
+                "WHERE id_user = ? AND status = 1 " +
+                "ORDER BY create_date DESC LIMIT 1";
 
-        if (connection != null) {
-            try {
-                statement = connection.prepareStatement(query);
-                statement.setInt(1,idUser );
-                statement.setInt(2, idCart);
-                resultSet = statement.executeQuery();
+        try (Connection connection = JDBCConnector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
+            statement.setInt(1, idUser);
+            try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    return resultSet.getString(1);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (resultSet != null) resultSet.close();
-                    if (statement != null) statement.close();
-                    if (connection != null) connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                    result = resultSet.getString(1);
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return null;
-    }
-    public ArrayList<BookModel> bookHetHang() {
+        return result;
+    }    public ArrayList<BookModel> bookHetHang() {
         String sql = "SELECT b.id_book, b.NAME, b.quantity, b.price,  ct.name\n" +
                 "FROM book b JOIN catalog ct ON b.id_catalog = ct.id_catalog\n" +
                 "WHERE quantity =0";

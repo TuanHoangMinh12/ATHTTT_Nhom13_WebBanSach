@@ -102,6 +102,25 @@ public class PublicKeyDao implements IPublicKeyDao {
     }
 
     /**
+     * Kiểm tra public key đã tồn tại trong DB chưa (bất kỳ user nào, bất kỳ
+     * trạng thái nào — kể cả key đã bị thu hồi). Dùng khi người dùng tự
+     * nhập Public Key có sẵn, để chặn trùng lặp trước khi lưu.
+     */
+    public boolean existsByPublicKey(String publicKey) {
+        String sql = "SELECT COUNT(*) FROM public_key WHERE public_Key = ?";
+        try (Connection conn = JDBCConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, publicKey);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * Lấy số lượng báo cáo mất khóa đang PENDING.
      * Dùng để hiển thị badge thông báo trên header/menu admin.
      */

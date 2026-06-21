@@ -21,12 +21,12 @@ USE `web_ban_sach`;
 
 -- Dumping structure for table web_ban_sach.author
 CREATE TABLE IF NOT EXISTS `author` (
-    `id_author` int(11) NOT NULL AUTO_INCREMENT,
-    `name` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
-    `img` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `information` text COLLATE utf8_unicode_ci DEFAULT NULL,
-    PRIMARY KEY (`id_author`) USING BTREE
-    ) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                        `id_author` int(11) NOT NULL AUTO_INCREMENT,
+                                        `name` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
+                                        `img` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                        `information` text COLLATE utf8_unicode_ci DEFAULT NULL,
+                                        PRIMARY KEY (`id_author`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.author: ~54 rows (approximately)
 INSERT INTO `author` (`id_author`, `name`, `img`, `information`) VALUES
@@ -87,30 +87,30 @@ INSERT INTO `author` (`id_author`, `name`, `img`, `information`) VALUES
 
 -- Dumping structure for table web_ban_sach.bill
 CREATE TABLE IF NOT EXISTS `bill` (
-    `id_order` int(11) NOT NULL AUTO_INCREMENT,
-    `id_user` int(11) NOT NULL,
-    `id_book` int(11) NOT NULL,
-    `idCart` int(11) DEFAULT NULL,
-    `shipping_info` int(11) NOT NULL DEFAULT 1 COMMENT '1: chờ xử lý; 2: đang vận chuyển; 3: đã hoàn thành; 4: đã hủy',
-    `id_discount` int(11) DEFAULT NULL,
-    `address` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-    `pack` int(11) NOT NULL DEFAULT 0 COMMENT '0:Bọc blastic, 1:Để nguyên seal',
-    `payment_method` int(11) NOT NULL DEFAULT 0 COMMENT '0: tiền mặt; 1: online',
-    `totalBill` double DEFAULT NULL,
-    `quantity` int(11) DEFAULT NULL,
-    `phone` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `info` text COLLATE utf8_unicode_ci DEFAULT NULL,
-    `create_order_time` timestamp NULL COMMENT 'Thời gian tạo bill',
-    `ship_time` timestamp NULL DEFAULT NULL COMMENT 'Thời gian ship',
-    `receive_time` timestamp NULL DEFAULT NULL COMMENT 'Thời gian nhận',
-    PRIMARY KEY (`id_order`) USING BTREE,
-    KEY `bil_ibfk_1` (`id_user`),
-    KEY `bil_ibfk_2` (`id_book`),
-    KEY `bil_ibfk_3` (`idCart`),
-    CONSTRAINT `bil_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`),
-    CONSTRAINT `bil_ibfk_2` FOREIGN KEY (`id_book`) REFERENCES `book` (`id_book`),
-    CONSTRAINT `bil_ibfk_3` FOREIGN KEY (`idCart`) REFERENCES `carts` (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                      `id_order` int(11) NOT NULL AUTO_INCREMENT,
+                                      `id_user` int(11) NOT NULL,
+                                      `id_book` int(11) NOT NULL,
+                                      `idCart` int(11) DEFAULT NULL,
+                                      `shipping_info` int(11) NOT NULL DEFAULT 1 COMMENT '1: chờ xử lý; 2: đang vận chuyển; 3: đã hoàn thành; 4: đã hủy',
+                                      `id_discount` int(11) DEFAULT NULL,
+                                      `address` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+                                      `pack` int(11) NOT NULL DEFAULT 0 COMMENT '0:Bọc blastic, 1:Để nguyên seal',
+                                      `payment_method` int(11) NOT NULL DEFAULT 0 COMMENT '0: tiền mặt; 1: online',
+                                      `totalBill` double DEFAULT NULL,
+                                      `quantity` int(11) DEFAULT NULL,
+                                      `phone` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                      `info` text COLLATE utf8_unicode_ci DEFAULT NULL,
+                                      `create_order_time` timestamp NULL COMMENT 'Thời gian tạo bill',
+                                      `ship_time` timestamp NULL DEFAULT NULL COMMENT 'Thời gian ship',
+                                      `receive_time` timestamp NULL DEFAULT NULL COMMENT 'Thời gian nhận',
+                                      PRIMARY KEY (`id_order`) USING BTREE,
+                                      KEY `bil_ibfk_1` (`id_user`),
+                                      KEY `bil_ibfk_2` (`id_book`),
+                                      KEY `bil_ibfk_3` (`idCart`),
+                                      CONSTRAINT `bil_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`),
+                                      CONSTRAINT `bil_ibfk_2` FOREIGN KEY (`id_book`) REFERENCES `book` (`id_book`),
+                                      CONSTRAINT `bil_ibfk_3` FOREIGN KEY (`idCart`) REFERENCES `carts` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.bill: ~2 rows (approximately)
 INSERT INTO `bill` (`id_order`, `id_user`, `id_book`, `idCart`, `shipping_info`, `id_discount`, `address`, `pack`, `payment_method`, `totalBill`, `quantity`, `phone`, `info`, `create_order_time`, `ship_time`, `receive_time`) VALUES
@@ -119,30 +119,30 @@ INSERT INTO `bill` (`id_order`, `id_user`, `id_book`, `idCart`, `shipping_info`,
 
 -- Dumping structure for table web_ban_sach.book
 CREATE TABLE IF NOT EXISTS `book` (
-    `id_book` int(11) NOT NULL AUTO_INCREMENT,
-    `name` varchar(200) CHARACTER SET utf8 DEFAULT NULL,
-    `id_author` int(11) NOT NULL,
-    `id_catalog` int(11) NOT NULL,
-    `quantity` int(11) DEFAULT NULL,
-    `prime_cost` double DEFAULT NULL,
-    `price` double DEFAULT NULL,
-    `discount_price` double DEFAULT NULL,
-    `isNew` tinyint(1) DEFAULT NULL,
-    `isActive` tinyint(1) DEFAULT NULL,
-    `id_pc` int(11) NOT NULL,
-    `id_p` int(11) NOT NULL,
-    `published_time` int(11) DEFAULT NULL,
-    `created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-    PRIMARY KEY (`id_book`) USING BTREE,
-    KEY `id_author` (`id_author`) USING BTREE,
-    KEY `id_catalog` (`id_catalog`) USING BTREE,
-    KEY `id_pc` (`id_pc`) USING BTREE,
-    KEY `id_p` (`id_p`) USING BTREE,
-    CONSTRAINT `book_ibfk_1` FOREIGN KEY (`id_author`) REFERENCES `author` (`id_author`),
-    CONSTRAINT `book_ibfk_2` FOREIGN KEY (`id_catalog`) REFERENCES `catalog` (`id_catalog`),
-    CONSTRAINT `book_ibfk_3` FOREIGN KEY (`id_pc`) REFERENCES `publisher_company` (`id_pc`),
-    CONSTRAINT `book_ibfk_4` FOREIGN KEY (`id_p`) REFERENCES `publisher` (`id_p`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                      `id_book` int(11) NOT NULL AUTO_INCREMENT,
+                                      `name` varchar(200) CHARACTER SET utf8 DEFAULT NULL,
+                                      `id_author` int(11) NOT NULL,
+                                      `id_catalog` int(11) NOT NULL,
+                                      `quantity` int(11) DEFAULT NULL,
+                                      `prime_cost` double DEFAULT NULL,
+                                      `price` double DEFAULT NULL,
+                                      `discount_price` double DEFAULT NULL,
+                                      `isNew` tinyint(1) DEFAULT NULL,
+                                      `isActive` tinyint(1) DEFAULT NULL,
+                                      `id_pc` int(11) NOT NULL,
+                                      `id_p` int(11) NOT NULL,
+                                      `published_time` int(11) DEFAULT NULL,
+                                      `created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                                      PRIMARY KEY (`id_book`) USING BTREE,
+                                      KEY `id_author` (`id_author`) USING BTREE,
+                                      KEY `id_catalog` (`id_catalog`) USING BTREE,
+                                      KEY `id_pc` (`id_pc`) USING BTREE,
+                                      KEY `id_p` (`id_p`) USING BTREE,
+                                      CONSTRAINT `book_ibfk_1` FOREIGN KEY (`id_author`) REFERENCES `author` (`id_author`),
+                                      CONSTRAINT `book_ibfk_2` FOREIGN KEY (`id_catalog`) REFERENCES `catalog` (`id_catalog`),
+                                      CONSTRAINT `book_ibfk_3` FOREIGN KEY (`id_pc`) REFERENCES `publisher_company` (`id_pc`),
+                                      CONSTRAINT `book_ibfk_4` FOREIGN KEY (`id_p`) REFERENCES `publisher` (`id_p`)
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.book: ~55 rows (approximately)
 INSERT INTO `book` (`id_book`, `name`, `id_author`, `id_catalog`, `quantity`, `prime_cost`, `price`, `discount_price`, `isNew`, `isActive`, `id_pc`, `id_p`, `published_time`, `created`) VALUES
@@ -203,18 +203,18 @@ INSERT INTO `book` (`id_book`, `name`, `id_author`, `id_catalog`, `quantity`, `p
 
 -- Dumping structure for table web_ban_sach.book_details
 CREATE TABLE IF NOT EXISTS `book_details` (
-    `id_book` int(11) NOT NULL,
-    `isbn` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-    `year` int(11) DEFAULT NULL,
-    `weight` double DEFAULT NULL,
-    `size` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `page` int(11) DEFAULT NULL,
-    `language` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
-    `extract` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
-    KEY `book_details_ibfk_1` (`id_book`) USING BTREE,
-    CONSTRAINT `book_details_ibfk_1` FOREIGN KEY (`id_book`) REFERENCES `book` (`id_book`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                              `id_book` int(11) NOT NULL,
+                                              `isbn` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+                                              `year` int(11) DEFAULT NULL,
+                                              `weight` double DEFAULT NULL,
+                                              `size` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                              `page` int(11) DEFAULT NULL,
+                                              `language` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                              `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
+                                              `extract` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+                                              KEY `book_details_ibfk_1` (`id_book`) USING BTREE,
+                                              CONSTRAINT `book_details_ibfk_1` FOREIGN KEY (`id_book`) REFERENCES `book` (`id_book`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.book_details: ~55 rows (approximately)
 INSERT INTO `book_details` (`id_book`, `isbn`, `year`, `weight`, `size`, `page`, `language`, `description`, `extract`) VALUES
@@ -235,58 +235,58 @@ INSERT INTO `book_details` (`id_book`, `isbn`, `year`, `weight`, `size`, `page`,
                                                                                                                            (15, 'ISBN 978-604-56-7920-3', 2020, 300, '20.5 x 13 x 0.5', 284, 'Tiếng Việt', '100 sai lầm có thể dễ dàng tránh được trong nuôi dạy trẻ\r\n\r\nTất cả các ông bố, bà mẹ đều sợ mắc phải những lỗi lầm dẫn đến việc phủ nhận mọi cố gắng nuôi dưỡng và giáo dục trẻ. Tuy nhiên, chúng ta không nên sợ lỗi lầm mà nên học cách để có thể tránh được chúng. Cuốn sách này là một cuốn cẩm nang chi tiết, trong đó chỉ ra những sai lầm của các bậc cha mẹ và cách thức khắc phục những sai lầm đó!\r\n\r\nCác sai lầm của cha mẹ ảnh hưởng thế nào đến giáo dục trẻ của chúng ta\r\n\r\nCó thể làm gì để không lặp lại các sai lầm của người khác và không mắc sai lầm\r\n\r\nNhững gì cần chú ý đầu tiên trong phát triển trẻ\r\n\r\nTại sao không nên lạm dụng phát triển trí tuệ ở trẻ quá sớm\r\n\r\nQuá tự kiêu, tự đại ở trẻ là gì và vì sao sự tự kiêu, tự đại có vị trí quan trọng trong phát triển nhân cách\r\n\r\n10 ảo tưởng về hạnh phúc mà chúng ta đã mang theo từ tuổi thơ\r\n\r\nLàm thế nào để truyền đạt cho trẻ hiểu biết đúng đắn về hạnh phúc và thành công\r\n\r\nĐiều gì bổ ích có thể học hỏi từ hệ thống giáo dục của các nước khác\r\n\r\nLàm thế nào để đáp ứng nhu cầu yêu thương mà vẫn không nuông chiều trẻ\r\n\r\n10 mong muốn quan trọng nhất của trẻ\r\n\r\nCách phản ứng đúng đắn đối với mong muốn của trẻ: thực hiện hay bỏ qua\r\n\r\n10 nỗi sợ của trẻ mà cha mẹ bắt buộc phải xử lý\r\n\r\n10 điểm trong giáo dục trẻ có thể hủy hoại tất cả\r\n\r\nTập hợp những sai lầm cụ thể trong giáo dục trẻ với những ví dụ và kết luận cụ thể.\r\n\r\nVề tác giả: Sách mua bản quyền của Exem Licence Limited, Nga do tác giả Olga Makhovskaya – nhà tâm lý học nổi tiếng, phó tiến sĩ khoa học tâm lý, cộng tác viên của Viện Tâm lý thuộc Viện Hành lâm khoa học Liên bang Nga, cộng tác viên của trường Đại học Điện ảnh Liên bang Nga. Olga Makhovskaya còn là người nhận được rất nhiều Học bổng các chương trình khoa học quốc tế. Bà còn là Giám đốc nội dung Dự án truyền hình giáo dục dành cho trẻ em “Sesame Street” (Phố Vừng) tại Nga, đồng thời là tác giả và người dẫn chương trình một số chương trình dành cho các bậc cha mẹ.\r\n\r\nOlga Makhovskaya còn là tác giả của các tác phẩm Trẻ em Mỹ chơi với niềm vui, trẻ em Pháp chơi theo nguyên tắc, còn trẻ em Nga chơi đến khi chiến thắng; Bình tĩnh nói chuyện với trẻ như thế nào về cuộc sống để trẻ cho bạn sống bình yên.\r\n\r\nMã hàng	9786045679203\r\nTên Nhà Cung Cấp	Phụ Nữ\r\nTác giả	Olga Makhovskaya\r\nNgười Dịch	Nhật Linh\r\nNXB	NXB Phụ Nữ Việt Nam\r\nNăm XB	2020\r\nNgôn Ngữ	Tiếng Việt\r\nTrọng lượng (gr)	300\r\nKích Thước Bao Bì	22.5 x 17 cm\r\nSố trang	284\r\nHình thức	Bìa Mềm\r\nSản phẩm bán chạy nhất	Top 100 sản phẩm Phương Pháp Giáo Dục Trẻ Các Nước bán chạy của tháng\r\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\r\n100 sai lầm có thể dễ dàng tránh được trong nuôi dạy trẻ\r\n\r\nTất cả các ông bố, bà mẹ đều sợ mắc phải những lỗi lầm dẫn đến việc phủ nhận mọi cố gắng nuôi dưỡng và giáo dục trẻ. Tuy nhiên, chúng ta không nên sợ lỗi lầm mà nên học cách để có thể tránh được chúng. Cuốn sách này là một cuốn cẩm nang chi tiết, trong đó chỉ ra những sai lầm của các bậc cha mẹ và cách thức khắc phục những sai lầm đó!', 'Các sai lầm của cha mẹ ảnh hưởng thế nào đến giáo dục trẻ của chúng ta\r\n\r\nCó thể làm gì để không lặp lại các sai lầm của người khác và không mắc sai lầm\r\n\r\nNhững gì cần chú ý đầu tiên trong phát triển trẻ\r\n\r\nTại sao không nên lạm dụng phát triển trí tuệ ở trẻ quá sớm\r\n\r\nQuá tự kiêu, tự đại ở trẻ là gì và vì sao sự tự kiêu, tự đại có vị trí quan trọng trong phát triển nhân cách\r\n\r\n10 ảo tưởng về hạnh phúc mà chúng ta đã mang theo từ tuổi thơ\r\n\r\nLàm thế nào để truyền đạt cho trẻ hiểu biết đúng đắn về hạnh phúc và thành công\r\n\r\nĐiều gì bổ ích có thể học hỏi từ hệ thống giáo dục của các nước khác\r\n\r\nLàm thế nào để đáp ứng nhu cầu yêu thương mà vẫn không nuông chiều trẻ\r\n\r\n10 mong muốn quan trọng nhất của trẻ\r\n\r\nCách phản ứng đúng đắn đối với mong muốn của trẻ: thực hiện hay bỏ qua\r\n\r\n10 nỗi sợ của trẻ mà cha mẹ bắt buộc phải xử lý\r\n\r\n10 điểm trong giáo dục trẻ có thể hủy hoại tất cả\r\n\r\nTập hợp những sai lầm cụ thể trong giáo dục trẻ với những ví dụ và kết luận cụ thể.'),
                                                                                                                            (16, 'ISBN 978-604-56-8983-7', 2020, 700, '20.5 x 13 x 0.5', 500, 'Tiếng Việt', 'Trong tiểu thuyết phân mảnh  Bieguni, những người không ngừng chuyển động – một thách thức mới cho người đọc vốn quen thể loại tiểu thuyết truyền thống – Tokarczuk tìm thấy cảm hứng từ những tấm bản đồ và góc nhìn từ trên cao, khiến vũ trụ thu nhỏ của bà trở thành tấm gương phản chiếu vũ trụ rộng lớn. Chúng ta có gì chung với các tín đồ cổ hủ của Chính thống giáo “Bieguni”, những kẻ chế ngự cái ác bằng chuyển động? Tên gọi bieguni, như tác giả giải thích, xuất phát từ các từ bieg (chạy) và ucieczka (chạy trốn). Trong chúng ta có bao nhiêu phần giống họ? Từ các cung điện xưa của vua một nước Hồi giáo nhỏ bé, qua các phòng trưng bày đồ cổ thế kỷ XVII, đến các nhà ga hiện đại ở sân bay, Olga Tokarczuk đưa độc giả vào cuộc hành trình hiếm thấy qua các địa điểm và thời gian khác nhau. Tác giả mời chúng ta cùng chế ngự thực tế mơ hồ, chắp vá, vứt bỏ những lối mòn quen thuộc. Bà thường được nhắc đến với giọng điệu huyền bí trong các tác phẩm của mình.\r\n\r\nChính trong tác phẩm này bà thổ lộ: “Trong những trang viết của tôi cuộc sống biến đổi thành những câu chuyện không đầy đủ, những lời nói mơ mộng, những chủ đề không rõ ràng, xuất hiện từ xa trong những viễn cảnh không bình thường và luôn di động hoặc trong những lát cắt ngang – và khó đưa ra được những kết luận nào đó về toàn bộ”.\r\n\r\nTác phẩm này không có biên giới – chuyện xảy ra trên toàn thế giới. Bà nói: “Văn học là phương cách an toàn nhất để vượt qua mọi ranh giới”.\r\n\r\nOlga Tokarczuk đã mô tả thế giới quanh ta bằng phương pháp hết sức đặc biệt, thông minh và nhạy cảm. Bà đã dành ra ba năm để hoàn thành tác phẩm này. Bà kể rằng phần lớn các ghi chép được bà thực hiện trong các chuyến đi. “Song đây không phải là cuốn sách về du lịch. Trong đó không miêu tả di tích và địa điểm. Đó không phải là nhật ký du lịch và cũng không phải là phóng sự. Tôi chỉ muốn nhìn kỹ cái được gọi là du lịch, là chuyển dịch, là thay đổi chỗ. Điều đó có ý nghĩa gì? Nó mang lại cho chúng ta cái gì?” Bà viết trong phần giới thiệu cuốn sách xuất bản lần thứ nhất. Như bà nói “Viết tiểu thuyết đối với tôi là kể chuyện cổ tích cho chính bản thân mình ở tuổi trưởng thành. Giống như trẻ con vẫn làm trước khi chúng đi ngủ. Ngôn ngữ được dùng nằm giữa mơ và thực, vừa miêu tả vừa bịa đặt.”\r\n\r\nĐÁNH GIÁ VỀ TÁC PHẨM\r\n\r\n“Chúng ta có nhà văn tầm cỡ thế giới, người miêu tả thế giới bằng phong cách đầy chất thơ và khác thường”.  - Giáo sư Per Wastberg, Chủ tịch Ủy ban Nobel về văn học\r\n\r\n“vì trí tưởng tượng dựa trên các quan sát tinh tế, kết hợp với sự say mê của bộ óc bách khoa, bà chỉ ra cho chúng ta thấy việc vượt qua các ranh giới như là một dạng của cuộc sống. Bà chưa bao giờ xem hiện thực là thứ gì đó ổn định và tồn tại vĩnh hằng.”   - Ủy ban Nobel vinh danh Olga Tokarczuk\r\n\r\n“Chắc chắn cuốn sách nên đọc trước tiên của Olga Tokarczuk là Bieguni, những người không ngừng chuyển động.” - Nhà phê bình văn học Janowska viết trong tạp chí Onet.kultura\r\n\r\n“Bieguni, những người không ngừng chuyển động tràn đầy năng lượng, là cuốn sách tỏa sáng chói lọi, rất dí dỏm hài hước và hết sức cuốn hút”. - Lisa Appignanesi, Chủ tịch Hội đồng The Man Booker International Prize, đồng thời là Chủ tịch Hội Văn học Hoàng gia Anh\r\n\r\n“Việc nữ nhà văn Ba Lan nhận được giải thưởng cao quý đó không làm tôi bất ngờ. Văn của Tokarczuk có tính chất phổ cập rộng rãi một cách khác thường – nó không gắn với bất kỳ địa điểm nào, đất nước nào hay dân tộc nào, nó nói đến con người ở mọi nơi trên thế giới. Tôi vô cùng vui mừng. Hơn nữa, rõ ràng là văn của bà cũng là biểu tượng của tự do, giá trị khiến người ta liên tưởng đến thành phố Gdansk, nơi hiện nay tôi sinh sống”. - Janusz Leon Wiśniewski, tác giả cuốn bestseller Cô đơn trên mạng', NULL),
                                                                                                                            (17, 'ISBN 978-604-56-9794-8', 2021, 300, '20.5 x 13 x 0.5', 296, 'Tiếng Việt', 'Bộ ba bất hảo xoay quanh ba cô gái học chung trường trung học lần lượt tên là Tabitha, Elodie và Moe: một người là “beauty queen”, một người là “wallflower” và người còn lại thì lúc nào cũng mang dáng vẻ “đừng lại gần ta”. Ba người với ba tính cách khác nhau, ba hoàn cảnh sống khác nhau tưởng chừng chẳng có chút mối liên hệ gì, và có thể chẳng dính líu tới nhau cho tới hết đời, ấy thế mà “nhờ” có chung thói quen "mua sắm không trả tiền" (hay còn có tên là… ăn cắp vặt), Tabitha, Elodie và Moe dần trở nên thân thiết và trở thành những người bạn thân không thể thiếu của nhau.\r\n\r\nĐộc giả sẽ không thể không hồi hộp muốn lật ngay sang trang kế tiếp để xem làm thế nào ba cô gái lại có thể trót lọt các “phi vụ” của mình… để rồi bị bắt, và màn so găng xem ai trong ba cô là người hốt được thứ đồ “ngon” nhất. Với những cú plot twist mà tác giả cài cắm, ta sẽ thấy được rằng đằng sau cái “thói quen” chẳng lấy gì làm tự hào (mà bản thân các cô gái của chúng ta cũng thấy vậy) không phải là ham muốn vật chất, không phải là hành động nổi loạn tuổi dậy thì, mà là nỗi cô đơn trống vắng thường trực, khát khao được yêu thương và chia sẻ. Những thứ mà dù cho có hàng núi vàng núi bạc, chúng ta cũng không thể mua được.\r\n\r\nBộ ba bất hảo là một món quà dành cho độc giả lứa tuổi học đường với nhiều biến chuyển trong tâm sinh lý được nhìn thấy mình qua ba nhân vật chính Tabitha, Elodie và Moe. Hơn thế nữa, cuốn sách cũng là món quà dành cho bạn đọc phụ huynh và thanh niên để có thể hiểu hơn các bạn tuổi teen năng động và nhiều hoài bão.\r\n\r\nNhà xuất bản Phụ nữ Việt Nam xin trân trọng giới thiệu quý độc giả cuốn sách Bộ ba bất hảo – Quẩy lên nào! – Tình bạn là vô giá.\r\n\r\nTác giả\r\n\r\nKirsten Smith là nhà biên kịch Hollywood và tác giả của dòng sách dành cho tuổi mới lớn. Cô đồng biên kịch nhiều phim nổi tiếng như 10 Things I Hate About You (1999), Legally Blonde (2001), She\'s the Man (2006) và The Ugly Truth (2009). Hai tác phẩm Kirsten Smith viết cho thanh thiếu niên là The Geography of Girlhood (2009) và Bộ ba bất hảo (2013).\r\n\r\nNhững lời khen dành cho cuốn sách\r\n\r\n“Sâu sắc, tinh tế và hài hước. Bộ ba bất hảo là một tác phẩm tuyệt vời!” –Ellen Page, ngôi sao của The Umbrella Academy và Whip It–\r\n\r\n“Tôi muốn dựng một điện thờ cho cuốn sách này. Nó không chỉ khám phá và đập tan những lối nói ráo rỗng về thời trung học, mà còn giúp ta hiểu ngôn ngữ của tuổi teen. Cuốn sách với ba nhân vật khác nhau làm nên một câu chuyện độc đáo khiến ta phấn khích và đồng cảm.” –Tavi Gevinson, tổng biên tập của tạp chí dành cho thanh thiếu niên Rookie–\r\n\r\n"Với ba góc nhìn khác nhau về thời trung học, chuyện tình lãng mạn và drama gia đình, Bộ ba bất hảo là một cuốn sách dễ đọc và có tính giải trí cao.” –School Library Journal–\r\n\r\nBộ ba bất hảo đã được Netflix chuyển thể thành bộ phim nhiều tập vào năm 2019.\r\n\r\nMã hàng	9786045697948\r\nTên Nhà Cung Cấp	Phụ Nữ\r\nTác giả	Kirsten Smith\r\nNgười Dịch	Trương Thị Thanh Hoa\r\nNXB	NXB Phụ Nữ Việt Nam\r\nNăm XB	2021\r\nTrọng lượng (gr)	300\r\nKích Thước Bao Bì	21 x 13 cm\r\nSố trang	296\r\nHình thức	Bìa Mềm\r\nSản phẩm bán chạy nhất	Top 100 sản phẩm Tuổi Teen bán chạy của tháng\r\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\r\nTác phẩm\r\n\r\nBộ ba bất hảo xoay quanh ba cô gái học chung trường trung học lần lượt tên là Tabitha, Elodie và Moe: một người là “beauty queen”, một người là “wallflower” và người còn lại thì lúc nào cũng mang dáng vẻ “đừng lại gần ta”. Ba người với ba tính cách khác nhau, ba hoàn cảnh sống khác nhau tưởng chừng chẳng có chút mối liên hệ gì, và có thể chẳng dính líu tới nhau cho tới hết đời, ấy thế mà “nhờ” có chung thói quen "mua sắm không trả tiền" (hay còn có tên là… ăn cắp vặt), Tabitha, Elodie và Moe dần trở nên thân thiết và trở thành những người bạn thân không thể thiếu của nhau.\r\n\r\nĐộc giả sẽ không thể không hồi hộp muốn lật ngay sang trang kế tiếp để xem làm thế nào ba cô gái lại có thể trót lọt các “phi vụ” của mình… để rồi bị bắt, và màn so găng xem ai trong ba cô là người hốt được thứ đồ “ngon” nhất. Với những cú plot twist mà tác giả cài cắm, ta sẽ thấy được rằng đằng sau cái “thói quen” chẳng lấy gì làm tự hào (mà bản thân các cô gái của chúng ta cũng thấy vậy) không phải là ham muốn vật chất, không phải là hành động nổi loạn tuổi dậy thì, mà là nỗi cô đơn trống vắng thường trực, khát khao được yêu thương và chia sẻ. Những thứ mà dù cho có hàng núi vàng núi bạc, chúng ta cũng không thể mua được.\r\n\r\nBộ ba bất hảo là một món quà dành cho độc giả lứa tuổi học đường với nhiều biến chuyển trong tâm sinh lý được nhìn thấy mình qua ba nhân vật chính Tabitha, Elodie và Moe. Hơn thế nữa, cuốn sách cũng là món quà dành cho bạn đọc phụ huynh và thanh niên để có thể hiểu hơn các bạn tuổi teen năng động và nhiều hoài bão.\r\n\r\nNhà xuất bản Phụ nữ Việt Nam xin trân trọng giới thiệu quý độc giả cuốn sách Bộ ba bất hảo – Quẩy lên nào! – Tình bạn là vô giá.', NULL),
-	(18, '2394012038478', 2022, 234, '20.5 x 13 x 0.5', 700, 'Tiếng Việt', '', NULL),
-	(19, '4658890979', 2022, 789, '20.5 x 13 x 0.5', 909, 'Tiếng Việt', '', NULL),
-	(22, 'ISBN 978-604-976-902-1', 2021, 890, '20.5 x 13 x 0.5', 220, 'Tiếng Việt', 'Nguyễn Công Hoan (1903 - 1977) là nhà văn tiêu biểu của văn học hiện thực phê phán Việt Nam. Trong cuộc đời sáng tác của mình, ông để lại một di sản nghệ thuật với hơn 200 truyện ngắn, gần 30 truyện dài và nhiều tiểu luận văn học. Hoạt động văn học của Nguyễn Công Hoan luôn song hành cùng với sự nghiệp cách mạng chống Mỹ cứu nước. Chính vì thế trong các sáng tác của ông, bức tranh xã hội của người nông dân dưới mới tầng áp bức hiện ra chân thực nhất, rõ nét nhất\r\n', NULL),
-	(23, 'ISBN 978-604-976-909-8', 2022, 820, '20.5 x 13 x 0.5', 210, 'Tiếng Việt', 'Sợi tóc thể hiện cái thiên tài hiếm có của Thạch Lam trong kỹ thuật mô tả tâm lý con người. Ngòi bút của Thạch Lam đã dẫn chúng ta đi sâu vào tận đáy tâm hồn con người để ta chứng kiến được cái biên giới mong manh giữa thiện, ác, giữa ăn cắp hay không ăn cắp, cái địa giới chỉ mỏng manh như một sợi tóc.\r\n', NULL),
-	(24, 'ISBN 978-604-999-346-8', 2021, 210, '20.5 x 13 x 0.5', 230, 'Tiếng Việt', 'Tuyển tập Thạch Lam xin trân trọng giới thiệu đến quý độc giả những tác phẩm xuất sắc nhất của nhà văn Thạch Lam: Hà Nội băm sáu phố phường, Qùa Hà Nội, Trẻ con lấy vợ; Theo giòng; Hà Nội ban đêm; Những biển hàng; Người ta viết chữ Tây; Hai đứa trẻ; Dưới bóng hoàng lan; Nhà mẹ Lê; Gió lạnh đầu mùa; Sợi tóc…\r\n', NULL),
-	(25, 'ISBN 978-604-954-765-8', 2022, 225, '20.5 x 13 x 0.5', 250, 'Tiếng Việt', 'Ngay trong tác phẩm đầu tay (Gió đầu mùa), người ta đã thấy Thạch Lam đứng vào một phái riêng… Ông có một ngòi bút lặng lẽ, điềm tĩnh vô cùng, ngòi bút chuyên tả tỉ mỉ những cái rất nhỏ và rất đẹp… Phải là người giàu tình cảm lắm mới viết được như vậy…\r\n', NULL),
-	(27, 'ISBN 978-604-917-889-5', 2021, 365, '20.5 x 13 x 0.5', 433, 'Tiếng Việt', 'Hơn nửa thế kỷ trước đây, phong trào Thơ mới đã có những đóng góp đáng kể vào sự phát triển của nền văn học trước Cách mạng tháng Tám của đất nước. Các thi sĩ của thuở ấy đã đem lại cho bạn đọc một tiếng nói mới, phản ánh khá trung thực tâm trạng của cả một lớp thanh niên tiểu tư sản trong cuộc sống có nhiều đau buồn, trăn trở và đôi khí bế tắc trước hiện trạng của đất nước thời bấy giờ.\r\n', NULL),
-	(29, 'ISBN 978-604-972-372-9', 2022, 399, '20.5 x 13 x 0.5', 233, 'Tiếng Việt', 'Thế giới thơ ca Xuân Quỳnh là sự tương tranh không ngừng giữa khắc nghiệt và yên lành với những biểu hiện sống động và biến hóa khôn cùng của chúng. Ở đó trái tim thơ Xuân Quỳnh là cánh chuồn chuồn báo bão cứ chao đi chao về, mệt nhoài giữa biến động và yên định, bão tố và bình yên, chiến tranh và hòa bình, thác lũ và êm trôi, tình yêu và cách trở, ra đi và trở lại, chảy trôi phiêu bạt và trụ vững kiên gan, tổ ấm và dòng đời, sóng và bờ, thuyền và biển, nhà ga và con tàu, trời xanh và bom đạn, gió Lào và cát trắng, cỏ dại và nắng lửa, thủy chung và trắc trở, xuân sắc và tàn phai, ngọn lửa cô đơn và đại ngàn tối sẫm...\r\n', NULL),
-	(30, 'ISBN 978-604-988-911-3', 2020, 492, '20.5 x 13 x 0.5', 236, 'Tiếng Việt', 'Truyện Kiều đã có cả một vận mệnh rất vẻ vang. Qua đó, ta có thể nhận thấy rằng: Dù từ xưa đến nay các thế hệ nhà văn, nhà thơ đều đồng thanh về giá trị văn nghệ của Truyện Kiều, thì mỗi thời đại, mỗi một giai tầng xã hội đều đã nhận xét tác phẩm của Nguyễn Du theo một quan điểm riêng biệt.\r\nTHI ĐỖ, RỒI ĐI LÀM CÔNG SỞ, đó là mục đích của cả một đời. Nhưng bây giờ Trường mới rõ cái nhỏ mọn của điều mong ước ấy. Sự sống đã cho chàng bao nhiêu bài học hay. Trường không băn khoăn vì cảnh nghèo của mình nữa. Chàng không ganh ghét với những người sang trọng, giàu có hơn chàng, - Trường nghĩ đến Quang, đến người bạn học cũ ở nhà quê, - và tự thấy mình giàu hơn họ nhiều, giàu hơn họ nhiều, giàu những tính tình tốt đẹp, những ý nghĩ đằm thắm mà những người chỉ biết đến mình không bao giờ có được.\r\n', NULL),
-	(31, 'ISBN 978-604-988-998-9', 2021, 230, '20.5 x 13 x 0.5', 120, 'Tiếng Việt', 'THI ĐỖ, RỒI ĐI LÀM CÔNG SỞ, đó là mục đích của cả một đời. Nhưng bây giờ Trường mới rõ cái nhỏ mọn của điều mong ước ấy. Sự sống đã cho chàng bao nhiêu bài học hay. Trường không băn khoăn vì cảnh nghèo của mình nữa. Chàng không ganh ghét với những người sang trọng, giàu có hơn chàng, - Trường nghĩ đến Quang, đến người bạn học cũ ở nhà quê, - và tự thấy mình giàu hơn họ nhiều, giàu hơn họ nhiều, giàu những tính tình tốt đẹp, những ý nghĩ đằm thắm mà những người chỉ biết đến mình không bao giờ có được.\r\n', NULL),
-	(44, 'ISBN 978-604-988-998-6', 2022, 120, '20.5 x 13 x 0.5', 320, 'Tiếng Việt', 'Cõi người mắc cạn là tiểu thuyết 12 chương của Hoàng Khánh Duy, được tác giả sáng tác theo phương thức huyền thoại hóa, chú trọng yếu tố văn hóa và môi trường “xanh”. Trong tác phẩm, tác giả đã tạo dựng một không gian nghệ thuật vừa lạ, vừa quen. Lạ vì đó là một không gian mang sắc màu huyền ảo, mơ hồ nhưng cũng là một không gian quen thuộc vì nó thấm đượm linh hồn của sông nước Tây Nam Bộ.  Xuyên suốt tiểu thuyết là hành trình đi tìm chân lý, đi tìm lẽ sống và đấng cứu rỗi một vùng quê đã khô cằn vì hạn mặn của nhân vật “hắn”. Nỗi bàng hoàng trước sự méo mó của phong cảnh và nỗi đau của con người là điểm khởi nguồn của dòng sông chữ Cõi người mắc cạn.\r\n', NULL),
-	(45, 'ISBN 978-604-988-887-5', 2022, 120, '20.5 x 13 x 0.5', 320, 'Tiếng Việt', 'Có những khoảnh khắc trong cuộc đời mỗi chúng ta thấy nhớ nhà, nhớ tuổi thơ, nhớ con đò nhỏ lâu rồi không có khách qua sông nên nằm buồn bến nước, nhớ cánh đồng và cánh cò trắng "chở luôn nước mắt cay nồng của cha", nhớ những người thân yêu vẫn hằng ngày ngóng vọng ta về.\r\n', NULL),
-	(46, 'ISBN 978-604-988-654-4', 2021, 320, '20.5 x 13 x 0.5', 365, 'Tiếng Việt', 'Người chồng đắc ý cười vang, nhấp thêm một chút nước trà sen; đoạn, thong thả lấy ngón tay cái và ngón tay trỏ nhón một chiếc bánh xuân cầu màu hoàng yến đưa lên miệng...\r\n', NULL),
-	(47, 'ISBN 978-604-988-887-4', 2021, 365, '20.5 x 13 x 0.5', 223, 'Tiếng Việt', 'Mỗi tác phẩm đều có ưu và nhược, không nên coi nặng một vài khuyết điểm mà bỏ qua ưu điểm. Người thẩm định cũng cần có nhãn quan tiến bộ, khách quan và có bản lĩnh… Dễ nhận thấy rằng, độ lùi tiếp nhận càng xa thì tính khách quan càng cao, những thiên kiến xã hội sẽ giảm bớt, quá khứ sẽ được đề cao.(…) “ Không thể vĩ đại trong thời đại mình, sự vĩ đại bao giờ cũng trông hòng ở con cháu”. Càng lùi về phía sau người ta càng thấy rõ hơn đỉnh núi nào cao thấp. Như vậy, công việc đánh giá những thành tựu của tiểu thuyết cách mạng Việt Nam thời chiến tranh sẽ còn tiếp tục đế mai sau.\r\n', NULL),
-	(56, 'ISBN 978-604-988-867-9', 2022, 256, '20.5 x 13 x 0.5', 221, 'Tiếng Việt', '"Trạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh.\n\nMã hàng 9786045290910\nNhà Cung Cấp CÔNG TY TNHH IN ẤN-DV-TM SIÊU TỐC\nTác giả Kim Khánh\nNXB NXB Đồng Nai\nNăm XB 2020\nTrọng lượng (gr) 80\nKích Thước Bao Bì 17.5 x 11.5 x 0.7 cm\nSố trang 120\nHình thức Bìa Mềm\nSản phẩm bán chạy nhất Top 100 sản phẩm Truyện Tranh Việt Nam bán chạy của tháng\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\nTrạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh."\r\n', NULL),
-	(58, 'ISBN 978-604-988-889-7', 2021, 236, '20.5 x 13 x 0.5', 223, 'Tiếng Việt', '"Trạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh.\n\nMã hàng 9786045290910\nNhà Cung Cấp CÔNG TY TNHH IN ẤN-DV-TM SIÊU TỐC\nTác giả Kim Khánh\nNXB NXB Đồng Nai\nNăm XB 2020\nTrọng lượng (gr) 80\nKích Thước Bao Bì 17.5 x 11.5 x 0.7 cm\nSố trang 120\nHình thức Bìa Mềm\nSản phẩm bán chạy nhất Top 100 sản phẩm Truyện Tranh Việt Nam bán chạy của tháng\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\nTrạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh."\r\n', NULL),
-	(59, 'ISBN 978-604-988-665-9', 2022, 523, '20.5 x 13 x 0.5', 252, 'Tiếng Việt', '"Trạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh.\n\nMã hàng 9786045290910\nNhà Cung Cấp CÔNG TY TNHH IN ẤN-DV-TM SIÊU TỐC\nTác giả Kim Khánh\nNXB NXB Đồng Nai\nNăm XB 2020\nTrọng lượng (gr) 80\nKích Thước Bao Bì 17.5 x 11.5 x 0.7 cm\nSố trang 120\nHình thức Bìa Mềm\nSản phẩm bán chạy nhất Top 100 sản phẩm Truyện Tranh Việt Nam bán chạy của tháng\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\nTrạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh."\r\n', NULL),
-	(60, 'ISBN 978-604-988-898-5', 2022, 512, '20.5 x 13 x 0.5', 212, 'Tiếng Việt', '"Trạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh.\n\nMã hàng 9786045290910\nNhà Cung Cấp CÔNG TY TNHH IN ẤN-DV-TM SIÊU TỐC\nTác giả Kim Khánh\nNXB NXB Đồng Nai\nNăm XB 2020\nTrọng lượng (gr) 80\nKích Thước Bao Bì 17.5 x 11.5 x 0.7 cm\nSố trang 120\nHình thức Bìa Mềm\nSản phẩm bán chạy nhất Top 100 sản phẩm Truyện Tranh Việt Nam bán chạy của tháng\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\nTrạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh."\r\n', NULL),
-	(62, 'ISBN 978-604-988-433-8', 2022, 652, '20.5 x 13 x 0.5', 220, 'Tiếng Việt', '"Trạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh.\n\nMã hàng 9786045290910\nNhà Cung Cấp CÔNG TY TNHH IN ẤN-DV-TM SIÊU TỐC\nTác giả Kim Khánh\nNXB NXB Đồng Nai\nNăm XB 2020\nTrọng lượng (gr) 80\nKích Thước Bao Bì 17.5 x 11.5 x 0.7 cm\nSố trang 120\nHình thức Bìa Mềm\nSản phẩm bán chạy nhất Top 100 sản phẩm Truyện Tranh Việt Nam bán chạy của tháng\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\nTrạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh."\r\n', NULL),
-	(63, 'ISBN 978-604-988-564-8', 2020, 541, '20.5 x 13 x 0.5', 265, 'Tiếng Việt', 'Ở một làng nhỏ ven biển thuộc Đông Triều (Quảng Ninh ngày nay), có vợ chồng nhà họ Lê hiếm muộn mãi mới hạ sinh được cô con gái, đặt tên là Lê Chân. Cô gái lớn lên xinh đẹp ngời ngời, vì thế tên Thái thú Tô Định muốn đem về làm thê thiếp. Lê Chân không chịu, nàng trốn khỏi làng. Vì căm giận tên Thái thú cũng như bọn giặc nhà Hán, nàng đã học võ nghệ và chiêu tập nghĩa quân, tham gia khởi nghĩa cùng Hai Bà Trưng và hi sinh khi tuổi mới tròn 23.\r\n', NULL),
-                                                                                                                            (64, 'ISBN 978-604-988-987-4', 2022, 213, '20.5 x 13 x 0.5', 555, 'Tiếng Việt', 'Có lão phú ông bủn xỉn, hành hạ kẻ ở đủ đường. Lão hứa gả con gái, để bắt anh đầy tớ dốc sức làm lụng ngày đêm. Nhưng ít lâu sau, vì muốn gả con gái cho một nhà giàu, lão chủ lại nghĩ mưu tính kế, bắt anh đầy tớ đi tìm cho được cây tre có một trăm đốt thì mới được lấy cô gái kia làm vợ. Nhưng liệu có cây tre nào cao đủ một trăm đốt? Anh đầy tớ phải làm sao? Mời các em cùng đọc truyện!\r\n', NULL),
-                                                                                                                            (65, 'ISBN 978-604-988-223-4', 2022, 233, '20.5 x 13 x 0.5', 530, 'Tiếng Việt', 'Ngày nay, ta vẫn thường thấy con thạch sùng đậu trên bờ tường hoặc mái nhà mà chắt lưỡi kêu “Tạch, tạch!” Người đời bảo rằng, đó là do xưa kia thạch sùng vốn là một chàng trai giàu có, nên khi chết vẫn còn nhiều tiếc nuối. Câu chuyện về thạch sùng ra sao? Mời độc giả đón đọc Tranh Truyện Dân Gian Việt Nam - Sự Tích Con Thạch Sùng.\r\n', NULL),
-                                                                                                                            (66, 'ISBN 978-604-988-998-8', 2022, 200, '20.5 x 13 x 0.5', 326, 'Tiếng Việt', 'Không chỉ ở địa điểm tổ chức Hội nghị Thượng đỉnh, nhiều vụ khủng bố còn đồng loạt xảy ra trên địa bàn thành phố vốn đã được bố trí an ninh nghiêm ngặt!! Trong khi Conan vắt óc suy nghĩ tìm hiểu mục đích thực sự của kẻ tội phạm, và công an tiến gần hơn tới âm mưu về một vụ án ẩn dấu, Hội nghị Thượng đỉnh Tokyo đã chính thức khai mạc!!\r\n', NULL),
-                                                                                                                            (67, 'ISBN 978-604-988-765-9', 2020, 230, '20.5 x 13 x 0.5', 360, 'Tiếng Việt', 'Không chỉ ở địa điểm tổ chức Hội nghị Thượng đỉnh, nhiều vụ khủng bố còn đồng loạt xảy ra trên địa bàn thành phố vốn đã được bố trí an ninh nghiêm ngặt!! Trong khi Conan vắt óc suy nghĩ tìm hiểu mục đích thực sự của kẻ tội phạm, và công an tiến gần hơn tới âm mưu về một vụ án ẩn dấu, Hội nghị Thượng đỉnh Tokyo đã chính thức khai mạc!!\r\n', NULL),
-                                                                                                                            (68, 'ISBN 978-604-988-988-9', 2022, 260, '20.5 x 13 x 0.5', 365, 'Tiếng Việt', 'Không chỉ ở địa điểm tổ chức Hội nghị Thượng đỉnh, nhiều vụ khủng bố còn đồng loạt xảy ra trên địa bàn thành phố vốn đã được bố trí an ninh nghiêm ngặt!! Trong khi Conan vắt óc suy nghĩ tìm hiểu mục đích thực sự của kẻ tội phạm, và công an tiến gần hơn tới âm mưu về một vụ án ẩn dấu, Hội nghị Thượng đỉnh Tokyo đã chính thức khai mạc!!\r\n', NULL),
-                                                                                                                            (69, 'ISBN 978-604-988-765-7', 2022, 623, '20.5 x 13 x 0.5', 399, 'Tiếng Việt', 'Lấy 36 vụ án CÓ THẬT kinh điển nhất trong hồ sơ tội phạm của FBI, “Tâm lý học tội phạm - phác họa chân dung kẻ phạm tội” mang đến cái nhìn toàn cảnh của các chuyên gia về chân dung tâm lý tội phạm. Trả lời cho câu hỏi: Làm thế nào phân tích được tâm lý và hành vi tội phạm, từ đó khôi phục sự thật thông qua các manh mối, từ hiện trường vụ án, thời gian, dấu tích,… để tìm ra kẻ sát nhân thực sự. \r\n', NULL),
-                                                                                                                            (70, 'ISBN 978-604-988-564-8', 2022, 215, '20.5 x 13 x 0.5', 894, 'Tiếng Việt', 'Tôi đã đọc quyển sách này một cách thích thú. Có nhiều kiến thức và kinh nghiệm hữu ích, những điều mới mẻ ngay cả với người gần trung niên như tôi. Tuổi trẻ đáng giá bao nhiêu? được tác giả chia làm 3 phần: HỌC, LÀM, ĐI. Nhưng tôi thấy cuốn sách còn thể hiện một phần thứ tư nữa, đó là ĐỌC. Hãy đọc sách, nếu bạn đọc sách một cách bền bỉ, sẽ đến lúc bạn bị thôi thúc không ngừng bởi ý muốn viết nên cuốn sách của riêng mình.\r\n', NULL),
-                                                                                                                            (71, 'ISBN 978-604-988-445-8', 2020, 254, '20.5 x 13 x 0.5', 441, 'Tiếng Việt', 'Đắc nhân tâm của Dale Carnegie là quyển sách của mọi thời đại và một hiện tượng đáng kinh ngạc trong ngành xuất bản Hoa Kỳ. Trong suốt nhiều thập kỷ tiếp theo và cho đến tận bây giờ, tác phẩm này vẫn chiếm vị trí số một trong danh mục sách bán chạy nhất và trở thành một sự kiện có một không hai trong lịch sử ngành xuất bản thế giới và được đánh giá là một quyển sách có tầm ảnh hưởng nhất mọi thời đại.\r\n', NULL),
-                                                                                                                            (75, 'ISBN 978-604-988-876-1', 2021, 778, '20.5 x 13 x 0.5', 145, 'Tiếng Việt', '“Tâm lý học tính cách” lấy “chín kiểu hình tính cách” làm trọng tâm, với nền tảng là những lý luận của tâm lý học tính cách và tâm lý học chiều sâu , giới thiệu đến bạn đọc một cách chi tiết về đặc trưng và phương pháp cải thiện khuyết điểm dành cho chín kiểu hình tính cách của con người.\r\n', NULL),
-                                                                                                                            (76, 'ISBN 978-604-988-776-1', 2022, 895, '20.5 x 13 x 0.5', 120, 'Tiếng Việt', 'Nhắc đến biểu cảm siêu nhỏ, đa số chúng ta đều cho rằng đó chỉ là những biểu hiện cảm xúc từ ngũ quan trên khuôn mặt. Tuy nhiên, phạm vi của biểu cảm siêu nhỏ không chỉ gói gọn trên khuôn mặt một người, mà còn bao gồm những biểu cảm trên cơ thể, trong ngôn ngữ và hành vi của người đó.\r\n', NULL),
-                                                                                                                            (77, 'ISBN 978-604-988-772-9', 2020, 895, '20.5 x 13 x 0.5', 150, 'Tiếng Việt', 'Bạn đã bao giờ cảm thấy như bạn đang nói chuyện với một bức tường? Chà, đó là một mô tả rất chính xác về những gì mà xảy ra khi hai người đang giao tiếp! Mọi người đều có một phép ẩn dụ “Bức tường giao tiếp” xung quanh họ để bảo vệ họ khỏi “những người xấu”. Nhưng trong tất cả các bức tường của chúng ta, chúng ta đã bỏ một số viên gạch ra, để cho “những người tốt” giao tiếp với chúng ta.\r\n', NULL),
-                                                                                                                            (78, 'ISBN 978-604-988-887-9', 2021, 455, '20.5 x 13 x 0.5', 152, 'Tiếng Việt', 'Cái gì cũng nói toạc ra, cái gì cũng bộc lộ hết không phải là thẳng tính, mà là thiếu bản lĩnh. Suy cho cùng, tất cả những cảm xúc tiêu cực của con người đều là sự phẫn nộ dành cho bất lực của bản thân. Nếu bạn đúng, bạn không cần phải nổi giận. Nếu bạn sai, bạn không có tư cách nổi giận.\r\n', NULL),
-                                                                                                                            (79, 'ISBN 978-604-988-342-2', 2022, 123, '20.5 x 13 x 0.5', 153, 'Tiếng Việt', 'Thất vọng, phẫn nộ, uất ức, đau đớn, buồn bã… là những cung bậc cảm xúc mà mỗi người đều phải nếm trải ít nhất một lần trong đời. Tuy nhiên, vấn đề lớn nhất là mọi người đều đang hiểu sai nỗi đau của bản thân. Chúng ta thường vô thức đắm chìm trong hàng tá suy nghĩ tiêu cực cứ chất chồng theo năm tháng để rồi vùi sâu vào thương tổn, và cuối cùng là bỏ rơi chính mình. \r\n', NULL),
-                                                                                                                            (80, 'ISBN 978-604-988-453-8', 2020, 236, '20.5 x 13 x 0.5', 662, 'Tiếng Việt', 'Bạn sẽ yên tâm hơn, tự tin hơn như được ở bên cạnh một nhà tâm lý học thấu hiểu và luôn chia sẻ cùng bạn khi có trong tay cuốn sách “Buông bỏ buồn buông”. Cuốn sách sẽ giúp bạn bóc tách những lo âu, phiền não ra khỏi tâm trí; giúp bạn có một cái nhìn về cuộc sống lạc quan, vui vẻ cách ứng xử thông và nhẹ nhàng hơn.\r\n', NULL),
-                                                                                                                            (82, 'ISBN 978-604-988-998-1', 2020, 223, '20.5 x 13 x 0.5', 332, 'Tiếng Việt', 'Cuộc sống ngày càng trở nên bận rộn và hối hả. Chúng ta luôn chạy đua với thời gian, công việc, những suy nghĩ và cả những con đường mà đôi khi ta đánh mất đi chính mình, quên đi việc nuôi dưỡng trái tim và tinh thần. Tôi tin rằng đã có lúc bạn từng cảm thấy băn khoăn và tự hỏi niềm vui trong công việc và cuộc sống của mình là gì? Ý nghĩa thật sự của cuộc đời mình là gì đây?\r\n', NULL),
-                                                                                                                            (83, 'ISBN 978-604-988-776-9', 2022, 223, '20.5 x 13 x 0.5', 254, 'Tiếng Việt', 'Mỗi ngày ta thức dậy, ấy là ta có trọn vẹn một ngày mới. Nhưng không phải ai cũng nhận ra hạnh phúc diệu kỳ này, để rồi lãng phí một cơ hội tận hưởng niềm vui. Không phải ai cũng biết tận dụng tối đa từng giây từng phút của một ngày quý gia để tạo ra niềm vui cho chính mình.\r\n', NULL),
-                                                                                                                            (86, 'ISBN 978-604-988-429-3', 2022, 224, '20.5 x 13 x 0.5', 212, 'Tiếng Việt', 'Thật sự truyền cảm hứng và vô cùng dí dỏm, những câu chuyện và những suy ngẫm ngắn trong sách Ai đổ đống rác ở đây? mang lại cho chúng ta trí tuệ phi thời gian về mọi chủ đề, từ tình yêu và sự cam kết đến nỗi sợ hãi và đau đớn. Rút ra từ trải nghiệm sống của chính mình cũng như những truyện cổ Phật giáo, Ajahn Brahm tạo ra một cuốn sách tuyệt vời cho mọi lứa tuổi.\r\n', NULL);
+                                                                                                                           (18, '2394012038478', 2022, 234, '20.5 x 13 x 0.5', 700, 'Tiếng Việt', '', NULL),
+                                                                                                                           (19, '4658890979', 2022, 789, '20.5 x 13 x 0.5', 909, 'Tiếng Việt', '', NULL),
+                                                                                                                           (22, 'ISBN 978-604-976-902-1', 2021, 890, '20.5 x 13 x 0.5', 220, 'Tiếng Việt', 'Nguyễn Công Hoan (1903 - 1977) là nhà văn tiêu biểu của văn học hiện thực phê phán Việt Nam. Trong cuộc đời sáng tác của mình, ông để lại một di sản nghệ thuật với hơn 200 truyện ngắn, gần 30 truyện dài và nhiều tiểu luận văn học. Hoạt động văn học của Nguyễn Công Hoan luôn song hành cùng với sự nghiệp cách mạng chống Mỹ cứu nước. Chính vì thế trong các sáng tác của ông, bức tranh xã hội của người nông dân dưới mới tầng áp bức hiện ra chân thực nhất, rõ nét nhất\r\n', NULL),
+                                                                                                                           (23, 'ISBN 978-604-976-909-8', 2022, 820, '20.5 x 13 x 0.5', 210, 'Tiếng Việt', 'Sợi tóc thể hiện cái thiên tài hiếm có của Thạch Lam trong kỹ thuật mô tả tâm lý con người. Ngòi bút của Thạch Lam đã dẫn chúng ta đi sâu vào tận đáy tâm hồn con người để ta chứng kiến được cái biên giới mong manh giữa thiện, ác, giữa ăn cắp hay không ăn cắp, cái địa giới chỉ mỏng manh như một sợi tóc.\r\n', NULL),
+                                                                                                                           (24, 'ISBN 978-604-999-346-8', 2021, 210, '20.5 x 13 x 0.5', 230, 'Tiếng Việt', 'Tuyển tập Thạch Lam xin trân trọng giới thiệu đến quý độc giả những tác phẩm xuất sắc nhất của nhà văn Thạch Lam: Hà Nội băm sáu phố phường, Qùa Hà Nội, Trẻ con lấy vợ; Theo giòng; Hà Nội ban đêm; Những biển hàng; Người ta viết chữ Tây; Hai đứa trẻ; Dưới bóng hoàng lan; Nhà mẹ Lê; Gió lạnh đầu mùa; Sợi tóc…\r\n', NULL),
+                                                                                                                           (25, 'ISBN 978-604-954-765-8', 2022, 225, '20.5 x 13 x 0.5', 250, 'Tiếng Việt', 'Ngay trong tác phẩm đầu tay (Gió đầu mùa), người ta đã thấy Thạch Lam đứng vào một phái riêng… Ông có một ngòi bút lặng lẽ, điềm tĩnh vô cùng, ngòi bút chuyên tả tỉ mỉ những cái rất nhỏ và rất đẹp… Phải là người giàu tình cảm lắm mới viết được như vậy…\r\n', NULL),
+                                                                                                                           (27, 'ISBN 978-604-917-889-5', 2021, 365, '20.5 x 13 x 0.5', 433, 'Tiếng Việt', 'Hơn nửa thế kỷ trước đây, phong trào Thơ mới đã có những đóng góp đáng kể vào sự phát triển của nền văn học trước Cách mạng tháng Tám của đất nước. Các thi sĩ của thuở ấy đã đem lại cho bạn đọc một tiếng nói mới, phản ánh khá trung thực tâm trạng của cả một lớp thanh niên tiểu tư sản trong cuộc sống có nhiều đau buồn, trăn trở và đôi khí bế tắc trước hiện trạng của đất nước thời bấy giờ.\r\n', NULL),
+                                                                                                                           (29, 'ISBN 978-604-972-372-9', 2022, 399, '20.5 x 13 x 0.5', 233, 'Tiếng Việt', 'Thế giới thơ ca Xuân Quỳnh là sự tương tranh không ngừng giữa khắc nghiệt và yên lành với những biểu hiện sống động và biến hóa khôn cùng của chúng. Ở đó trái tim thơ Xuân Quỳnh là cánh chuồn chuồn báo bão cứ chao đi chao về, mệt nhoài giữa biến động và yên định, bão tố và bình yên, chiến tranh và hòa bình, thác lũ và êm trôi, tình yêu và cách trở, ra đi và trở lại, chảy trôi phiêu bạt và trụ vững kiên gan, tổ ấm và dòng đời, sóng và bờ, thuyền và biển, nhà ga và con tàu, trời xanh và bom đạn, gió Lào và cát trắng, cỏ dại và nắng lửa, thủy chung và trắc trở, xuân sắc và tàn phai, ngọn lửa cô đơn và đại ngàn tối sẫm...\r\n', NULL),
+                                                                                                                           (30, 'ISBN 978-604-988-911-3', 2020, 492, '20.5 x 13 x 0.5', 236, 'Tiếng Việt', 'Truyện Kiều đã có cả một vận mệnh rất vẻ vang. Qua đó, ta có thể nhận thấy rằng: Dù từ xưa đến nay các thế hệ nhà văn, nhà thơ đều đồng thanh về giá trị văn nghệ của Truyện Kiều, thì mỗi thời đại, mỗi một giai tầng xã hội đều đã nhận xét tác phẩm của Nguyễn Du theo một quan điểm riêng biệt.\r\nTHI ĐỖ, RỒI ĐI LÀM CÔNG SỞ, đó là mục đích của cả một đời. Nhưng bây giờ Trường mới rõ cái nhỏ mọn của điều mong ước ấy. Sự sống đã cho chàng bao nhiêu bài học hay. Trường không băn khoăn vì cảnh nghèo của mình nữa. Chàng không ganh ghét với những người sang trọng, giàu có hơn chàng, - Trường nghĩ đến Quang, đến người bạn học cũ ở nhà quê, - và tự thấy mình giàu hơn họ nhiều, giàu hơn họ nhiều, giàu những tính tình tốt đẹp, những ý nghĩ đằm thắm mà những người chỉ biết đến mình không bao giờ có được.\r\n', NULL),
+                                                                                                                           (31, 'ISBN 978-604-988-998-9', 2021, 230, '20.5 x 13 x 0.5', 120, 'Tiếng Việt', 'THI ĐỖ, RỒI ĐI LÀM CÔNG SỞ, đó là mục đích của cả một đời. Nhưng bây giờ Trường mới rõ cái nhỏ mọn của điều mong ước ấy. Sự sống đã cho chàng bao nhiêu bài học hay. Trường không băn khoăn vì cảnh nghèo của mình nữa. Chàng không ganh ghét với những người sang trọng, giàu có hơn chàng, - Trường nghĩ đến Quang, đến người bạn học cũ ở nhà quê, - và tự thấy mình giàu hơn họ nhiều, giàu hơn họ nhiều, giàu những tính tình tốt đẹp, những ý nghĩ đằm thắm mà những người chỉ biết đến mình không bao giờ có được.\r\n', NULL),
+                                                                                                                           (44, 'ISBN 978-604-988-998-6', 2022, 120, '20.5 x 13 x 0.5', 320, 'Tiếng Việt', 'Cõi người mắc cạn là tiểu thuyết 12 chương của Hoàng Khánh Duy, được tác giả sáng tác theo phương thức huyền thoại hóa, chú trọng yếu tố văn hóa và môi trường “xanh”. Trong tác phẩm, tác giả đã tạo dựng một không gian nghệ thuật vừa lạ, vừa quen. Lạ vì đó là một không gian mang sắc màu huyền ảo, mơ hồ nhưng cũng là một không gian quen thuộc vì nó thấm đượm linh hồn của sông nước Tây Nam Bộ.  Xuyên suốt tiểu thuyết là hành trình đi tìm chân lý, đi tìm lẽ sống và đấng cứu rỗi một vùng quê đã khô cằn vì hạn mặn của nhân vật “hắn”. Nỗi bàng hoàng trước sự méo mó của phong cảnh và nỗi đau của con người là điểm khởi nguồn của dòng sông chữ Cõi người mắc cạn.\r\n', NULL),
+                                                                                                                           (45, 'ISBN 978-604-988-887-5', 2022, 120, '20.5 x 13 x 0.5', 320, 'Tiếng Việt', 'Có những khoảnh khắc trong cuộc đời mỗi chúng ta thấy nhớ nhà, nhớ tuổi thơ, nhớ con đò nhỏ lâu rồi không có khách qua sông nên nằm buồn bến nước, nhớ cánh đồng và cánh cò trắng "chở luôn nước mắt cay nồng của cha", nhớ những người thân yêu vẫn hằng ngày ngóng vọng ta về.\r\n', NULL),
+                                                                                                                           (46, 'ISBN 978-604-988-654-4', 2021, 320, '20.5 x 13 x 0.5', 365, 'Tiếng Việt', 'Người chồng đắc ý cười vang, nhấp thêm một chút nước trà sen; đoạn, thong thả lấy ngón tay cái và ngón tay trỏ nhón một chiếc bánh xuân cầu màu hoàng yến đưa lên miệng...\r\n', NULL),
+                                                                                                                           (47, 'ISBN 978-604-988-887-4', 2021, 365, '20.5 x 13 x 0.5', 223, 'Tiếng Việt', 'Mỗi tác phẩm đều có ưu và nhược, không nên coi nặng một vài khuyết điểm mà bỏ qua ưu điểm. Người thẩm định cũng cần có nhãn quan tiến bộ, khách quan và có bản lĩnh… Dễ nhận thấy rằng, độ lùi tiếp nhận càng xa thì tính khách quan càng cao, những thiên kiến xã hội sẽ giảm bớt, quá khứ sẽ được đề cao.(…) “ Không thể vĩ đại trong thời đại mình, sự vĩ đại bao giờ cũng trông hòng ở con cháu”. Càng lùi về phía sau người ta càng thấy rõ hơn đỉnh núi nào cao thấp. Như vậy, công việc đánh giá những thành tựu của tiểu thuyết cách mạng Việt Nam thời chiến tranh sẽ còn tiếp tục đế mai sau.\r\n', NULL),
+                                                                                                                           (56, 'ISBN 978-604-988-867-9', 2022, 256, '20.5 x 13 x 0.5', 221, 'Tiếng Việt', '"Trạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh.\n\nMã hàng 9786045290910\nNhà Cung Cấp CÔNG TY TNHH IN ẤN-DV-TM SIÊU TỐC\nTác giả Kim Khánh\nNXB NXB Đồng Nai\nNăm XB 2020\nTrọng lượng (gr) 80\nKích Thước Bao Bì 17.5 x 11.5 x 0.7 cm\nSố trang 120\nHình thức Bìa Mềm\nSản phẩm bán chạy nhất Top 100 sản phẩm Truyện Tranh Việt Nam bán chạy của tháng\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\nTrạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh."\r\n', NULL),
+                                                                                                                           (58, 'ISBN 978-604-988-889-7', 2021, 236, '20.5 x 13 x 0.5', 223, 'Tiếng Việt', '"Trạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh.\n\nMã hàng 9786045290910\nNhà Cung Cấp CÔNG TY TNHH IN ẤN-DV-TM SIÊU TỐC\nTác giả Kim Khánh\nNXB NXB Đồng Nai\nNăm XB 2020\nTrọng lượng (gr) 80\nKích Thước Bao Bì 17.5 x 11.5 x 0.7 cm\nSố trang 120\nHình thức Bìa Mềm\nSản phẩm bán chạy nhất Top 100 sản phẩm Truyện Tranh Việt Nam bán chạy của tháng\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\nTrạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh."\r\n', NULL),
+                                                                                                                           (59, 'ISBN 978-604-988-665-9', 2022, 523, '20.5 x 13 x 0.5', 252, 'Tiếng Việt', '"Trạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh.\n\nMã hàng 9786045290910\nNhà Cung Cấp CÔNG TY TNHH IN ẤN-DV-TM SIÊU TỐC\nTác giả Kim Khánh\nNXB NXB Đồng Nai\nNăm XB 2020\nTrọng lượng (gr) 80\nKích Thước Bao Bì 17.5 x 11.5 x 0.7 cm\nSố trang 120\nHình thức Bìa Mềm\nSản phẩm bán chạy nhất Top 100 sản phẩm Truyện Tranh Việt Nam bán chạy của tháng\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\nTrạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh."\r\n', NULL),
+                                                                                                                           (60, 'ISBN 978-604-988-898-5', 2022, 512, '20.5 x 13 x 0.5', 212, 'Tiếng Việt', '"Trạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh.\n\nMã hàng 9786045290910\nNhà Cung Cấp CÔNG TY TNHH IN ẤN-DV-TM SIÊU TỐC\nTác giả Kim Khánh\nNXB NXB Đồng Nai\nNăm XB 2020\nTrọng lượng (gr) 80\nKích Thước Bao Bì 17.5 x 11.5 x 0.7 cm\nSố trang 120\nHình thức Bìa Mềm\nSản phẩm bán chạy nhất Top 100 sản phẩm Truyện Tranh Việt Nam bán chạy của tháng\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\nTrạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh."\r\n', NULL),
+                                                                                                                           (62, 'ISBN 978-604-988-433-8', 2022, 652, '20.5 x 13 x 0.5', 220, 'Tiếng Việt', '"Trạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh.\n\nMã hàng 9786045290910\nNhà Cung Cấp CÔNG TY TNHH IN ẤN-DV-TM SIÊU TỐC\nTác giả Kim Khánh\nNXB NXB Đồng Nai\nNăm XB 2020\nTrọng lượng (gr) 80\nKích Thước Bao Bì 17.5 x 11.5 x 0.7 cm\nSố trang 120\nHình thức Bìa Mềm\nSản phẩm bán chạy nhất Top 100 sản phẩm Truyện Tranh Việt Nam bán chạy của tháng\nGiá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...\nTrạng Quỷnh là một bộ truyện tranh thiếu nhi nhiều tập của Việt Nam, tập truyện đầu tiên mang tên Sao sáng xứ Thanh được Nhà xuất bản Đồng Nai phát hành giữa tháng 6 năm 2003.\n\nBan đầu tác phẩm được đặt là Trạng Quỳnh (từ tập 1 đến tập 24), còn từ tập 25 trở đi thì đặt tên là Trạng Quỷnh.\n\nTác phẩm được thực hiện bởi tác giả Kim Khánh. \n\nTruyện lấy bối cảnh vào thời chúa Nguyễn, dưới thời chúa Nguyễn Phúc Khoát, nhưng những sự kiện xảy ra trong truyện không trùng lặp với những sự kiện xảy ra trên thực tế. Tác phẩm này ban đầu kể lại về cuộc đời của Trạng Quỳnh - một người có tính cách trào phúng dân gian Việt Nam. Trong truyện này, Trạng Quỳnh vốn thông minh từ trong bụng mẹ.\n\nTrước khi cậu sinh ra, một lần bà mẹ ra ao giặt đồ, bỗng nhìn thấy một chú vịt, bà mẹ liền ngâm câu thơ, và lập tức có tiếng đối đáp lại trong bụng vịt.\n\nBà cho rằng đó là điềm lạ, nghĩ rằng bà sẽ sinh ra một quý tử, hiểu biết hơn người, sẽ là người có tiếng tăm. Thời gian trôi qua, bà hạ sinh một bé trai, tư dung thông minh lạ thường, đặt tên là Quỳnh."\r\n', NULL),
+                                                                                                                           (63, 'ISBN 978-604-988-564-8', 2020, 541, '20.5 x 13 x 0.5', 265, 'Tiếng Việt', 'Ở một làng nhỏ ven biển thuộc Đông Triều (Quảng Ninh ngày nay), có vợ chồng nhà họ Lê hiếm muộn mãi mới hạ sinh được cô con gái, đặt tên là Lê Chân. Cô gái lớn lên xinh đẹp ngời ngời, vì thế tên Thái thú Tô Định muốn đem về làm thê thiếp. Lê Chân không chịu, nàng trốn khỏi làng. Vì căm giận tên Thái thú cũng như bọn giặc nhà Hán, nàng đã học võ nghệ và chiêu tập nghĩa quân, tham gia khởi nghĩa cùng Hai Bà Trưng và hi sinh khi tuổi mới tròn 23.\r\n', NULL),
+                                                                                                                           (64, 'ISBN 978-604-988-987-4', 2022, 213, '20.5 x 13 x 0.5', 555, 'Tiếng Việt', 'Có lão phú ông bủn xỉn, hành hạ kẻ ở đủ đường. Lão hứa gả con gái, để bắt anh đầy tớ dốc sức làm lụng ngày đêm. Nhưng ít lâu sau, vì muốn gả con gái cho một nhà giàu, lão chủ lại nghĩ mưu tính kế, bắt anh đầy tớ đi tìm cho được cây tre có một trăm đốt thì mới được lấy cô gái kia làm vợ. Nhưng liệu có cây tre nào cao đủ một trăm đốt? Anh đầy tớ phải làm sao? Mời các em cùng đọc truyện!\r\n', NULL),
+                                                                                                                           (65, 'ISBN 978-604-988-223-4', 2022, 233, '20.5 x 13 x 0.5', 530, 'Tiếng Việt', 'Ngày nay, ta vẫn thường thấy con thạch sùng đậu trên bờ tường hoặc mái nhà mà chắt lưỡi kêu “Tạch, tạch!” Người đời bảo rằng, đó là do xưa kia thạch sùng vốn là một chàng trai giàu có, nên khi chết vẫn còn nhiều tiếc nuối. Câu chuyện về thạch sùng ra sao? Mời độc giả đón đọc Tranh Truyện Dân Gian Việt Nam - Sự Tích Con Thạch Sùng.\r\n', NULL),
+                                                                                                                           (66, 'ISBN 978-604-988-998-8', 2022, 200, '20.5 x 13 x 0.5', 326, 'Tiếng Việt', 'Không chỉ ở địa điểm tổ chức Hội nghị Thượng đỉnh, nhiều vụ khủng bố còn đồng loạt xảy ra trên địa bàn thành phố vốn đã được bố trí an ninh nghiêm ngặt!! Trong khi Conan vắt óc suy nghĩ tìm hiểu mục đích thực sự của kẻ tội phạm, và công an tiến gần hơn tới âm mưu về một vụ án ẩn dấu, Hội nghị Thượng đỉnh Tokyo đã chính thức khai mạc!!\r\n', NULL),
+                                                                                                                           (67, 'ISBN 978-604-988-765-9', 2020, 230, '20.5 x 13 x 0.5', 360, 'Tiếng Việt', 'Không chỉ ở địa điểm tổ chức Hội nghị Thượng đỉnh, nhiều vụ khủng bố còn đồng loạt xảy ra trên địa bàn thành phố vốn đã được bố trí an ninh nghiêm ngặt!! Trong khi Conan vắt óc suy nghĩ tìm hiểu mục đích thực sự của kẻ tội phạm, và công an tiến gần hơn tới âm mưu về một vụ án ẩn dấu, Hội nghị Thượng đỉnh Tokyo đã chính thức khai mạc!!\r\n', NULL),
+                                                                                                                           (68, 'ISBN 978-604-988-988-9', 2022, 260, '20.5 x 13 x 0.5', 365, 'Tiếng Việt', 'Không chỉ ở địa điểm tổ chức Hội nghị Thượng đỉnh, nhiều vụ khủng bố còn đồng loạt xảy ra trên địa bàn thành phố vốn đã được bố trí an ninh nghiêm ngặt!! Trong khi Conan vắt óc suy nghĩ tìm hiểu mục đích thực sự của kẻ tội phạm, và công an tiến gần hơn tới âm mưu về một vụ án ẩn dấu, Hội nghị Thượng đỉnh Tokyo đã chính thức khai mạc!!\r\n', NULL),
+                                                                                                                           (69, 'ISBN 978-604-988-765-7', 2022, 623, '20.5 x 13 x 0.5', 399, 'Tiếng Việt', 'Lấy 36 vụ án CÓ THẬT kinh điển nhất trong hồ sơ tội phạm của FBI, “Tâm lý học tội phạm - phác họa chân dung kẻ phạm tội” mang đến cái nhìn toàn cảnh của các chuyên gia về chân dung tâm lý tội phạm. Trả lời cho câu hỏi: Làm thế nào phân tích được tâm lý và hành vi tội phạm, từ đó khôi phục sự thật thông qua các manh mối, từ hiện trường vụ án, thời gian, dấu tích,… để tìm ra kẻ sát nhân thực sự. \r\n', NULL),
+                                                                                                                           (70, 'ISBN 978-604-988-564-8', 2022, 215, '20.5 x 13 x 0.5', 894, 'Tiếng Việt', 'Tôi đã đọc quyển sách này một cách thích thú. Có nhiều kiến thức và kinh nghiệm hữu ích, những điều mới mẻ ngay cả với người gần trung niên như tôi. Tuổi trẻ đáng giá bao nhiêu? được tác giả chia làm 3 phần: HỌC, LÀM, ĐI. Nhưng tôi thấy cuốn sách còn thể hiện một phần thứ tư nữa, đó là ĐỌC. Hãy đọc sách, nếu bạn đọc sách một cách bền bỉ, sẽ đến lúc bạn bị thôi thúc không ngừng bởi ý muốn viết nên cuốn sách của riêng mình.\r\n', NULL),
+                                                                                                                           (71, 'ISBN 978-604-988-445-8', 2020, 254, '20.5 x 13 x 0.5', 441, 'Tiếng Việt', 'Đắc nhân tâm của Dale Carnegie là quyển sách của mọi thời đại và một hiện tượng đáng kinh ngạc trong ngành xuất bản Hoa Kỳ. Trong suốt nhiều thập kỷ tiếp theo và cho đến tận bây giờ, tác phẩm này vẫn chiếm vị trí số một trong danh mục sách bán chạy nhất và trở thành một sự kiện có một không hai trong lịch sử ngành xuất bản thế giới và được đánh giá là một quyển sách có tầm ảnh hưởng nhất mọi thời đại.\r\n', NULL),
+                                                                                                                           (75, 'ISBN 978-604-988-876-1', 2021, 778, '20.5 x 13 x 0.5', 145, 'Tiếng Việt', '“Tâm lý học tính cách” lấy “chín kiểu hình tính cách” làm trọng tâm, với nền tảng là những lý luận của tâm lý học tính cách và tâm lý học chiều sâu , giới thiệu đến bạn đọc một cách chi tiết về đặc trưng và phương pháp cải thiện khuyết điểm dành cho chín kiểu hình tính cách của con người.\r\n', NULL),
+                                                                                                                           (76, 'ISBN 978-604-988-776-1', 2022, 895, '20.5 x 13 x 0.5', 120, 'Tiếng Việt', 'Nhắc đến biểu cảm siêu nhỏ, đa số chúng ta đều cho rằng đó chỉ là những biểu hiện cảm xúc từ ngũ quan trên khuôn mặt. Tuy nhiên, phạm vi của biểu cảm siêu nhỏ không chỉ gói gọn trên khuôn mặt một người, mà còn bao gồm những biểu cảm trên cơ thể, trong ngôn ngữ và hành vi của người đó.\r\n', NULL),
+                                                                                                                           (77, 'ISBN 978-604-988-772-9', 2020, 895, '20.5 x 13 x 0.5', 150, 'Tiếng Việt', 'Bạn đã bao giờ cảm thấy như bạn đang nói chuyện với một bức tường? Chà, đó là một mô tả rất chính xác về những gì mà xảy ra khi hai người đang giao tiếp! Mọi người đều có một phép ẩn dụ “Bức tường giao tiếp” xung quanh họ để bảo vệ họ khỏi “những người xấu”. Nhưng trong tất cả các bức tường của chúng ta, chúng ta đã bỏ một số viên gạch ra, để cho “những người tốt” giao tiếp với chúng ta.\r\n', NULL),
+                                                                                                                           (78, 'ISBN 978-604-988-887-9', 2021, 455, '20.5 x 13 x 0.5', 152, 'Tiếng Việt', 'Cái gì cũng nói toạc ra, cái gì cũng bộc lộ hết không phải là thẳng tính, mà là thiếu bản lĩnh. Suy cho cùng, tất cả những cảm xúc tiêu cực của con người đều là sự phẫn nộ dành cho bất lực của bản thân. Nếu bạn đúng, bạn không cần phải nổi giận. Nếu bạn sai, bạn không có tư cách nổi giận.\r\n', NULL),
+                                                                                                                           (79, 'ISBN 978-604-988-342-2', 2022, 123, '20.5 x 13 x 0.5', 153, 'Tiếng Việt', 'Thất vọng, phẫn nộ, uất ức, đau đớn, buồn bã… là những cung bậc cảm xúc mà mỗi người đều phải nếm trải ít nhất một lần trong đời. Tuy nhiên, vấn đề lớn nhất là mọi người đều đang hiểu sai nỗi đau của bản thân. Chúng ta thường vô thức đắm chìm trong hàng tá suy nghĩ tiêu cực cứ chất chồng theo năm tháng để rồi vùi sâu vào thương tổn, và cuối cùng là bỏ rơi chính mình. \r\n', NULL),
+                                                                                                                           (80, 'ISBN 978-604-988-453-8', 2020, 236, '20.5 x 13 x 0.5', 662, 'Tiếng Việt', 'Bạn sẽ yên tâm hơn, tự tin hơn như được ở bên cạnh một nhà tâm lý học thấu hiểu và luôn chia sẻ cùng bạn khi có trong tay cuốn sách “Buông bỏ buồn buông”. Cuốn sách sẽ giúp bạn bóc tách những lo âu, phiền não ra khỏi tâm trí; giúp bạn có một cái nhìn về cuộc sống lạc quan, vui vẻ cách ứng xử thông và nhẹ nhàng hơn.\r\n', NULL),
+                                                                                                                           (82, 'ISBN 978-604-988-998-1', 2020, 223, '20.5 x 13 x 0.5', 332, 'Tiếng Việt', 'Cuộc sống ngày càng trở nên bận rộn và hối hả. Chúng ta luôn chạy đua với thời gian, công việc, những suy nghĩ và cả những con đường mà đôi khi ta đánh mất đi chính mình, quên đi việc nuôi dưỡng trái tim và tinh thần. Tôi tin rằng đã có lúc bạn từng cảm thấy băn khoăn và tự hỏi niềm vui trong công việc và cuộc sống của mình là gì? Ý nghĩa thật sự của cuộc đời mình là gì đây?\r\n', NULL),
+                                                                                                                           (83, 'ISBN 978-604-988-776-9', 2022, 223, '20.5 x 13 x 0.5', 254, 'Tiếng Việt', 'Mỗi ngày ta thức dậy, ấy là ta có trọn vẹn một ngày mới. Nhưng không phải ai cũng nhận ra hạnh phúc diệu kỳ này, để rồi lãng phí một cơ hội tận hưởng niềm vui. Không phải ai cũng biết tận dụng tối đa từng giây từng phút của một ngày quý gia để tạo ra niềm vui cho chính mình.\r\n', NULL),
+                                                                                                                           (86, 'ISBN 978-604-988-429-3', 2022, 224, '20.5 x 13 x 0.5', 212, 'Tiếng Việt', 'Thật sự truyền cảm hứng và vô cùng dí dỏm, những câu chuyện và những suy ngẫm ngắn trong sách Ai đổ đống rác ở đây? mang lại cho chúng ta trí tuệ phi thời gian về mọi chủ đề, từ tình yêu và sự cam kết đến nỗi sợ hãi và đau đớn. Rút ra từ trải nghiệm sống của chính mình cũng như những truyện cổ Phật giáo, Ajahn Brahm tạo ra một cuốn sách tuyệt vời cho mọi lứa tuổi.\r\n', NULL);
 
 -- Dumping structure for table web_ban_sach.carts
 CREATE TABLE IF NOT EXISTS `carts` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `idUser` int(11) DEFAULT 0,
-    `timeShip` varchar(50) DEFAULT NULL,
-    `feeShip` int(11) DEFAULT 0,
-    `totalPrice` int(11) unsigned DEFAULT 0,
-    `infoShip` int(11) DEFAULT 0,
-    `create_time` timestamp NULL,
-    `verify` text DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    KEY `carts_ibfk_1` (`idUser`),
-    CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`idUser`) REFERENCES `customer` (`id_user`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4;
+                                       `id` int(11) NOT NULL AUTO_INCREMENT,
+                                       `idUser` int(11) DEFAULT 0,
+                                       `timeShip` varchar(50) DEFAULT NULL,
+                                       `feeShip` int(11) DEFAULT 0,
+                                       `totalPrice` int(11) unsigned DEFAULT 0,
+                                       `infoShip` int(11) DEFAULT 0,
+                                       `create_time` timestamp NULL,
+                                       `verify` text DEFAULT NULL,
+                                       PRIMARY KEY (`id`),
+                                       KEY `carts_ibfk_1` (`idUser`),
+                                       CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`idUser`) REFERENCES `customer` (`id_user`)
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4;
 
 -- Dumping data for table web_ban_sach.carts: ~0 rows (approximately)
 INSERT INTO `carts` (`id`, `idUser`, `timeShip`, `feeShip`, `totalPrice`, `infoShip`, `create_time`, `verify`) VALUES
@@ -294,11 +294,11 @@ INSERT INTO `carts` (`id`, `idUser`, `timeShip`, `feeShip`, `totalPrice`, `infoS
 
 -- Dumping structure for table web_ban_sach.catalog
 CREATE TABLE IF NOT EXISTS `catalog` (
-    `id_catalog` int(11) NOT NULL AUTO_INCREMENT,
-    `name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-    `parent_id` int(11) DEFAULT NULL,
-    PRIMARY KEY (`id_catalog`) USING BTREE
-    ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                         `id_catalog` int(11) NOT NULL AUTO_INCREMENT,
+                                         `name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+                                         `parent_id` int(11) DEFAULT NULL,
+                                         PRIMARY KEY (`id_catalog`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.catalog: ~9 rows (approximately)
 INSERT INTO `catalog` (`id_catalog`, `name`, `parent_id`) VALUES
@@ -314,16 +314,16 @@ INSERT INTO `catalog` (`id_catalog`, `name`, `parent_id`) VALUES
 
 -- Dumping structure for table web_ban_sach.contact
 CREATE TABLE IF NOT EXISTS `contact` (
-    `id_contact` int(11) NOT NULL AUTO_INCREMENT,
-    `id_user` int(11) NOT NULL,
-    `full_name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `phone_number` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-    `email_contact` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-    `content_contact` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
-    `status` int(11) NOT NULL DEFAULT 0,
-    `feedback_content` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
-    PRIMARY KEY (`id_contact`) USING BTREE
-    ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                         `id_contact` int(11) NOT NULL AUTO_INCREMENT,
+                                         `id_user` int(11) NOT NULL,
+                                         `full_name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                         `phone_number` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+                                         `email_contact` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+                                         `content_contact` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
+                                         `status` int(11) NOT NULL DEFAULT 0,
+                                         `feedback_content` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                         PRIMARY KEY (`id_contact`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.contact: ~5 rows (approximately)
 INSERT INTO `contact` (`id_contact`, `id_user`, `full_name`, `phone_number`, `email_contact`, `content_contact`, `status`, `feedback_content`) VALUES
@@ -335,21 +335,21 @@ INSERT INTO `contact` (`id_contact`, `id_user`, `full_name`, `phone_number`, `em
 
 -- Dumping structure for table web_ban_sach.customer
 CREATE TABLE IF NOT EXISTS `customer` (
-    `id_user` int(11) NOT NULL AUTO_INCREMENT,
-    `first_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-    `last_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-    `email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-    `password` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-    `address` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `phone` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `created_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-    `role` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `status` int(11) DEFAULT NULL,
-    `attempts` int(11) DEFAULT 3,
-    `lock_time` int(11) DEFAULT -1,
-    `typeLogin` int(11) DEFAULT 1,
-    PRIMARY KEY (`id_user`) USING BTREE
-    ) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                          `id_user` int(11) NOT NULL AUTO_INCREMENT,
+                                          `first_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+                                          `last_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+                                          `email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+                                          `password` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+                                          `address` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                          `phone` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                          `created_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                                          `role` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                          `status` int(11) DEFAULT NULL,
+                                          `attempts` int(11) DEFAULT 3,
+                                          `lock_time` int(11) DEFAULT -1,
+                                          `typeLogin` int(11) DEFAULT 1,
+                                          PRIMARY KEY (`id_user`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.customer: ~22 rows (approximately)
 INSERT INTO `customer` (`id_user`, `first_name`, `last_name`, `email`, `password`, `address`, `phone`, `created_time`, `role`, `status`, `attempts`, `lock_time`, `typeLogin`) VALUES
@@ -378,15 +378,15 @@ INSERT INTO `customer` (`id_user`, `first_name`, `last_name`, `email`, `password
 
 -- Dumping structure for table web_ban_sach.discount
 CREATE TABLE IF NOT EXISTS `discount` (
-    `id_discount` int(11) NOT NULL AUTO_INCREMENT,
-    `name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-    `quantity` int(11) DEFAULT NULL,
-    `percent_discount` int(11) DEFAULT NULL,
-    `diktat` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `status` int(11) DEFAULT 0,
-    `price_minimum` int(11) DEFAULT 0,
-    PRIMARY KEY (`id_discount`) USING BTREE
-    ) ENGINE=InnoDB AUTO_INCREMENT=10004 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                          `id_discount` int(11) NOT NULL AUTO_INCREMENT,
+                                          `name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+                                          `quantity` int(11) DEFAULT NULL,
+                                          `percent_discount` int(11) DEFAULT NULL,
+                                          `diktat` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                          `status` int(11) DEFAULT 0,
+                                          `price_minimum` int(11) DEFAULT 0,
+                                          PRIMARY KEY (`id_discount`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=10004 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.discount: ~9 rows (approximately)
 INSERT INTO `discount` (`id_discount`, `name`, `quantity`, `percent_discount`, `diktat`, `status`, `price_minimum`) VALUES
@@ -401,26 +401,26 @@ INSERT INTO `discount` (`id_discount`, `name`, `quantity`, `percent_discount`, `
 
 -- Dumping structure for table web_ban_sach.discount_customer
 CREATE TABLE IF NOT EXISTS `discount_customer` (
-    `id_discount` int(11) NOT NULL,
-    `id_user` int(11) NOT NULL,
-    `quantity` int(11) NOT NULL,
-    PRIMARY KEY (`id_discount`,`id_user`) USING BTREE,
-    KEY `voucher_fk2` (`id_user`) USING BTREE,
-    CONSTRAINT `voucher_fk1` FOREIGN KEY (`id_discount`) REFERENCES `discount` (`id_discount`),
-    CONSTRAINT `voucher_fk2` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+                                                   `id_discount` int(11) NOT NULL,
+                                                   `id_user` int(11) NOT NULL,
+                                                   `quantity` int(11) NOT NULL,
+                                                   PRIMARY KEY (`id_discount`,`id_user`) USING BTREE,
+                                                   KEY `voucher_fk2` (`id_user`) USING BTREE,
+                                                   CONSTRAINT `voucher_fk1` FOREIGN KEY (`id_discount`) REFERENCES `discount` (`id_discount`),
+                                                   CONSTRAINT `voucher_fk2` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.discount_customer: ~0 rows (approximately)
 
 -- Dumping structure for table web_ban_sach.image_book
 CREATE TABLE IF NOT EXISTS `image_book` (
-    `id_image` int(11) NOT NULL AUTO_INCREMENT,
-    `id_book` int(11) NOT NULL,
-    `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-    PRIMARY KEY (`id_image`) USING BTREE,
-    KEY `book_fk12` (`id_book`) USING BTREE,
-    CONSTRAINT `book_fk12` FOREIGN KEY (`id_book`) REFERENCES `book` (`id_book`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                            `id_image` int(11) NOT NULL AUTO_INCREMENT,
+                                            `id_book` int(11) NOT NULL,
+                                            `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                            PRIMARY KEY (`id_image`) USING BTREE,
+                                            KEY `book_fk12` (`id_book`) USING BTREE,
+                                            CONSTRAINT `book_fk12` FOREIGN KEY (`id_book`) REFERENCES `book` (`id_book`)
+) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.image_book: ~112 rows (approximately)
 INSERT INTO `image_book` (`id_image`, `id_book`, `image`) VALUES
@@ -539,19 +539,19 @@ INSERT INTO `image_book` (`id_image`, `id_book`, `image`) VALUES
 
 -- Dumping structure for table web_ban_sach.infomationdelivers
 CREATE TABLE IF NOT EXISTS `infomationdelivers` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `idCart` int(11) NOT NULL DEFAULT 0,
-    `x` int(11) NOT NULL DEFAULT 0,
-    `y` int(11) NOT NULL DEFAULT 0,
-    `z` int(11) NOT NULL DEFAULT 0,
-    `w` int(11) NOT NULL DEFAULT 0,
-    `districtTo` varchar(50) NOT NULL DEFAULT '0',
-    `warTo` varchar(50) NOT NULL DEFAULT '0',
-    `token` varchar(50) DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    KEY `infomationdelivers_ibfk_1` (`idCart`),
-    CONSTRAINT `infomationdelivers_ibfk_1` FOREIGN KEY (`idCart`) REFERENCES `carts` (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4;
+                                                    `id` int(11) NOT NULL AUTO_INCREMENT,
+                                                    `idCart` int(11) NOT NULL DEFAULT 0,
+                                                    `x` int(11) NOT NULL DEFAULT 0,
+                                                    `y` int(11) NOT NULL DEFAULT 0,
+                                                    `z` int(11) NOT NULL DEFAULT 0,
+                                                    `w` int(11) NOT NULL DEFAULT 0,
+                                                    `districtTo` varchar(50) NOT NULL DEFAULT '0',
+                                                    `warTo` varchar(50) NOT NULL DEFAULT '0',
+                                                    `token` varchar(50) DEFAULT NULL,
+                                                    PRIMARY KEY (`id`),
+                                                    KEY `infomationdelivers_ibfk_1` (`idCart`),
+                                                    CONSTRAINT `infomationdelivers_ibfk_1` FOREIGN KEY (`idCart`) REFERENCES `carts` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4;
 
 -- Dumping data for table web_ban_sach.infomationdelivers: ~1 rows (approximately)
 INSERT INTO `infomationdelivers` (`id`, `idCart`, `x`, `y`, `z`, `w`, `districtTo`, `warTo`, `token`) VALUES
@@ -559,16 +559,16 @@ INSERT INTO `infomationdelivers` (`id`, `idCart`, `x`, `y`, `z`, `w`, `districtT
 
 -- Dumping structure for table web_ban_sach.logs
 CREATE TABLE IF NOT EXISTS `logs` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `level` int(11) NOT NULL DEFAULT 0,
-    `user` int(11) NOT NULL DEFAULT 0,
-    `ip` varchar(200) NOT NULL DEFAULT '0',
-    `src` varchar(200) NOT NULL DEFAULT '0',
-    `content` varchar(200) NOT NULL DEFAULT '0',
-    `createAt` datetime NOT NULL DEFAULT current_timestamp(),
-    `status` int(11) NOT NULL DEFAULT 0,
-    PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=122 DEFAULT CHARSET=utf8mb4;
+                                      `id` int(11) NOT NULL AUTO_INCREMENT,
+                                      `level` int(11) NOT NULL DEFAULT 0,
+                                      `user` int(11) NOT NULL DEFAULT 0,
+                                      `ip` varchar(200) NOT NULL DEFAULT '0',
+                                      `src` varchar(200) NOT NULL DEFAULT '0',
+                                      `content` varchar(200) NOT NULL DEFAULT '0',
+                                      `createAt` datetime NOT NULL DEFAULT current_timestamp(),
+                                      `status` int(11) NOT NULL DEFAULT 0,
+                                      PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=122 DEFAULT CHARSET=utf8mb4;
 
 -- Dumping data for table web_ban_sach.logs: ~121 rows (approximately)
 INSERT INTO `logs` (`id`, `level`, `user`, `ip`, `src`, `content`, `createAt`, `status`) VALUES
@@ -696,14 +696,14 @@ INSERT INTO `logs` (`id`, `level`, `user`, `ip`, `src`, `content`, `createAt`, `
 
 -- Dumping structure for table web_ban_sach.news
 CREATE TABLE IF NOT EXISTS `news` (
-    `id_news` int(11) NOT NULL AUTO_INCREMENT,
-    `title_news` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-    `content_news` text COLLATE utf8_unicode_ci NOT NULL,
-    `id_user` int(11) NOT NULL,
-    PRIMARY KEY (`id_news`) USING BTREE,
-    KEY `news_fk1` (`id_user`) USING BTREE,
-    CONSTRAINT `news_fk1` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                      `id_news` int(11) NOT NULL AUTO_INCREMENT,
+                                      `title_news` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+                                      `content_news` text COLLATE utf8_unicode_ci NOT NULL,
+                                      `id_user` int(11) NOT NULL,
+                                      PRIMARY KEY (`id_news`) USING BTREE,
+                                      KEY `news_fk1` (`id_user`) USING BTREE,
+                                      CONSTRAINT `news_fk1` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.news: ~2 rows (approximately)
 INSERT INTO `news` (`id_news`, `title_news`, `content_news`, `id_user`) VALUES
@@ -712,14 +712,14 @@ INSERT INTO `news` (`id_news`, `title_news`, `content_news`, `id_user`) VALUES
 
 -- Dumping structure for table web_ban_sach.owner
 CREATE TABLE IF NOT EXISTS `owner` (
-    `id_company` int(11) NOT NULL AUTO_INCREMENT,
-    `name_website` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-    `name_company` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-    `time_start_proprietary` datetime NOT NULL,
-    `time_finish_proprietary` datetime DEFAULT NULL,
-    `information_company` text COLLATE utf8_unicode_ci NOT NULL,
-    PRIMARY KEY (`id_company`) USING BTREE
-    ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                       `id_company` int(11) NOT NULL AUTO_INCREMENT,
+                                       `name_website` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+                                       `name_company` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+                                       `time_start_proprietary` datetime NOT NULL,
+                                       `time_finish_proprietary` datetime DEFAULT NULL,
+                                       `information_company` text COLLATE utf8_unicode_ci NOT NULL,
+                                       PRIMARY KEY (`id_company`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.owner: ~0 rows (approximately)
 INSERT INTO `owner` (`id_company`, `name_website`, `name_company`, `time_start_proprietary`, `time_finish_proprietary`, `information_company`) VALUES
@@ -727,27 +727,27 @@ INSERT INTO `owner` (`id_company`, `name_website`, `name_company`, `time_start_p
 
 -- Dumping structure for table web_ban_sach.public_key
 CREATE TABLE IF NOT EXISTS `public_key` (
-    `id_key` int(11) NOT NULL AUTO_INCREMENT,
-    `id_user` int(11) NOT NULL,
-    `public_Key` text DEFAULT NULL,
-    `status` int(11) DEFAULT NULL,
-    `create_date` timestamp NOT NULL DEFAULT current_timestamp(),
-    `expire`  timestamp NULL,
-    PRIMARY KEY (`id_key`),
-    KEY `id_user` (`id_user`),
-    CONSTRAINT `public_key_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                                            `id_key` int(11) NOT NULL AUTO_INCREMENT,
+                                            `id_user` int(11) NOT NULL,
+                                            `public_Key` text DEFAULT NULL,
+                                            `status` int(11) DEFAULT NULL,
+                                            `create_date` timestamp NOT NULL DEFAULT current_timestamp(),
+                                            `expire`  timestamp NULL,
+                                            PRIMARY KEY (`id_key`),
+                                            KEY `id_user` (`id_user`),
+                                            CONSTRAINT `public_key_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Dumping data for table web_ban_sach.public_key: ~0 rows (approximately)
 
 -- Dumping structure for table web_ban_sach.publisher
 CREATE TABLE IF NOT EXISTS `publisher` (
-    `id_p` int(11) NOT NULL AUTO_INCREMENT,
-    `name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `time_start_coop` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-    `time_finish_coop` date DEFAULT NULL,
-    PRIMARY KEY (`id_p`) USING BTREE
-    ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                           `id_p` int(11) NOT NULL AUTO_INCREMENT,
+                                           `name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                           `time_start_coop` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                                           `time_finish_coop` date DEFAULT NULL,
+                                           PRIMARY KEY (`id_p`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.publisher: ~19 rows (approximately)
 INSERT INTO `publisher` (`id_p`, `name`, `time_start_coop`, `time_finish_coop`) VALUES
@@ -773,12 +773,12 @@ INSERT INTO `publisher` (`id_p`, `name`, `time_start_coop`, `time_finish_coop`) 
 
 -- Dumping structure for table web_ban_sach.publisher_company
 CREATE TABLE IF NOT EXISTS `publisher_company` (
-    `id_pc` int(11) NOT NULL AUTO_INCREMENT,
-    `name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `time_start_coop` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-    `time_finish_coop` date DEFAULT NULL,
-    PRIMARY KEY (`id_pc`) USING BTREE
-    ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                                   `id_pc` int(11) NOT NULL AUTO_INCREMENT,
+                                                   `name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                                   `time_start_coop` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                                                   `time_finish_coop` date DEFAULT NULL,
+                                                   PRIMARY KEY (`id_pc`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.publisher_company: ~25 rows (approximately)
 INSERT INTO `publisher_company` (`id_pc`, `name`, `time_start_coop`, `time_finish_coop`) VALUES
@@ -810,35 +810,35 @@ INSERT INTO `publisher_company` (`id_pc`, `name`, `time_start_coop`, `time_finis
 
 -- Dumping structure for table web_ban_sach.rate
 CREATE TABLE IF NOT EXISTS `rate` (
-    `id_user` int(11) NOT NULL,
-    `id_book` int(11) NOT NULL,
-    `id_order` int(11) NOT NULL,
-    `start_rate` int(11) DEFAULT NULL,
-    `comment` text COLLATE utf8_unicode_ci DEFAULT NULL,
-    `rate_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-    `status` int(11) NOT NULL DEFAULT 1,
-    PRIMARY KEY (`id_user`,`id_book`,`id_order`) USING BTREE,
-    KEY `id_book` (`id_book`) USING BTREE,
-    KEY `id_order` (`id_order`) USING BTREE,
-    CONSTRAINT `rate_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`),
-    CONSTRAINT `rate_ibfk_2` FOREIGN KEY (`id_book`) REFERENCES `book` (`id_book`),
-    CONSTRAINT `rate_ibfk_3` FOREIGN KEY (`id_order`) REFERENCES `bill` (`id_order`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                      `id_user` int(11) NOT NULL,
+                                      `id_book` int(11) NOT NULL,
+                                      `id_order` int(11) NOT NULL,
+                                      `start_rate` int(11) DEFAULT NULL,
+                                      `comment` text COLLATE utf8_unicode_ci DEFAULT NULL,
+                                      `rate_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                                      `status` int(11) NOT NULL DEFAULT 1,
+                                      PRIMARY KEY (`id_user`,`id_book`,`id_order`) USING BTREE,
+                                      KEY `id_book` (`id_book`) USING BTREE,
+                                      KEY `id_order` (`id_order`) USING BTREE,
+                                      CONSTRAINT `rate_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`),
+                                      CONSTRAINT `rate_ibfk_2` FOREIGN KEY (`id_book`) REFERENCES `book` (`id_book`),
+                                      CONSTRAINT `rate_ibfk_3` FOREIGN KEY (`id_order`) REFERENCES `bill` (`id_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.rate: ~0 rows (approximately)
 
 -- Dumping structure for table web_ban_sach.slide_pr
 CREATE TABLE IF NOT EXISTS `slide_pr` (
-    `id_pr` int(11) NOT NULL,
-    `name_pr` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `img` text COLLATE utf8_unicode_ci DEFAULT NULL,
-    `link` text COLLATE utf8_unicode_ci DEFAULT NULL,
-    `start_time` date DEFAULT NULL,
-    `finish_time` date DEFAULT NULL,
-    `create_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-    `status` int(11) NOT NULL DEFAULT 1,
-    PRIMARY KEY (`id_pr`) USING BTREE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                          `id_pr` int(11) NOT NULL,
+                                          `name_pr` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                          `img` text COLLATE utf8_unicode_ci DEFAULT NULL,
+                                          `link` text COLLATE utf8_unicode_ci DEFAULT NULL,
+                                          `start_time` date DEFAULT NULL,
+                                          `finish_time` date DEFAULT NULL,
+                                          `create_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                                          `status` int(11) NOT NULL DEFAULT 1,
+                                          PRIMARY KEY (`id_pr`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.slide_pr: ~3 rows (approximately)
 INSERT INTO `slide_pr` (`id_pr`, `name_pr`, `img`, `link`, `start_time`, `finish_time`, `create_time`, `status`) VALUES
@@ -848,22 +848,22 @@ INSERT INTO `slide_pr` (`id_pr`, `name_pr`, `img`, `link`, `start_time`, `finish
 
 -- Dumping structure for table web_ban_sach.transactions
 CREATE TABLE IF NOT EXISTS `transactions` (
-    `id_transaction` int(11) NOT NULL AUTO_INCREMENT,
-    `status` text COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '1: thành công; 0: không thành công',
-    `id_user` int(11) NOT NULL,
-    `name_customer` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
-    `email_customer` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `phone_customer` char(10) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `quantity` int(11) DEFAULT NULL,
-    `payment` varchar(20) CHARACTER SET utf8 DEFAULT NULL COMMENT 'tên cổng thanh toán',
-    `payment_info` text COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'thông tin trả về',
-    `messenger` text COLLATE utf8_unicode_ci DEFAULT NULL,
-    `security` text COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'mã bảo mật',
-    `created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-    PRIMARY KEY (`id_transaction`) USING BTREE,
-    KEY `id_user` (`id_user`) USING BTREE,
-    CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+                                              `id_transaction` int(11) NOT NULL AUTO_INCREMENT,
+                                              `status` text COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '1: thành công; 0: không thành công',
+                                              `id_user` int(11) NOT NULL,
+                                              `name_customer` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
+                                              `email_customer` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                              `phone_customer` char(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+                                              `quantity` int(11) DEFAULT NULL,
+                                              `payment` varchar(20) CHARACTER SET utf8 DEFAULT NULL COMMENT 'tên cổng thanh toán',
+                                              `payment_info` text COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'thông tin trả về',
+                                              `messenger` text COLLATE utf8_unicode_ci DEFAULT NULL,
+                                              `security` text COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'mã bảo mật',
+                                              `created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                                              PRIMARY KEY (`id_transaction`) USING BTREE,
+                                              KEY `id_user` (`id_user`) USING BTREE,
+                                              CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `customer` (`id_user`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table web_ban_sach.transactions: ~0 rows (approximately)
 INSERT INTO `transactions` (`id_transaction`, `status`, `id_user`, `name_customer`, `email_customer`, `phone_customer`, `quantity`, `payment`, `payment_info`, `messenger`, `security`, `created`) VALUES
@@ -914,28 +914,34 @@ CREATE PROCEDURE getSelectPublicKey(IN user_id INT, IN cart_id INT)
 BEGIN
     -- Check if there is a record with a non-null expire date that satisfies the conditions
     IF EXISTS (SELECT 1 FROM carts
-               JOIN public_key ON carts.idUser = public_key.id_user
+                                 JOIN public_key ON carts.idUser = public_key.id_user
                WHERE carts.id = cart_id
                  AND carts.idUser = user_id
                  AND public_key.expire IS NOT NULL
                  AND carts.create_time <= public_key.expire) THEN
 
-SELECT pk.public_Key
-FROM customer c
-         JOIN public_key pk ON c.id_user = pk.id_user
-         JOIN carts ct ON c.id_user = ct.idUser
-WHERE ct.id = cart_id
-  AND ct.idUser = user_id
-  AND ct.create_time >= pk.create_date
-  AND ct.create_time <= pk.expire;
-ELSE
-SELECT pk.public_Key
-FROM customer c
-         JOIN public_key pk ON c.id_user = pk.id_user
-         JOIN carts ct ON c.id_user = ct.idUser
-WHERE ct.id = cart_id
-  AND ct.idUser = user_id
-  AND ct.create_time >= pk.create_date
-  AND pk.expire IS NULL;
-END IF;
+        SELECT pk.public_Key
+        FROM customer c
+                 JOIN public_key pk ON c.id_user = pk.id_user
+                 JOIN carts ct ON c.id_user = ct.idUser
+        WHERE ct.id = cart_id
+          AND ct.idUser = user_id
+          AND ct.create_time >= pk.create_date
+          AND ct.create_time <= pk.expire;
+    ELSE
+        -- FIX: bỏ điều kiện ct.create_time >= pk.create_date ở nhánh này.
+-- Khi expire IS NULL tức là đây là khóa hiện tại (chưa bị revoke).
+-- Không cần so sánh thời gian vì chỉ có một khóa active duy nhất.
+-- Điều kiện cũ làm null khi cart mẫu (2023) < create_date key (2024/2025).
+        SELECT pk.public_Key
+        FROM customer c
+                 JOIN public_key pk ON c.id_user = pk.id_user
+                 JOIN carts ct ON c.id_user = ct.idUser
+        WHERE ct.id = cart_id
+          AND ct.idUser = user_id
+          AND pk.expire IS NULL
+          AND pk.status = 1
+        ORDER BY pk.create_date DESC
+        LIMIT 1;
+    END IF;
 END

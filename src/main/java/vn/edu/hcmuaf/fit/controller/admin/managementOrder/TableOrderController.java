@@ -3,7 +3,6 @@ package vn.edu.hcmuaf.fit.controller.admin.managementOrder;
 import vn.edu.hcmuaf.fit.dao.impl.BillDAO;
 import vn.edu.hcmuaf.fit.dao.impl.CartDao;
 import vn.edu.hcmuaf.fit.dao.impl.PublicKeyDao;
-import vn.edu.hcmuaf.fit.model.PublicKeyModel;
 import vn.edu.hcmuaf.fit.model.CartModel;
 import vn.edu.hcmuaf.fit.services.IBillManagementService;
 import vn.edu.hcmuaf.fit.utils.ObjectVerifyUtil;
@@ -15,7 +14,12 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @WebServlet(name = "admin-table-order", value = "/admin-table-order")
@@ -24,20 +28,16 @@ public class TableOrderController extends HttpServlet {
     @Inject
     IBillManagementService iBillManagementService;
 
-    CartDao cartDao= new CartDao();
+    CartDao cartDao = new CartDao();
     SHA256Util sha256Util = new SHA256Util();
     ObjectVerifyUtil objUtil = new ObjectVerifyUtil();
     PublicKeyDao publicKeyDao = new PublicKeyDao();
-
-    // KHÔNG khai báo RSAUtil ở đây — tạo mới bên trong calcVerifyStatus()
-    // cho từng đơn, tránh nhiều request/nhiều vòng lặp dùng chung field
-    // publicKey của 1 object RSAUtil (gây verify nhầm key giữa các đơn).
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        request.setAttribute("title", "Danh Sách Đơn Hàng");
+        request.setAttribute("title", "Quản Lý Đơn Hàng");
 
         String message = request.getParameter("message");
         String alert   = request.getParameter("alert");
@@ -46,67 +46,96 @@ public class TableOrderController extends HttpServlet {
             request.setAttribute("alert", alert);
         }
 
-        request.setAttribute("listBill", buildOrderList());
-        request.getRequestDispatcher("views/admin/table-data-order.jsp")
-                .forward(request, response);
+        // Giữ nguyên lấy từ Cart gốc từ database theo ảnh DB của bạn
+        List<CartModel> rawCarts = cartDao.getAllCart();
+        List<CartModel> finalizedCarts = attachOrderMetaData(rawCarts);
+
+        request.setAttribute("listBill", finalizedCarts);
+        request.getRequestDispatcher("/views/admin/table-data-order.jsp").forward(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         doGet(request, response);
     }
 
-    private List<CartModel> buildOrderList() {
-        List<CartModel> list = cartDao.getAllCart();
-        for (CartModel cart : list) {
-            // Gắn danh sách bill (giữ nguyên logic cũ)
-            cart.setBills(new BillDAO().findAllBillByIdCart(cart.getId()));
+    private List<CartModel> attachOrderMetaData(List<CartModel> list) {
+        if (list == null) return new ArrayList<>();
 
-            // Verify lại CHO MỌI đơn, không phân biệt trạng thái vận chuyển
-            String verifyStatus = calcVerifyStatus(cart.getId(), cart.getIdUser());
+        BillDAO billDAO = new BillDAO();
+        for (CartModel cart : list) {
+            int idCart = cart.getId();
+            int idUser = cart.getIdUser();
+
+            cart.setBills(billDAO.findAllBillByIdCart(idCart));
+
+            // 1. Chạy tự động verify đơn hàng
+            String verifyStatus = RSAUtil.autoVerifyOrder(idCart, idUser);
             cart.setVerifyStatus(verifyStatus);
 
-            // ── TỰ ĐỘNG HỦY: chỉ áp dụng khi đơn đang "Chờ xử lý" (1) ───
-            // Đơn đang vận chuyển (2) hoặc đã giao (3) KHÔNG bị đổi trạng
-            // thái dù verify FAIL — chỉ badge Invalid cảnh báo cho admin.
-            if ("FAIL".equals(verifyStatus) && cart.getInShip() == 1) {
-                cartDao.updateCart(cart.getId(), 4); // Tự động đổi infoShip sang 4 (Đã hủy) trong DB
-                cart.setInShip(4);                   // Đổi trạng thái hiển thị tại chỗ
+            // 2. ĐỒNG BỘ NGAY TRÊN GIAO DIỆN: Nếu chữ ký giả mạo, gán tạm trạng thái hiển thị là 4
+            if ("FAIL".equals(verifyStatus)) {
+                cart.setInShip(4);
             }
         }
         return list;
     }
 
-    private String calcVerifyStatus(int idCart, int idUser) {
-        try {
-            String signature = cartDao.getHash(idCart, idUser);
-            String publicKey = cartDao.getPuclickey(idUser, idCart);
+//    private String calcVerifyStatus(int idCart, int idUser) {
+//        try {
+//            String signature = cartDao.getHash(idCart, idUser);
+//            String publicKey = cartDao.getPuclickey(idUser, idCart);
+//
+//            // Nếu đơn hàng chưa được ký số (cột verify trong DB null) -> Trả về trạng thái "Chưa verify"
+//            if (signature == null || signature.trim().isEmpty() || "NULL".equalsIgnoreCase(signature)) {
+//                return "CHUA_VERIFY";
+//            }
+//            if (publicKey == null) return "FAIL";
+//
+//            // Kiểm tra trạng thái thu hồi khóa (Revoke) của Public Key
+//            boolean isKeyRevoked = publicKeyDao.getAllKeys().stream()
+//                    .anyMatch(key -> key.getIdUser() == idUser
+//                            && publicKey.contains(key.getPublicKey())
+//                            && key.getStatus() == 0);
+//
+//            if (isKeyRevoked) {
+//                return "FAIL";
+//            }
+//
+//            // Sinh chuỗi hash MD5/SHA256 thô hiển thị trên màn hình sign-order.jsp để đối chiếu
+//            String orderString = objUtil.string(idUser, idCart);
+//            String hash1 = sha256Util.check(orderString);
+//
+//            // Tiến hành Verify chữ ký số chuẩn thuật toán SHA256withRSA
+//            boolean isValid = verifySignature(publicKey, hash1, signature);
+//
+//            return isValid ? "OK" : "FAIL";
+//
+//        } catch (Exception e) {
+//            return "FAIL";
+//        }
+//    }
 
-            if (signature == null || publicKey == null) return null;
-
-            // Kiểm tra xem khóa công khai này có bị Admin bấm thu hồi (Revoke) trước đó hay không
-            boolean isKeyRevoked = publicKeyDao.getAllKeys().stream()
-                    .anyMatch(key -> key.getIdUser() == idUser
-                            && publicKey.contains(key.getPublicKey())
-                            && key.getStatus() == 0);
-
-            if (isKeyRevoked) {
-                return "FAIL"; // Khóa chết thì báo Invalid luôn
-            }
-
-            // Tính toán hash tự nhiên theo dữ liệu DB hiện tại
-            String orderString = objUtil.string(idUser, idCart);
-            String hash1 = sha256Util.check(orderString);
-
-            RSAUtil rsaUtil = new RSAUtil();
-            rsaUtil.setPublicKey(publicKey);
-            String hash2 = rsaUtil.decrypt(signature);
-
-            // Trả về kết quả thật (OK hoặc FAIL) không can thiệp ép uổng
-            return hash1.equals(hash2) ? "OK" : "FAIL";
-
-        } catch (Exception e) {
-            return "FAIL";
-        }
-    }
+//    private boolean verifySignature(String publicKeyStr, String plaintextData, String signatureStr) {
+//        try {
+//            String cleanPublicKey = publicKeyStr.trim().replace("\r\n", "").replace("\n", "");
+//            byte[] publicBytes = Base64.getDecoder().decode(cleanPublicKey);
+//            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
+//            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+//            PublicKey publicKey = keyFactory.generatePublic(keySpec);
+//
+//            String cleanSignature = signatureStr.trim().replace("\r\n", "").replace("\n", "");
+//            byte[] signatureBytes = Base64.getDecoder().decode(cleanSignature);
+//
+//            Signature sig = Signature.getInstance("SHA256withRSA");
+//            sig.initVerify(publicKey);
+//            sig.update(plaintextData.getBytes("UTF-8"));
+//
+//            return sig.verify(signatureBytes);
+//        } catch (Exception e) {
+//            System.err.println("Lỗi verify signature: " + e.getMessage());
+//            return false;
+//        }
+//    }
 }

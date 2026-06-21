@@ -23,28 +23,25 @@ public class ReportKeyLossController extends HttpServlet {
             throws ServletException, IOException {
 
         CustomerModel user = (CustomerModel) SessionUtil.getInstance().getValue(request, "USERMODEL");
-
         if (user == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+            response.sendRedirect(request.getContextPath() + "/login?action=login");
             return;
         }
 
+        // Lấy danh sách key đang ACTIVE của user
         List<PublicKeyModel> activeKeys = publicKeyDao.getActiveKeysByUser(user.getIdUser());
         request.setAttribute("activeKeys", activeKeys);
-        request.setAttribute("title", "Báo Mất Khóa");
         request.getRequestDispatcher("/views/web/report-key-loss.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         request.setCharacterEncoding("UTF-8");
 
         CustomerModel user = (CustomerModel) SessionUtil.getInstance().getValue(request, "USERMODEL");
-
         if (user == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+            response.sendRedirect(request.getContextPath() + "/login?action=login");
             return;
         }
 
@@ -66,18 +63,16 @@ public class ReportKeyLossController extends HttpServlet {
             return;
         }
 
-        if (reportDao.hasPendingReport(idKey)) {
-            request.setAttribute("error", "Bạn đã gửi báo cáo cho khóa này và đang chờ admin xử lý.");
-            doGet(request, response);
-            return;
-        }
-
+        // Xử lý: khóa key + hủy đơn sau thời điểm báo mất — tất cả trong 1 transaction
         boolean ok = reportDao.submitReport(idKey, user.getIdUser(), reason);
 
         if (ok) {
-            response.sendRedirect(request.getContextPath() + "/report-key-loss?success=1");
+            // Thành công → khóa đã bị vô hiệu hóa ngay.
+            // Quay về trang Quản Lý Khóa: vì activeKey giờ rỗng nên trang đó
+            // sẽ tự hiện 2 lựa chọn "Tạo khóa mới" / "Nhập Public Key có sẵn".
+            response.sendRedirect(request.getContextPath() + "/key-management?msg=keylost");
         } else {
-            request.setAttribute("error", "Có lỗi xảy ra khi gửi báo cáo. Vui lòng thử lại.");
+            request.setAttribute("error", "Có lỗi xảy ra. Vui lòng thử lại.");
             doGet(request, response);
         }
     }

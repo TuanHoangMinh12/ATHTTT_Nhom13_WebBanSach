@@ -20,6 +20,10 @@ public class KeyManagementController extends HttpServlet {
     private final PublicKeyDao publicKeyDao = new PublicKeyDao();
     private final CustomerDAO  customerDAO  = new CustomerDAO();
 
+    // Độ dài tối thiểu hợp lý để chặn chuỗi rỗng/rác — không bắt buộc định
+    // dạng PEM (BEGIN/END), người dùng có thể dán thẳng nội dung key.
+    private static final int MIN_PUBLIC_KEY_LENGTH = 20;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -54,6 +58,21 @@ public class KeyManagementController extends HttpServlet {
             request.setAttribute("alertType", "warning");
             request.setAttribute("alertMsg",
                     "Bạn đang có khóa hoạt động. Nếu muốn đổi khóa, hãy dùng chức năng Cập Nhật Khóa.");
+        } else if ("keylost".equals(msg)) {
+            request.setAttribute("alertType", "warning");
+            request.setAttribute("alertMsg",
+                    "Khóa cũ đã được vô hiệu hóa do báo mất. Vui lòng tạo khóa mới hoặc nhập Public Key có sẵn để tiếp tục sử dụng hệ thống.");
+        } else if ("publickeysaved".equals(msg)) {
+            request.setAttribute("alertType", "success");
+            request.setAttribute("alertMsg", "Đã lưu Public Key của bạn thành công.");
+        } else if ("invalidpublickey".equals(msg)) {
+            request.setAttribute("alertType", "danger");
+            request.setAttribute("alertMsg",
+                    "Public Key không hợp lệ. Vui lòng kiểm tra lại và thử lại.");
+        } else if ("duplicatepublickey".equals(msg)) {
+            request.setAttribute("alertType", "danger");
+            request.setAttribute("alertMsg",
+                    "Public Key này đã được sử dụng trong hệ thống. Vui lòng nhập một key khác.");
         } else if ("error".equals(msg)) {
             request.setAttribute("alertType", "danger");
             request.setAttribute("alertMsg", "Có lỗi xảy ra. Vui lòng thử lại sau.");
@@ -66,6 +85,8 @@ public class KeyManagementController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        request.setCharacterEncoding("UTF-8");
 
         CustomerModel user = getLoggedInUser(request);
         if (user == null) {
@@ -82,6 +103,9 @@ public class KeyManagementController extends HttpServlet {
                 break;
             case "renew":
                 handleRenew(request, response, user);
+                break;
+            case "submitPublicKey":
+                handleSubmitPublicKey(request, response, user);
                 break;
             default:
                 response.sendRedirect(request.getContextPath() + "/key-management");
@@ -108,6 +132,53 @@ public class KeyManagementController extends HttpServlet {
 
         boolean ok = generateAndStoreKey(request, response, user.getIdUser(), "renewed");
         if (!ok) redirect(response, request, "error");
+    }
+
+    /**
+     * Người dùng đã có sẵn cặp khóa RSA của riêng họ (vd: tạo offline bằng OpenSSL)
+     * và chỉ muốn đăng ký Public Key đó với hệ thống — dùng khi vừa báo mất khóa
+     * (không có activeKey) và không muốn hệ thống tự sinh khóa mới.
+     * KHÔNG cho thực hiện khi đang có activeKey — trường hợp đó phải dùng "Cập Nhật Khóa".
+     */
+    private void handleSubmitPublicKey(HttpServletRequest request, HttpServletResponse response,
+                                       CustomerModel user) throws IOException {
+
+        PublicKeyModel activeKey = findActiveKey(user.getIdUser());
+        if (activeKey != null) {
+            redirect(response, request, "haveactive");
+            return;
+        }
+
+        String publicKey = request.getParameter("publicKey");
+        if (!isValidPublicKey(publicKey)) {
+            redirect(response, request, "invalidpublickey");
+            return;
+        }
+
+        String trimmedKey = publicKey.trim();
+
+        // Chặn key đã được dùng (bởi bất kỳ user nào, ở bất kỳ trạng thái nào)
+        if (publicKeyDao.existsByPublicKey(trimmedKey)) {
+            redirect(response, request, "duplicatepublickey");
+            return;
+        }
+
+        try {
+            // Lưu public key vào DB (status = 1, active) — không sinh private key,
+            // vì private key do người dùng tự giữ.
+            customerDAO.insert_publicKey(user.getIdUser(), trimmedKey);
+            redirect(response, request, "publickeysaved");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirect(response, request, "error");
+        }
+    }
+
+    /** Kiểm tra Public Key không rỗng và đủ độ dài tối thiểu hợp lý. */
+    private boolean isValidPublicKey(String publicKey) {
+        if (publicKey == null) return false;
+        String trimmed = publicKey.trim();
+        return trimmed.length() >= MIN_PUBLIC_KEY_LENGTH;
     }
 
     private boolean generateAndStoreKey(HttpServletRequest request, HttpServletResponse response,
