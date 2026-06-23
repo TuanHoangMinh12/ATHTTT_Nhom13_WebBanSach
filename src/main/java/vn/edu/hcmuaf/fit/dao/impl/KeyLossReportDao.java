@@ -129,6 +129,11 @@ public class KeyLossReportDao {
      * (chỉ xem lịch sử, không còn duyệt/từ chối vì hệ thống tự xử lý ngay
      * lúc người dùng báo mất).
      */
+    /**
+     * Lấy TOÀN BỘ lịch sử báo mất khóa của TẤT CẢ user — dùng cho trang Admin
+     * (chỉ xem lịch sử, không còn duyệt/từ chối vì hệ thống tự xử lý ngay
+     * lúc người dùng báo mất).
+     */
     public List<KeyLossReportModel> getAllReports() {
         List<KeyLossReportModel> list = new ArrayList<>();
         String sql =
@@ -139,9 +144,11 @@ public class KeyLossReportDao {
                         "JOIN public_key pk ON r.id_key = pk.id_key " +
                         "JOIN customer c ON r.id_user = c.id_user " +
                         "ORDER BY r.report_time DESC";
+
         try (Connection conn = JDBCConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
+
             while (rs.next()) {
                 KeyLossReportModel m = new KeyLossReportModel();
                 m.setIdReport(rs.getInt("id_report"));
@@ -156,9 +163,11 @@ public class KeyLossReportDao {
                 m.setEmail(rs.getString("email"));
                 list.add(m);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return list;
     }
 }
