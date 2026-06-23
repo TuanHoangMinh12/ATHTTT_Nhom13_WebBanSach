@@ -1,4 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="vi_VN"/>
 <%--
   Created by IntelliJ IDEA.
   User: ndl22
@@ -65,48 +67,48 @@
         <tbody>
         <c:forEach var="item" items="${cart.map}">
           <tr data-product-id="${item.value.product.idBook}">
-              <td>
-                <label>
-                  <input type="checkbox" name="settings" value="${item.value.product.idBook}"></label>
-              </td>
-              <td class="container_img">
-                <div class="col_img"><img src="${pageContext.request.contextPath}/${item.value.product.image}" alt=""></div>
-                <div class="col-container_content">
-                  <a data-product-name="${item.value.product.name}"></a>
-                  <h2 class="title">${item.value.product.name}</h2>
-                  <div class="wrap_id">
-                    <span class="id">Mã SP</span>
-                    <div id="id">${item.key}</div>
-                  </div>
-                  <div class="wrap_price">
-                      <div class="price active">${item.value.product.priceDiscount} đ</div>
-                      <div class="price_sale">${item.value.product.price} đ</div>
-                  </div>
+            <td>
+              <label>
+                <input type="checkbox" name="settings" value="${item.value.product.idBook}"></label>
+            </td>
+            <td class="container_img">
+              <div class="col_img"><img src="${pageContext.request.contextPath}/${item.value.product.image}" alt=""></div>
+              <div class="col-container_content">
+                <a data-product-name="${item.value.product.name}"></a>
+                <h2 class="title">${item.value.product.name}</h2>
+                <div class="wrap_id">
+                  <span class="id">Mã SP</span>
+                  <div id="id">${item.key}</div>
                 </div>
-              </td>
-              <td>
-                <div class="d-flex quantity">
-                  <div class="input-group-prepend minus">
-                    <span class="input-group-text btn-spin btn-dec btn-number" style="cursor: pointer; background-color: #FFFFFF; border: 1px solid #cacaca">-</span>
-                  </div>
-                  <input type="text" value="${item.value.quantity}" style="width: 60px; background-color: #FFFFFF; border: 1px solid #cacaca" class="soluongsp text-center input-quantity" />
-                  <div class="input-group-append plus">
-                    <span class="input-group-text btn-spin btn-inc btn-number" style="cursor: pointer; background-color: #FFFFFF; border: 1px solid #cacaca">+</span>
-                  </div>
+                <div class="wrap_price">
+                  <div class="price active"><fmt:formatNumber value="${item.value.product.priceDiscount}" pattern="#,###"/> đ</div>
+                  <div class="price_sale"><fmt:formatNumber value="${item.value.product.price}" pattern="#,###"/> đ</div>
                 </div>
-              </td>
-              <td><span class="col-sum_price">${item.value.product.priceDiscount * item.value.quantity}đ</span></td>
-              <td class="action text-center" data-title="Remove">
-                <a href="#"><i class="col_delete fa-solid fa-trash-can"></i></a>
-              </td>
-            </tr>
+              </div>
+            </td>
+            <td>
+              <div class="d-flex quantity">
+                <div class="input-group-prepend minus">
+                  <span class="input-group-text btn-spin btn-dec btn-number" style="cursor: pointer; background-color: #FFFFFF; border: 1px solid #cacaca">-</span>
+                </div>
+                <input type="text" value="${item.value.quantity}" style="width: 60px; background-color: #FFFFFF; border: 1px solid #cacaca" class="soluongsp text-center input-quantity" />
+                <div class="input-group-append plus">
+                  <span class="input-group-text btn-spin btn-inc btn-number" style="cursor: pointer; background-color: #FFFFFF; border: 1px solid #cacaca">+</span>
+                </div>
+              </div>
+            </td>
+            <td><span class="col-sum_price"><fmt:formatNumber value="${item.value.product.priceDiscount * item.value.quantity}" pattern="#,###"/>đ</span></td>
+            <td class="action text-center" data-title="Remove">
+              <a href="#"><i class="col_delete fa-solid fa-trash-can"></i></a>
+            </td>
+          </tr>
         </c:forEach>
         </tbody>
       </table>
       <div class="container_right">
         <div class="container_price">
           <span class="provisional">Tạm tính</span>
-          <span class="sum_money">${cart.totalPrice}đ</span>
+          <span class="sum_money"><fmt:formatNumber value="${cart.totalPrice}" pattern="#,###"/>đ</span>
         </div>
         <div class="order">ĐẶT HÀNG</div>
         <a href="${pageContext.request.contextPath}/home"><div class="add_product">CHỌN THÊM SẢN PHẨM</div></a>
