@@ -40,7 +40,7 @@ public class AccountController extends HttpServlet {
                     request.setAttribute("listBillDelivByIdOrder",  listDonHang(cus,2));
                     request.setAttribute("listBillRateByIdOrder",  cartModelsChuaRate(cus,3));
                     request.setAttribute("listBillByIdOrder", listDonHang(cus,3));
-                    request.setAttribute("listBillCancelByIdOrder", listDonHang(cus,-1));
+                    request.setAttribute("listBillCancelByIdOrder", listDonHang(cus,4));
 
                     request.getRequestDispatcher("/views/web/reviewOrders.jsp").forward(request, response);
                 }

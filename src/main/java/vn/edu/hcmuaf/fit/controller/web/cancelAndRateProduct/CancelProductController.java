@@ -37,7 +37,7 @@ public class CancelProductController extends HttpServlet {
             request.setAttribute("listBillRateByIdOrder",  listDonHang(cus,3));
             request.setAttribute("listBillByIdOrder", listDonHang(cus,3));
             CartDao dao = new CartDao();
-            dao.updateCart(idInt, -1);
+            dao.updateCart(idInt, 4);
             Log log = new Log(Log.ALER,ip,"Cancel Product", cus.getIdUser(),"Customer cancel product: "+ id,1);
             log.insert();
             new MessageParameterUntil("Hủy đơn hàng thành công", "success", "/views/web/reviewOrders.jsp", request, response).send();
