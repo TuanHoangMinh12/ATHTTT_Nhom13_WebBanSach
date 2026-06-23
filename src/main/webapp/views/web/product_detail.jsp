@@ -1,4 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="vi_VN"/>
 <%--
   Created by IntelliJ IDEA.
   User: ndl22
@@ -27,13 +29,13 @@
           integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css" rel="stylesheet">
-      <link rel="stylesheet" href="<c:url value='/templates/styles/Header.css'/> " />
-      <link rel="stylesheet" href="<c:url value='/templates/styles/ProductDetail.css'/> " />
-      <link rel="stylesheet" href="<c:url value='/templates/styles/Footer.css'/> " />
+    <link rel="stylesheet" href="<c:url value='/templates/styles/Header.css'/> " />
+    <link rel="stylesheet" href="<c:url value='/templates/styles/ProductDetail.css'/> " />
+    <link rel="stylesheet" href="<c:url value='/templates/styles/Footer.css'/> " />
 
-<%--    <link rel="stylesheet" href="${pageContext.request.contextPath}/templates/styles/Header.css" />--%>
-<%--    <link rel="stylesheet" href="${pageContext.request.contextPath}/templates/styles/ProductDetail.css" />--%>
-<%--    <link rel="stylesheet" href="${pageContext.request.contextPath}/templates/styles/Footer.css" />--%>
+    <%--    <link rel="stylesheet" href="${pageContext.request.contextPath}/templates/styles/Header.css" />--%>
+    <%--    <link rel="stylesheet" href="${pageContext.request.contextPath}/templates/styles/ProductDetail.css" />--%>
+    <%--    <link rel="stylesheet" href="${pageContext.request.contextPath}/templates/styles/Footer.css" />--%>
 
     <style>
         .sao .active {
@@ -119,8 +121,8 @@
                 </div>
                 <hr>
                 <div class="product-content-right-product-price">
-                    <div class="giabia">Giá:<span class="giacu ml-2">${bookModel.priceDiscount} ₫</span></div>
-                    <div class="giaban">Giá bán tại Doraemon: <span class="giamoi font-weight-bold">${bookModel.price} đ</span></div>
+                    <div class="giabia">Giá:<span class="giacu ml-2"><fmt:formatNumber value="${bookModel.priceDiscount}" pattern="#,###"/> ₫</span></div>
+                    <div class="giaban">Giá bán tại Doraemon: <span class="giamoi font-weight-bold"><fmt:formatNumber value="${bookModel.price}" pattern="#,###"/> đ</span></div>
                     <div class="tietkiem">Tiết kiệm: <b>20.000 ₫</b>
                     </div>
                     <c:if test="${quantityRemain != 0}">
