@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%--<%@ include file="styles"%>--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<fmt:setLocale value="vi_VN"/>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -144,9 +146,9 @@
                                         <small class="tacgia text-muted" style="font-weight: bold">${bookPayTop.nameAuthor}</small>
                                         <p class="card-text">
                                         <div class="container_price">
-                                            <p class="card-text_price">${bookPayTop.price}đ</p>
+                                            <p class="card-text_price"><fmt:formatNumber value="${bookPayTop.price}" pattern="#,###"/>đ</p>
                                             <c:if test="${bookPayTop.discount != 0}">
-                                                <p style="text-decoration: line-through;" class="card-text_price--sale">${bookPayTop.priceDiscount}đ
+                                                <p style="text-decoration: line-through;" class="card-text_price--sale"><fmt:formatNumber value="${bookPayTop.priceDiscount}" pattern="#,###"/>đ
                                                 </p>
                                             </c:if>
 
@@ -239,9 +241,9 @@
                                         <small class="tacgia text-muted" style="font-weight: bold">${bookNew.nameAuthor}</small>
                                         <p class="card-text">
                                         <div class="container_price">
-                                            <p class="card-text_price">${bookNew.price}đ</p>
+                                            <p class="card-text_price"><fmt:formatNumber value="${bookNew.price}" pattern="#,###"/>đ</p>
                                             <c:if test="${bookNew.discount != 0}">
-                                                <p style="text-decoration: line-through;" class="card-text_price--sale">${bookNew.priceDiscount}đ
+                                                <p style="text-decoration: line-through;" class="card-text_price--sale"><fmt:formatNumber value="${bookNew.priceDiscount}" pattern="#,###"/>đ
                                                 </p>
                                             </c:if>
                                         </div>
@@ -333,9 +335,9 @@
                                         <small class="tacgia text-muted" style="font-weight: bold">${bookSap.nameAuthor}</small>
                                         <p class="card-text">
                                         <div class="container_price">
-                                            <p class="card-text_price">${bookSap.price}đ</p>
+                                            <p class="card-text_price"><fmt:formatNumber value="${bookSap.price}" pattern="#,###"/>đ</p>
                                             <c:if test="${bookSap.discount != 0}">
-                                                <p style="text-decoration: line-through;" class="card-text_price--sale">${bookSap.priceDiscount}đ
+                                                <p style="text-decoration: line-through;" class="card-text_price--sale"><fmt:formatNumber value="${bookSap.priceDiscount}" pattern="#,###"/>đ
                                                 </p>
                                             </c:if>
                                         </div>
