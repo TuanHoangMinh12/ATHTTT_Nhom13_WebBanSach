@@ -1,4 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="vi_VN"/>
 <%--
   Created by IntelliJ IDEA.
   User: ndl22
@@ -84,7 +86,7 @@
       <div class="form-group input">
         <label for="district">Quận/Huyện: <span class="obligatory">(*)</span></label>
         <select    name="district" class="form-control form-select form-select-sm mb-3" id="district"
-                aria-label=".form-select-sm">
+                   aria-label=".form-select-sm">
           <option  value="" selected>Chọn quận huyện</option>
 
         </select>
@@ -150,44 +152,44 @@
     <h4 class="order_header">Chi tiết đơn hàng</h4>
     <div class="container_order">
 
-        <div class="wrap_oder">
-          <c:forEach var="item" items="${sessionScope.cartOrder.map}">
-            <h2 class="title"> ${item.value.product.name}</h2>
-            <div class="wrap">
-              <span class="id fs_s">Mã SP: </span>
-              <div class="fs_s" id="id"> ${item.key}</div>
-            </div>
-            <div class="wrap" style="margin-bottom: 12px">
-              <span class="quantity fs_s">Số lượng:</span>
-              <div class="fs_s" id="quantity"> ${item.value.quantity}</div>
-            </div>
-            <hr>
-          </c:forEach>
-          <div class="wrap_left">
-            <div style="margin-top: 12px;" class="wrap mt">
-              <span class="sum_price">Tổng tiền:</span>
-              <div class="ml" id="sum_price"> ${sessionScope.cartOrder.totalPrice} đ</div>
-            </div>
-            <div class="wrap mt">
-              <span class="sum_transport">Phí vận chuyển:</span>
-              <p class="ml" id="sum_transport"> </p>
-            </div>
-            <div class="wrap mt">
-              <span class="sum_transport">Dự kiến giao:</span>
-              <p class="ml" id="date_transport"> </p>
-            </div>
-            <div class="wrap mt">
-              <span class="sum_transport">Giảm giá:</span>
-              <p class="ml" id="voucher">${sessionScope.cartOrder.voucher} đ </p>
-            </div>
-            <div class="wrap mt">
-              <span class="sum_transport">Thanh toán:</span>
-              <span class="ml" style="font-weight: 600; color: rgb(217, 11, 11);" id="sum_order"> </span>
-              
-            </div>
+      <div class="wrap_oder">
+        <c:forEach var="item" items="${sessionScope.cartOrder.map}">
+          <h2 class="title"> ${item.value.product.name}</h2>
+          <div class="wrap">
+            <span class="id fs_s">Mã SP: </span>
+            <div class="fs_s" id="id"> ${item.key}</div>
           </div>
-          <input id="bt-update_order" type="button" value="CHỈNH SỬA ĐƠN HÀNG">
+          <div class="wrap" style="margin-bottom: 12px">
+            <span class="quantity fs_s">Số lượng:</span>
+            <div class="fs_s" id="quantity"> ${item.value.quantity}</div>
+          </div>
+          <hr>
+        </c:forEach>
+        <div class="wrap_left">
+          <div style="margin-top: 12px;" class="wrap mt">
+            <span class="sum_price">Tổng tiền:</span>
+            <div class="ml" id="sum_price"> <fmt:formatNumber value="${sessionScope.cartOrder.totalPrice}" pattern="#,###"/> đ</div>
+          </div>
+          <div class="wrap mt">
+            <span class="sum_transport">Phí vận chuyển:</span>
+            <p class="ml" id="sum_transport"> </p>
+          </div>
+          <div class="wrap mt">
+            <span class="sum_transport">Dự kiến giao:</span>
+            <p class="ml" id="date_transport"> </p>
+          </div>
+          <div class="wrap mt">
+            <span class="sum_transport">Giảm giá:</span>
+            <p class="ml" id="voucher">${sessionScope.cartOrder.voucher} đ </p>
+          </div>
+          <div class="wrap mt">
+            <span class="sum_transport">Thanh toán:</span>
+            <span class="ml" style="font-weight: 600; color: rgb(217, 11, 11);" id="sum_order"> </span>
+
+          </div>
         </div>
+        <input id="bt-update_order" type="button" value="CHỈNH SỬA ĐƠN HÀNG">
+      </div>
 
 
     </div>

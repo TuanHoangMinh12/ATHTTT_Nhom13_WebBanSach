@@ -52,7 +52,6 @@
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="fas fa-check-circle mr-1"></i>
                     <strong>Gửi thành công!</strong> Yêu cầu của bạn đã được gửi đến admin.
-                    Bạn sẽ được thông báo khi admin xử lý. Trong thời gian chờ,
                     <strong>hãy ngừng sử dụng private key đó</strong>.
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -72,12 +71,11 @@
 
             <%-- Cảnh báo giải thích hậu quả --%>
             <div class="warning-box">
-                <strong><i class="fas fa-shield-alt"></i> Điều gì xảy ra khi admin xác nhận?</strong>
+                <strong><i class="fas fa-shield-alt"></i> Điều gì xảy ra khi bạn báo mất khóa?</strong>
                 <ul>
                     <li>Khóa bí mật sẽ bị <strong>vô hiệu hóa ngay lập tức</strong>.</li>
-                    <li>Đơn hàng được ký <strong>trước</strong> thời điểm bạn báo mất → <span class="text-success">vẫn hợp lệ</span>.</li>
-                    <li>Đơn hàng được ký <strong>sau</strong> thời điểm báo mất → <span class="text-danger">chuyển trạng thái lỗi / hủy</span>.</li>
-                    <li>Bạn có thể <strong>tạo cặp khóa mới</strong> sau khi admin xử lý.</li>
+                    <li>Bạn có thể <strong>tạo cặp khóa mới</strong> Sau khi báo mất khóa.</li>
+                    <li>Bạn có thể <strong>sử dụng khóa riêng</strong> nếu bạn đã có sẵn khóa.</li>
                 </ul>
             </div>
 
