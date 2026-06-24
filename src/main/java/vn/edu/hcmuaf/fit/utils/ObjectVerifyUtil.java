@@ -16,6 +16,7 @@ public class ObjectVerifyUtil {
         double totalBillFromBillTable = cartDao.getTotalBill(idUser, idCart);   // bill.totalBill
         double totalPriceFromCarts = o1.getTotolPrice();                        // carts.totalPrice
         double feeShip = cartDao.getFeeShip(idUser, idCart);                    // carts.feeShip
+        String createTime = cartDao.getCreatime(idUser, idCart);
 
         StringBuilder sb = new StringBuilder();
 
@@ -26,10 +27,12 @@ public class ObjectVerifyUtil {
         sb.append("|").append(o1.getAddress());
         sb.append("|").append(o1.getPhone());
         sb.append("|").append(o1.getEmail());
+        sb.append("|").append(o1.getCreate_order_time());
         sb.append("|").append(getTime);
         sb.append("|").append(totalBillFromBillTable);
         sb.append("|").append(totalPriceFromCarts);
         sb.append("|").append(feeShip);
+        sb.append("|").append(createTime);
 
         // Thông tin từng sản phẩm (giữ thứ tự theo ORDER BY b.id_order)
         for (CartDetailModel item : details) {
