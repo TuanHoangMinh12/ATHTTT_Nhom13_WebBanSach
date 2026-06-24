@@ -63,13 +63,9 @@ public class ReportKeyLossController extends HttpServlet {
             return;
         }
 
-        // Xử lý: khóa key + hủy đơn sau thời điểm báo mất — tất cả trong 1 transaction
         boolean ok = reportDao.submitReport(idKey, user.getIdUser(), reason);
 
         if (ok) {
-            // Thành công → khóa đã bị vô hiệu hóa ngay.
-            // Quay về trang Quản Lý Khóa: vì activeKey giờ rỗng nên trang đó
-            // sẽ tự hiện 2 lựa chọn "Tạo khóa mới" / "Nhập Public Key có sẵn".
             response.sendRedirect(request.getContextPath() + "/key-management?msg=keylost");
         } else {
             request.setAttribute("error", "Có lỗi xảy ra. Vui lòng thử lại.");

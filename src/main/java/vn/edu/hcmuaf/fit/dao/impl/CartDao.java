@@ -573,7 +573,7 @@ public class CartDao {
 
     public String getPuclickey(int idUser, int idCart) {
         String result = null;
-        // Thay vì JOIN phức tạp dễ bị lệch idUser=0 trong bảng carts, ta chỉ truy vấn thẳng bảng public_key
+        // trong bảng carts, ta chỉ truy vấn bảng public_key
         // để lấy key có hiệu lực tại thời điểm đơn hàng đó tạo ra.
         String sql = "SELECT public_Key FROM public_key " +
                 "WHERE id_user = ? AND status = 1 " +

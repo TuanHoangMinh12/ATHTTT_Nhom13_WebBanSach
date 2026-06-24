@@ -120,10 +120,7 @@ public class RSAUtil {
         return new String(output, StandardCharsets.UTF_8);
     }
 
-    /**
-     * Hàm tự động xác thực đơn hàng dùng chung cho toàn hệ thống backend admin
-     * @return "OK" (Hợp lệ), "FAIL" (Bị chỉnh sửa/Lỗi khóa), hoặc null (Chưa ký)
-     */
+
     public static String autoVerifyOrder(int idCart, int idUser) {
         try {
             String signature = cartDao.getHash(idCart, idUser);
@@ -133,7 +130,7 @@ public class RSAUtil {
                 return null;
             }
             if (publicKey == null) {
-                System.out.println("[VERIFY ERRROR]: Không tìm thấy Public Key cho User ID: " + idUser);
+                System.out.println(" Không tìm thấy Public Key cho User ID: " + idUser);
                 return "FAIL";
             }
 
@@ -164,12 +161,12 @@ public class RSAUtil {
             boolean isCorrect = sig.verify(signatureBytes);
 
             if (isCorrect) {
-                System.out.println("[ADMIN VERIFY] - Kết quả kiểm tra chữ ký: " + (isCorrect ? "HỢP LỆ (OK)" : "KHÔNG KHỚP (FAIL)"));
+                System.out.println("Kết quả kiểm tra chữ ký: " + (isCorrect ? "HỢP LỆ (OK)" : "KHÔNG KHỚP (FAIL)"));
                 return "OK";
             } else {
                 // TỰ ĐỘNG CẬP NHẬT TRẠNG THÁI HỦY ĐƠN HÀNG XUỐNG DATABASE
                 cartDao.updateCart(idCart, 4);
-                System.out.println("[BẢO MẬT] - Đơn hàng #" + idCart + " có chữ ký Invalid. Đã tự động chuyển trạng thái về Đã hủy (4).");
+                System.out.println(" Đơn hàng #" + idCart + " có chữ ký Invalid. Đã tự động chuyển trạng thái về Đã hủy (4).");
                 return "FAIL";
             }
 

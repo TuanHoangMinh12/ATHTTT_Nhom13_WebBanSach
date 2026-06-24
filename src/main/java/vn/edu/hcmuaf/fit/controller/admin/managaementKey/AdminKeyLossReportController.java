@@ -9,15 +9,6 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Trang Admin xem LỊCH SỬ báo mất khóa.
- *
- * Từ khi áp dụng luồng tự động xử lý (KeyLossReportDao#submitReport):
- * mỗi báo cáo được hệ thống xử lý ngay lúc người dùng bấm "Báo Mất Khóa"
- * (vô hiệu hóa key + hủy đơn hàng liên quan), KHÔNG còn cần admin xác
- * nhận hoặc từ chối nữa. Vì vậy controller này chỉ còn chức năng xem —
- * không có doPost xử lý approve/reject.
- */
 @WebServlet(name = "adminKeyLossReport", value = "/admin-key-loss-report")
 public class AdminKeyLossReportController extends HttpServlet {
 

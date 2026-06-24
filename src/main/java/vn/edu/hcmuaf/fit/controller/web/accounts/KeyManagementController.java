@@ -20,15 +20,12 @@ public class KeyManagementController extends HttpServlet {
     private final PublicKeyDao publicKeyDao = new PublicKeyDao();
     private final CustomerDAO  customerDAO  = new CustomerDAO();
 
-    // Độ dài tối thiểu hợp lý để chặn chuỗi rỗng/rác — không bắt buộc định
-    // dạng PEM (BEGIN/END), người dùng có thể dán thẳng nội dung key.
     private static final int MIN_PUBLIC_KEY_LENGTH = 20;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // ── Xử lý download file private key (gọi từ iframe) ─────────────────
         String action = request.getParameter("action");
         if ("download".equals(action)) {
             handleDownload(request, response);
@@ -134,12 +131,6 @@ public class KeyManagementController extends HttpServlet {
         if (!ok) redirect(response, request, "error");
     }
 
-    /**
-     * Người dùng đã có sẵn cặp khóa RSA của riêng họ (vd: tạo offline bằng OpenSSL)
-     * và chỉ muốn đăng ký Public Key đó với hệ thống — dùng khi vừa báo mất khóa
-     * (không có activeKey) và không muốn hệ thống tự sinh khóa mới.
-     * KHÔNG cho thực hiện khi đang có activeKey — trường hợp đó phải dùng "Cập Nhật Khóa".
-     */
     private void handleSubmitPublicKey(HttpServletRequest request, HttpServletResponse response,
                                        CustomerModel user) throws IOException {
 
@@ -174,7 +165,7 @@ public class KeyManagementController extends HttpServlet {
         }
     }
 
-    /** Kiểm tra Public Key không rỗng và đủ độ dài tối thiểu hợp lý. */
+    // Kiểm tra Public Key không rỗng và đủ độ dài tối thiểu hợp lý.
     private boolean isValidPublicKey(String publicKey) {
         if (publicKey == null) return false;
         String trimmed = publicKey.trim();
@@ -203,9 +194,7 @@ public class KeyManagementController extends HttpServlet {
 
             String redirectUrl = request.getContextPath() + "/key-management?msg=" + successMsg;
 
-            // Trả về trang HTML trung gian:
-            // - iframe ẩn trigger download file
-            // - meta refresh redirect về trang chính sau 2 giây
+            // Trả về trang HTML trung gian: iframe ẩn trigger download file
             response.setContentType("text/html; charset=UTF-8");
             response.getWriter().write(
                     "<!DOCTYPE html><html><head><meta charset='UTF-8'>" +
