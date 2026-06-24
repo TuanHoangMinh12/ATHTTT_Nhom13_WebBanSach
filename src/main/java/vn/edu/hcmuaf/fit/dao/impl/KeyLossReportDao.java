@@ -9,14 +9,6 @@ import java.util.List;
 
 public class KeyLossReportDao {
 
-    /**
-     * Người dùng bấm "Báo Mất Khóa" → tự động xử lý luôn (không cần admin xác nhận):
-     * 1. Ghi báo cáo vào key_loss_report (status=1 luôn — đã xử lý)
-     * 2. Thu hồi public_key ngay (status=0, expire=now)
-     * 3. Đơn hàng của user tạo SAU thời điểm báo mất → hủy (bill.shipping_info=4)
-     * 4. Đồng bộ carts.infoShip=4 để UI hiển thị đúng
-     * → Đơn tạo TRƯỚC thời điểm báo mất → giữ nguyên (hợp lệ)
-     */
     public boolean submitReport(int idKey, int idUser, String reason) {
         Connection conn = null;
         try {
@@ -124,16 +116,6 @@ public class KeyLossReportDao {
         return list;
     }
 
-    /**
-     * Lấy TOÀN BỘ lịch sử báo mất khóa của TẤT CẢ user — dùng cho trang Admin
-     * (chỉ xem lịch sử, không còn duyệt/từ chối vì hệ thống tự xử lý ngay
-     * lúc người dùng báo mất).
-     */
-    /**
-     * Lấy TOÀN BỘ lịch sử báo mất khóa của TẤT CẢ user — dùng cho trang Admin
-     * (chỉ xem lịch sử, không còn duyệt/từ chối vì hệ thống tự xử lý ngay
-     * lúc người dùng báo mất).
-     */
     public List<KeyLossReportModel> getAllReports() {
         List<KeyLossReportModel> list = new ArrayList<>();
         String sql =

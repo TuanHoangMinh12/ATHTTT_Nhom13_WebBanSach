@@ -21,7 +21,6 @@ public class RemoveBillController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Chuyển bảo mật: Không cho phép gọi qua thẻ <a> GET nữa
         response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
     }
 

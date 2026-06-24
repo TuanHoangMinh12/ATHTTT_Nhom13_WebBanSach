@@ -13,7 +13,7 @@ public class CartDetailModel {
     private int pack;            // bill.pack — đóng gói, ảnh hưởng chi phí
     private int paymentMethod;   // bill.payment_method — đổi cách thanh toán là gian lận
     private String info;         // bill.info — ghi chú đơn hàng
-
+    
     public CartDetailModel(int id, String nameSach, int quantity, String image, double totalPrice) {
         this.id = id;
         this.nameSach = nameSach;
