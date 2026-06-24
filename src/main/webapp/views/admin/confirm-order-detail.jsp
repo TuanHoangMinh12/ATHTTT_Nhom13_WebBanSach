@@ -127,6 +127,15 @@
                                         </div>
                                     </div>
                                 </c:when>
+                                <c:when test="${verifyResult == 'CHUA_VERIFY'}">
+                                    <div class="verify-box verify-none">
+                                        <i class="fas fa-info-circle" style="color: #6c757d;"></i>
+                                        <div>
+                                            <strong>Đơn hàng chưa được ký số</strong><br>
+                                            <small>Khách hàng chưa thực hiện ký số cho đơn hàng này. Vui lòng liên hệ người dùng cập nhật chữ ký điện tử.</small>
+                                        </div>
+                                    </div>
+                                </c:when>
                                 <c:when test="${verifyResult == 'ERROR'}">
                                     <div class="verify-box verify-none">
                                         <i class="fas fa-question-circle"></i>
@@ -200,14 +209,14 @@
                                                 </b>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td>Tình trạng:</td>
-                                            <td>${cart.getInFoShipString()}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>DEBUG:</td>
-                                            <td>inShip = [${cart.inShip}]</td>
-                                        </tr>
+<%--                                        <tr>--%>
+<%--                                            <td>Tình trạng:</td>--%>
+<%--                                            <td>${cart.getInFoShipString()}</td>--%>
+<%--                                        </tr>--%>
+<%--                                        <tr>--%>
+<%--                                            <td>DEBUG:</td>--%>
+<%--                                            <td>inShip = [${cart.inShip}]</td>--%>
+<%--                                        </tr>--%>
                                         <tr>
                                             <td>Đăng ký giao hàng:</td>
                                             <td>
@@ -354,7 +363,6 @@
                 swal("Hành động bị chặn!", "Đơn hàng này chưa được xác thực chữ ký số hoặc chữ ký không hợp lệ. Bạn phải bấm nút [Verify đơn hàng] trước khi giao cho đối tác vận chuyển!", "error");
                 return;
             }
-
             var orderId = $(this).data('id');
             var cusId = $(this).data('cus');
             var $btn = $(this);
@@ -484,7 +492,6 @@
                 }
             });
         });
-
     });
 </script>
 
